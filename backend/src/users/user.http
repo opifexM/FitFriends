@@ -1,0 +1,29 @@
+@host = http://localhost:3000
+@userId = 665370cf3c05a9828e60a286
+
+### Create a new user
+POST {{host}}/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user112@notfound.local",
+  "name": "KeksA",
+  "age": 123
+}
+
+
+### Get user by ID
+GET {{host}}/api/users/{{userId}} HTTP/1.1
+
+
+### Update user
+PATCH {{host}}/api/users/{{userId}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "AAA2"
+}
+
+
+### Delete user by ID
+DELETE {{host}}/api/users/{{userId}} HTTP/1.1

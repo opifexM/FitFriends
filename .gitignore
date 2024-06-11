@@ -1,0 +1,11 @@
+/node_modules/
+/backend/dist
+/backend/node_modules/
+/frontend/dist
+/frontend/node_modules/
+/.idea/
+# Project exclude paths
+/shared/type/user.d.ts
+/shared/type/user.js
+/shared/type/user.js.map
+*.env
