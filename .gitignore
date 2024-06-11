@@ -3,6 +3,7 @@
 /backend/node_modules/
 /frontend/dist
 /frontend/node_modules/
+/frontend/markup/
 /.idea/
 # Project exclude paths
 /shared/type/user.d.ts
