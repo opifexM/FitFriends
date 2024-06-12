@@ -1,0 +1,59 @@
+@host = http://localhost:3000
+@userId = 6669fa301a4a457b8092f593
+@accessToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5Zjc4YjVlZDg1NjBmYmVhNjI0Y2QiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJLZWtzQSIsImlhdCI6MTcxODIyMDcwOSwiZXhwIjoxNzE4NTIwNzA5fQ.NgZJMR0ukhThsHnN04RCTuiM4M825kgvnH3o2jE0fNQHF3syrvbza5fmDpCF94EkDLDpaGfAWnnJP_27-HsViw
+@refreshToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwidG9rZW5JZCI6IjY5YTliMjI2LWRiM2MtNDJmMi1iMzVkLTk5ZTZlODE4ZmM0YyIsImlhdCI6MTcxODIyNjY2OCwiZXhwIjoxNzIwODE4NjY4fQ.lSDiLzu8pCXuCsVU0adXVKJa5QjOfIwtckwJXBfyPxIMi6plXyy6yV7o17d5TNBHCiC1l0HFeUDdoucYvIb2OA
+
+### Create a new user
+POST {{host}}/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user13@notfound.local",
+  "name": "KeksA",
+  "password": "123456",
+  "location": "Петроградская",
+  "gender": "мужской",
+  "role": "visitor",
+  "profilePictureId": "123e4567-e89b-12d3-a456-426614174000",
+  "dateOfBirth": "1990-01-01"
+}
+
+
+### Get user by ID
+GET {{host}}/api/users/{{userId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Update user
+PATCH {{host}}/api/users/{{userId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "AAAAAA2"
+}
+
+
+### Delete user by ID
+DELETE {{host}}/api/users/{{userId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Login user by email and password
+POST {{host}}/api/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user13@notfound.local",
+  "password": "123456"
+}
+
+
+### Check JWT token
+POST {{host}}/api/users/check HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Get new JWT pair from refreshToken
+POST {{host}}/api/users/refresh HTTP/1.1
+Authorization: Bearer {{refreshToken}}

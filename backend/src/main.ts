@@ -4,22 +4,30 @@ import { AppModule } from './app.module';
 import { AppConfiguration } from './config/app-configuration.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+const GLOBAL_PREFIX = 'api';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-
+  app.setGlobalPrefix(GLOBAL_PREFIX);
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
     }),
   );
+
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   const configService = app.get(AppConfiguration);
 
   const config = new DocumentBuilder()
     .setTitle('User API')
     .setDescription('API description for User operations')
+    .addBearerAuth()
     .setVersion('1.0')
     .build();
 
@@ -28,7 +36,7 @@ async function bootstrap() {
 
   await app.listen(configService.appPort);
   Logger.log(
-    `🚀 Application is running on: http://localhost:${configService.appPort}/${globalPrefix}`,
+    `🚀 Application is running on: http://localhost:${configService.appPort}/${GLOBAL_PREFIX}`,
   );
   Logger.log(
     `📚 Swagger is available on: http://localhost:${configService.appPort}/spec`,
