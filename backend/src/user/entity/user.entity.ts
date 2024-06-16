@@ -5,18 +5,18 @@ import { RoleType } from 'shared/type/enum/role-type.enum';
 import { User } from 'shared/type/user/user';
 
 export class UserEntity extends Entity implements User {
-  avatarId: string;
-  createdAt: Date;
-  dateOfBirth: Date;
-  description: string;
-  email: string;
-  gender: GenderType;
-  location: LocationType;
-  name: string;
-  password: string;
-  profilePictureId: string;
-  updatedAt: Date;
-  role: RoleType;
+  public avatarId: string;
+  public createdAt: Date;
+  public dateOfBirth: Date;
+  public description: string;
+  public email: string;
+  public gender: GenderType;
+  public location: LocationType;
+  public name: string;
+  public password: string;
+  public profilePictureId: string;
+  public updatedAt: Date;
+  public role: RoleType;
 
   constructor(user?: User) {
     super();

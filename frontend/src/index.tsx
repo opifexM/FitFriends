@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { User } from 'shared/type/user.ts';
+import {User} from 'shared/type/user.ts';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

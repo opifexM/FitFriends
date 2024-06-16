@@ -1,6 +1,6 @@
 import { Logger, NotFoundException } from '@nestjs/common';
-import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { Model } from 'mongoose';
 
 export abstract class BaseRepository<T> {
   protected readonly logger: Logger;

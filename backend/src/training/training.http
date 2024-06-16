@@ -1,0 +1,45 @@
+@host = http://localhost:3000
+@trainingId = 666deb9e10ff48d5830d5607
+@userId = 6669e5a12b10829b5ace1060
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4MzI1MjE3LCJleHAiOjE3MTg2MjUyMTd9.0bGUe-SCjIzP4dOGeF-37v0oG-BHzBo2MSSmE9OVynreX474iFgheJHVwVoacoRVI9-xTPPGhaojp3KKW7OwOg
+
+### Create a new training
+POST {{host}}/api/trainings HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Morning Yoga",
+  "backgroundId": "123e4567-e89b-12d3-a456-426614174001",
+  "skillLevel": "любитель",
+  "workout": "стрейчинг",
+  "workoutDuration": "30-50 мин",
+  "price": 3500,
+  "caloriesBurned": 3780,
+  "description": "A high-intensity interval training session to burn maximum calories",
+  "gender": "мужской",
+  "videoId": "123e4567-e89b-12d3-a456-426614174001",
+  "coach": "{{userId}}",
+  "isSpecialOffer": false
+}
+
+
+### Get training by ID
+GET {{host}}/api/trainings/{{trainingId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Update training
+PATCH {{host}}/api/trainings/{{trainingId}} HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "workoutDuration": "50-80 мин",
+  "price": 4000
+}
+
+
+### Delete training by ID
+DELETE {{host}}/api/trainings/{{trainingId}} HTTP/1.1
+Authorization: Bearer {{token}}

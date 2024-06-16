@@ -1,11 +1,12 @@
+import {Types} from "mongoose";
 import {PaymentType} from "../enum/payment-type.enum";
 import {PurchaseType} from "../enum/purchase-type.enum";
-import {Training} from "../training/training";
 
 export interface Order {
   id?: string;
+  user: Types.ObjectId;
   purchase: PurchaseType;
-  service: Training;
+  service: Types.ObjectId;
   price: number;
   count: number;
   totalPrice: number;

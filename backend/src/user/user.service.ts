@@ -5,6 +5,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Token } from 'shared/type/token.interface';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
@@ -14,7 +15,6 @@ import { UserEntity } from './entity/user.entity';
 import { UserFactory } from './entity/user.factory';
 import { UserRepository } from './entity/user.repository';
 import { USER_MESSAGES } from './user.constant';
-import { Token } from 'shared/type/token.interface';
 
 @Injectable()
 export class UserService {
@@ -36,6 +36,8 @@ export class UserService {
       role,
       location,
       dateOfBirth,
+      avatarId,
+      description,
     } = dto;
     this.logger.log(`Attempting to create user with email: ${email}`);
 
@@ -46,7 +48,6 @@ export class UserService {
     }
 
     const hashPassword = await this.bcryptCrypto.hashPassword(password);
-    //todo avatarId description
     const userData = {
       name: name,
       email: email,
@@ -56,8 +57,8 @@ export class UserService {
       gender: gender,
       role: role,
       profilePictureId: profilePictureId,
-      avatarId: '(none)',
-      description: '(none)',
+      avatarId: avatarId ?? '',
+      description: description ?? '',
     };
 
     const userEntity = UserFactory.createEntity(userData);
@@ -96,6 +97,8 @@ export class UserService {
     if (dto.profilePictureId !== undefined)
       updatedUser.profilePictureId = dto.profilePictureId;
     if (dto.avatarId !== undefined) updatedUser.avatarId = dto.avatarId;
+    if (dto.description !== undefined)
+      updatedUser.description = dto.description;
 
     return this.userRepository.update(userId, updatedUser);
   }

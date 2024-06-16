@@ -81,7 +81,18 @@ export class UpdateUserDto {
   @IsUUID()
   @ApiProperty({
     example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'The avatar ID of the user',
+    description: 'The avatar picture ID of the user',
   })
   public avatarId?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(USER.DESCRIPTION.MIN, USER.DESCRIPTION.MAX)
+  @ApiProperty({
+    example: 'A dedicated and motivated fitness enthusiast who is disciplined, active, health-conscious, energetic, goal-oriented, resilient, and passionate',
+    description: 'The description of the user',
+    minLength: USER.DESCRIPTION.MIN,
+    maxLength: USER.DESCRIPTION.MAX,
+  })
+  public description?: string;
 }

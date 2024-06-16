@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {ApiProperty} from '@nestjs/swagger';
 import {Expose} from 'class-transformer';
 import {GenderType} from "../../enum/gender-type.enum";
@@ -45,6 +44,7 @@ export class UserDto {
   @ApiProperty({
     example: LocationType.PIONERSKAYA,
     description: 'The location of the user',
+    enum: LocationType
   })
   public location: LocationType;
 
@@ -52,6 +52,7 @@ export class UserDto {
   @ApiProperty({
     example: GenderType.FEMALE,
     description: 'The gender of the user',
+    enum: GenderType
   })
   public gender: GenderType;
 
@@ -59,6 +60,7 @@ export class UserDto {
   @ApiProperty({
     example: RoleType.VISITOR,
     description: 'The role of the user',
+    enum: RoleType
   })
   public role: RoleType;
 

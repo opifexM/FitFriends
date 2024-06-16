@@ -2,7 +2,7 @@ import {GenderType} from "../enum/gender-type.enum";
 import {SkillLevelType} from "../enum/skill-level-type.enum";
 import {WorkoutDurationType} from "../enum/workout-duration-type.enum";
 import {WorkoutType} from "../enum/workout-type.enum";
-import {User} from "../user/user";
+import { Types } from 'mongoose';
 
 export interface Training {
   id?: string;
@@ -17,7 +17,7 @@ export interface Training {
   gender: GenderType;
   videoId: string;
   rating: number;
-  coach: User;
+  coach: Types.ObjectId;
   isSpecialOffer: boolean;
   createdAt: Date;
   updatedAt: Date;

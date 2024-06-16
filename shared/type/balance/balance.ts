@@ -1,10 +1,9 @@
-import {Training} from "../training/training";
-import {User} from "../user/user";
+import {Types} from "mongoose";
 
 export interface Balance {
   id?: string;
-  user: User;
-  training: Training;
+  user: Types.ObjectId;
+  training: Types.ObjectId;
   count: number;
   createdAt: Date;
   updatedAt: Date;

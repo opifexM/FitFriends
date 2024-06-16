@@ -1,11 +1,11 @@
+import {Types} from "mongoose";
 import {SkillLevelType} from "../enum/skill-level-type.enum";
 import {WorkoutDurationType} from "../enum/workout-duration-type.enum";
 import {WorkoutType} from "../enum/workout-type.enum";
-import {User} from "../user/user";
 
 export interface Questionnaire {
   id?: string;
-  user: User;
+  user: Types.ObjectId;
   skillLevel: SkillLevelType;
   workout: WorkoutType[];
   workoutDuration: WorkoutDurationType;

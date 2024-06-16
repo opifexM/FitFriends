@@ -1,0 +1,36 @@
+@host = http://localhost:3000
+@balanceId = 666decaac3099213b4f893f8
+@userId = 6669e5a12b10829b5ace1060
+@trainingId = 666deb9e10ff48d5830d5607
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4MzI1MjE3LCJleHAiOjE3MTg2MjUyMTd9.0bGUe-SCjIzP4dOGeF-37v0oG-BHzBo2MSSmE9OVynreX474iFgheJHVwVoacoRVI9-xTPPGhaojp3KKW7OwOg
+
+### Create a new balance
+POST {{host}}/api/balances HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "user": "{{userId}}",
+  "training": "{{trainingId}}",
+  "count": 5000
+}
+
+
+### Get balance by ID
+GET {{host}}/api/balances/{{balanceId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Update balance
+PATCH {{host}}/api/balances/{{balanceId}} HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "count": 3500
+}
+
+
+### Delete balance by ID
+DELETE {{host}}/api/balances/{{balanceId}} HTTP/1.1
+Authorization: Bearer {{token}}

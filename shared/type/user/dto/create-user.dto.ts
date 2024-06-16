@@ -1,6 +1,5 @@
-// @ts-nocheck
 import {ApiProperty} from '@nestjs/swagger';
-import { IsEmail, IsString, Length, IsDate, IsEnum, IsUUID } from 'class-validator';
+import {IsEmail, IsString, Length, IsDate, IsEnum, IsUUID, IsOptional} from 'class-validator';
 import {USER} from '../user.constant';
 import {GenderType} from "../../enum/gender-type.enum";
 import {LocationType} from "../../enum/location-type.enum";
@@ -34,7 +33,6 @@ export class CreateUserDto {
     maxLength: USER.PASSWORD.MAX,
   })
   public password: string;
-
 
   @IsDate()
   @Transform(({ value }) => new Date(value), { toClassOnly: true })
@@ -71,4 +69,23 @@ export class CreateUserDto {
     description: 'The profile picture ID of the user',
   })
   public profilePictureId: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    description: 'The avatar picture ID of the user',
+  })
+  public avatarId?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(USER.DESCRIPTION.MIN, USER.DESCRIPTION.MAX)
+  @ApiProperty({
+    example: 'A dedicated and motivated fitness enthusiast who is disciplined, active, health-conscious, energetic, goal-oriented, resilient, and passionate',
+    description: 'The description of the user',
+    minLength: USER.DESCRIPTION.MIN,
+    maxLength: USER.DESCRIPTION.MAX,
+  })
+  public description?: string;
 }

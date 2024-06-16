@@ -26,5 +26,6 @@ import { UserService } from './user.service';
     JwtAccessStrategy,
     JwtRefreshStrategy,
   ],
+  exports: [UserService],
 })
 export class UserModule {}

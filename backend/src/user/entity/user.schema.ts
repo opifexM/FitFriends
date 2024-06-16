@@ -18,34 +18,34 @@ import { RoleType } from 'shared/type/enum/role-type.enum';
 })
 export class UserModel extends Document {
   @Prop({ required: true, trim: true })
-  avatarId: string;
+  public avatarId: string;
 
   @Prop({ required: true })
-  dateOfBirth: Date;
+  public dateOfBirth: Date;
 
   @Prop({ required: true, trim: true })
-  description: string;
+  public description: string;
 
   @Prop({ required: true, trim: true, unique: true })
-  email: string;
+  public email: string;
 
   @Prop({ required: true, enum: GenderType })
-  gender: GenderType;
+  public gender: GenderType;
 
   @Prop({ required: true, enum: LocationType })
-  location: LocationType;
+  public location: LocationType;
 
   @Prop({ required: true, trim: true })
-  name: string;
+  public name: string;
 
   @Prop({ required: true, trim: true })
-  password: string;
+  public password: string;
 
   @Prop({ required: true, trim: true })
-  profilePictureId: string;
+  public profilePictureId: string;
 
   @Prop({ required: true, enum: RoleType })
-  role: RoleType;
+  public role: RoleType;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);
