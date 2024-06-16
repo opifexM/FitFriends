@@ -1,4 +1,4 @@
-import { ClassTransformOptions, plainToInstance } from "class-transformer";
+import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 import { Logger } from '@nestjs/common';
 
 type PlainObject = Record<string, unknown>;
@@ -47,7 +47,7 @@ export function parseTime(time: string): TimeAndUnit {
     throw new Error(`[parseTime] Can't parse value count. Result is NaN.`);
   }
 
-  return { value, unit }
+  return { value, unit };
 }
 
 export function addTime(value: number, unit: string): Date {
@@ -75,5 +75,3 @@ export function addTime(value: number, unit: string): Date {
 
   return date;
 }
-
-

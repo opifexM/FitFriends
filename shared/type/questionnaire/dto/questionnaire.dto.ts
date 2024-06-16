@@ -1,8 +1,8 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {Expose} from 'class-transformer';
-import {SkillLevelType} from 'shared/type/enum/skill-level-type.enum';
-import {WorkoutDurationType} from 'shared/type/enum/workout-duration-type.enum';
-import {WorkoutType} from 'shared/type/enum/workout-type.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum';
+import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum';
+import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 
 export class QuestionnaireDto {
   @Expose()
@@ -63,7 +63,6 @@ export class QuestionnaireDto {
     description: 'Is the user ready for training',
   })
   public isReadyForTraining: boolean;
-
 
   @Expose()
   @ApiProperty({

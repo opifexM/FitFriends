@@ -1,6 +1,6 @@
-import {GenderType} from "../enum/gender-type.enum";
-import {LocationType} from "../enum/location-type.enum";
-import {RoleType} from "../enum/role-type.enum";
+import { GenderType } from '../enum/gender-type.enum';
+import { LocationType } from '../enum/location-type.enum';
+import { RoleType } from '../enum/role-type.enum';
 
 export interface User {
   id?: string;
@@ -11,7 +11,7 @@ export interface User {
   gender: GenderType;
   dateOfBirth: Date;
   description: string;
-  location: LocationType
+  location: LocationType;
   profilePictureId: string;
   createdAt: Date;
   updatedAt: Date;

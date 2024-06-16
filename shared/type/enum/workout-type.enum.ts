@@ -5,5 +5,5 @@ export enum WorkoutType {
   STRETCHING = 'стрейчинг',
   CROSSFIT = 'кроссфит',
   AEROBICS = 'аэробика',
-  PILATES = 'пилатес'
+  PILATES = 'пилатес',
 }

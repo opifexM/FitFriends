@@ -1,6 +1,13 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {IsMongoId, IsNumber, IsString, Length, Max, Min,} from 'class-validator';
-import {REVIEW} from "../review.constant";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsMongoId,
+  IsNumber,
+  IsString,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
+import { REVIEW } from '../review.constant';
 
 export class CreateReviewDto {
   @IsMongoId()
@@ -31,7 +38,8 @@ export class CreateReviewDto {
   @IsString()
   @Length(REVIEW.TEXT.MIN, REVIEW.TEXT.MAX)
   @ApiProperty({
-    example: 'The training session was incredibly informative and engaging. The coach demonstrated deep knowledge and provided practical insights. The interactive activities helped reinforce the concepts, making it easier to apply them in real-world scenarios. Overall, it was a highly valuable experience.',
+    example:
+      'The training session was incredibly informative and engaging. The coach demonstrated deep knowledge and provided practical insights. The interactive activities helped reinforce the concepts, making it easier to apply them in real-world scenarios. Overall, it was a highly valuable experience.',
     description: 'The text of the review',
     minLength: REVIEW.TEXT.MIN,
     maxLength: REVIEW.TEXT.MAX,

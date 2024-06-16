@@ -3,5 +3,5 @@ export enum LocationType {
   PETROGRADSKAYA = 'Петроградская',
   UDELNAYA = 'Удельная',
   ZVEZDNAYA = 'Звёздная',
-  SPORTOVNAYA = 'Спортивная'
+  SPORTOVNAYA = 'Спортивная',
 }

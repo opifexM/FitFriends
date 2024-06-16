@@ -89,7 +89,8 @@ export class UpdateUserDto {
   @IsString()
   @Length(USER.DESCRIPTION.MIN, USER.DESCRIPTION.MAX)
   @ApiProperty({
-    example: 'A dedicated and motivated fitness enthusiast who is disciplined, active, health-conscious, energetic, goal-oriented, resilient, and passionate',
+    example:
+      'A dedicated and motivated fitness enthusiast who is disciplined, active, health-conscious, energetic, goal-oriented, resilient, and passionate',
     description: 'The description of the user',
     minLength: USER.DESCRIPTION.MIN,
     maxLength: USER.DESCRIPTION.MAX,

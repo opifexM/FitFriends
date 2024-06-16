@@ -1,9 +1,17 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {IsEmail, IsString, Length, IsDate, IsEnum, IsUUID, IsOptional} from 'class-validator';
-import {USER} from '../user.constant';
-import {GenderType} from "../../enum/gender-type.enum";
-import {LocationType} from "../../enum/location-type.enum";
-import {RoleType} from "../../enum/role-type.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsString,
+  Length,
+  IsDate,
+  IsEnum,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
+import { USER } from '../user.constant';
+import { GenderType } from '../../enum/gender-type.enum';
+import { LocationType } from '../../enum/location-type.enum';
+import { RoleType } from '../../enum/role-type.enum';
 import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
@@ -82,7 +90,8 @@ export class CreateUserDto {
   @IsString()
   @Length(USER.DESCRIPTION.MIN, USER.DESCRIPTION.MAX)
   @ApiProperty({
-    example: 'A dedicated and motivated fitness enthusiast who is disciplined, active, health-conscious, energetic, goal-oriented, resilient, and passionate',
+    example:
+      'A dedicated and motivated fitness enthusiast who is disciplined, active, health-conscious, energetic, goal-oriented, resilient, and passionate',
     description: 'The description of the user',
     minLength: USER.DESCRIPTION.MIN,
     maxLength: USER.DESCRIPTION.MAX,

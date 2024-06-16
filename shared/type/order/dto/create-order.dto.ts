@@ -1,8 +1,8 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {IsEnum, IsMongoId, IsNumber, Max, Min,} from 'class-validator';
-import {PaymentType} from "../../enum/payment-type.enum";
-import {PurchaseType} from "../../enum/purchase-type.enum";
-import {ORDER} from "../order.constant";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsMongoId, IsNumber, Max, Min } from 'class-validator';
+import { PaymentType } from '../../enum/payment-type.enum';
+import { PurchaseType } from '../../enum/purchase-type.enum';
+import { ORDER } from '../order.constant';
 
 export class CreateOrderDto {
   @IsMongoId()

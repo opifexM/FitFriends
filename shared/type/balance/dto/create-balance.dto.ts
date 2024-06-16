@@ -1,5 +1,5 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {IsMongoId, IsNumber} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsMongoId, IsNumber } from 'class-validator';
 
 export class CreateBalanceDto {
   @IsMongoId()
@@ -23,4 +23,3 @@ export class CreateBalanceDto {
   })
   public count: number;
 }
-

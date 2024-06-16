@@ -1,9 +1,18 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {ArrayMaxSize, IsArray, IsBoolean, IsEnum, IsMongoId, IsNumber, Max, Min,} from 'class-validator';
-import {SkillLevelType} from 'shared/type/enum/skill-level-type.enum';
-import {WorkoutDurationType} from 'shared/type/enum/workout-duration-type.enum';
-import {WorkoutType} from 'shared/type/enum/workout-type.enum';
-import {QUESTIONNAIRE} from 'shared/type/questionnaire/questionnaire.constant';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsMongoId,
+  IsNumber,
+  Max,
+  Min,
+} from 'class-validator';
+import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum';
+import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum';
+import { WorkoutType } from 'shared/type/enum/workout-type.enum';
+import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
 
 export class CreateQuestionnaireDto {
   @IsMongoId()

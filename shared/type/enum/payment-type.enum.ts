@@ -1,5 +1,5 @@
 export enum PaymentType {
   VISA = 'visa',
   MIR = 'mir',
-  UMONEY = 'umoney'
+  UMONEY = 'umoney',
 }

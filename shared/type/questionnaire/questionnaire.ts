@@ -1,7 +1,7 @@
-import {Types} from "mongoose";
-import {SkillLevelType} from "../enum/skill-level-type.enum";
-import {WorkoutDurationType} from "../enum/workout-duration-type.enum";
-import {WorkoutType} from "../enum/workout-type.enum";
+import { Types } from 'mongoose';
+import { SkillLevelType } from '../enum/skill-level-type.enum';
+import { WorkoutDurationType } from '../enum/workout-duration-type.enum';
+import { WorkoutType } from '../enum/workout-type.enum';
 
 export interface Questionnaire {
   id?: string;

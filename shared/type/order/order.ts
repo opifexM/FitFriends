@@ -1,6 +1,6 @@
-import {Types} from "mongoose";
-import {PaymentType} from "../enum/payment-type.enum";
-import {PurchaseType} from "../enum/purchase-type.enum";
+import { Types } from 'mongoose';
+import { PaymentType } from '../enum/payment-type.enum';
+import { PurchaseType } from '../enum/purchase-type.enum';
 
 export interface Order {
   id?: string;

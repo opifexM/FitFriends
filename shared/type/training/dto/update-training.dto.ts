@@ -1,10 +1,20 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {IsBoolean, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Length, Max, Min} from 'class-validator';
-import {GenderType} from "../../enum/gender-type.enum";
-import {SkillLevelType} from "../../enum/skill-level-type.enum";
-import {WorkoutDurationType} from "../../enum/workout-duration-type.enum";
-import {WorkoutType} from "../../enum/workout-type.enum";
-import {TRAINING} from "../traning.constant";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
+import { GenderType } from '../../enum/gender-type.enum';
+import { SkillLevelType } from '../../enum/skill-level-type.enum';
+import { WorkoutDurationType } from '../../enum/workout-duration-type.enum';
+import { WorkoutType } from '../../enum/workout-type.enum';
+import { TRAINING } from '../traning.constant';
 
 export class UpdateTrainingDto {
   @IsOptional()
@@ -74,7 +84,8 @@ export class UpdateTrainingDto {
   @IsString()
   @Length(TRAINING.DESCRIPTION.MIN, TRAINING.DESCRIPTION.MAX)
   @ApiProperty({
-    example: 'A high-intensity interval training session to burn maximum calories.',
+    example:
+      'A high-intensity interval training session to burn maximum calories.',
     description: 'The description of the training',
     minLength: TRAINING.DESCRIPTION.MIN,
     maxLength: TRAINING.DESCRIPTION.MAX,

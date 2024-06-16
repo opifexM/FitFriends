@@ -28,5 +28,4 @@ import { UserModule } from './user/user.module';
   providers: [AppConfiguration],
   exports: [],
 })
-export class AppModule {
-}
+export class AppModule {}

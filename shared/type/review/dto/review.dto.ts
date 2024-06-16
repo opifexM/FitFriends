@@ -1,5 +1,5 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {Expose} from "class-transformer";
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 export class ReviewDto {
   @Expose()
@@ -32,7 +32,8 @@ export class ReviewDto {
 
   @Expose()
   @ApiProperty({
-    example: 'The training session was incredibly informative and engaging. The coach demonstrated deep knowledge and provided practical insights. The interactive activities helped reinforce the concepts, making it easier to apply them in real-world scenarios. Overall, it was a highly valuable experience.',
+    example:
+      'The training session was incredibly informative and engaging. The coach demonstrated deep knowledge and provided practical insights. The interactive activities helped reinforce the concepts, making it easier to apply them in real-world scenarios. Overall, it was a highly valuable experience.',
     description: 'The text of the review',
   })
   public text: string;

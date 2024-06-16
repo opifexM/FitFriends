@@ -1,9 +1,9 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {Expose} from "class-transformer";
-import {GenderType} from "../../enum/gender-type.enum";
-import {SkillLevelType} from "../../enum/skill-level-type.enum";
-import {WorkoutDurationType} from "../../enum/workout-duration-type.enum";
-import {WorkoutType} from "../../enum/workout-type.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+import { GenderType } from '../../enum/gender-type.enum';
+import { SkillLevelType } from '../../enum/skill-level-type.enum';
+import { WorkoutDurationType } from '../../enum/workout-duration-type.enum';
+import { WorkoutType } from '../../enum/workout-type.enum';
 
 export class TrainingDto {
   @Expose()
@@ -64,7 +64,8 @@ export class TrainingDto {
 
   @Expose()
   @ApiProperty({
-    example: 'A high-intensity interval training session to burn maximum calories.',
+    example:
+      'A high-intensity interval training session to burn maximum calories.',
     description: 'The description of the training',
   })
   public description: string;
@@ -96,7 +97,6 @@ export class TrainingDto {
     description: 'Indicates if the training is a special offer',
   })
   public isSpecialOffer: boolean;
-
 
   @Expose()
   @ApiProperty({

@@ -1,3 +1,3 @@
 export enum PurchaseType {
-  SUBSCRIPTION = 'абонемент'
+  SUBSCRIPTION = 'абонемент',
 }

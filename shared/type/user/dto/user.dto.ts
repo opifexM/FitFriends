@@ -1,8 +1,8 @@
-import {ApiProperty} from '@nestjs/swagger';
-import {Expose} from 'class-transformer';
-import {GenderType} from "../../enum/gender-type.enum";
-import {LocationType} from "../../enum/location-type.enum";
-import {RoleType} from "../../enum/role-type.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+import { GenderType } from '../../enum/gender-type.enum';
+import { LocationType } from '../../enum/location-type.enum';
+import { RoleType } from '../../enum/role-type.enum';
 
 export class UserDto {
   @Expose()
@@ -44,7 +44,7 @@ export class UserDto {
   @ApiProperty({
     example: LocationType.PIONERSKAYA,
     description: 'The location of the user',
-    enum: LocationType
+    enum: LocationType,
   })
   public location: LocationType;
 
@@ -52,7 +52,7 @@ export class UserDto {
   @ApiProperty({
     example: GenderType.FEMALE,
     description: 'The gender of the user',
-    enum: GenderType
+    enum: GenderType,
   })
   public gender: GenderType;
 
@@ -60,7 +60,7 @@ export class UserDto {
   @ApiProperty({
     example: RoleType.VISITOR,
     description: 'The role of the user',
-    enum: RoleType
+    enum: RoleType,
   })
   public role: RoleType;
 
