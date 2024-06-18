@@ -1,14 +1,14 @@
 @host = http://localhost:3000
 @userId = 6669fa301a4a457b8092f593
 @accessToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5Zjc4YjVlZDg1NjBmYmVhNjI0Y2QiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJLZWtzQSIsImlhdCI6MTcxODIyMDcwOSwiZXhwIjoxNzE4NTIwNzA5fQ.NgZJMR0ukhThsHnN04RCTuiM4M825kgvnH3o2jE0fNQHF3syrvbza5fmDpCF94EkDLDpaGfAWnnJP_27-HsViw
-@refreshToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwidG9rZW5JZCI6IjY5YTliMjI2LWRiM2MtNDJmMi1iMzVkLTk5ZTZlODE4ZmM0YyIsImlhdCI6MTcxODIyNjY2OCwiZXhwIjoxNzIwODE4NjY4fQ.lSDiLzu8pCXuCsVU0adXVKJa5QjOfIwtckwJXBfyPxIMi6plXyy6yV7o17d5TNBHCiC1l0HFeUDdoucYvIb2OA
+@refreshToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwidG9rZW5JZCI6IjRmNDAwMTM1LTljY2QtNGVkZi04ZjEwLTU2Y2ZlYmJiODE0NyIsImlhdCI6MTcxODU1NjMwOCwiZXhwIjoxNzIxMTQ4MzA4fQ.-UJowbd-IGAmPrPN-M4o3kK30rrRlC1GZaow28STekqCqRY99oWEAe4PjxTm--JwBhdWAFGNGgtSFjkMeDcPiw
 
 ### Create a new user
 POST {{host}}/api/users HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "user13@notfound.local",
+  "email": "user134@notfound.local",
   "name": "KeksA",
   "password": "123456",
   "location": "Петроградская",

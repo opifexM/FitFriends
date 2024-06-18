@@ -10966,3 +10966,7 @@ input:active + .custom-textarea__text {
     background-color: #f7f7f7;
   }
 }
+
+.invalid-feedback {
+  color: red;
+}

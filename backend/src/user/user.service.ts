@@ -57,8 +57,8 @@ export class UserService {
       gender: gender,
       role: role,
       profilePictureId: profilePictureId,
-      avatarId: avatarId ?? '',
-      description: description ?? '',
+      avatarId: avatarId ?? '(none)',
+      description: description ?? '(none)',
     };
 
     const userEntity = UserFactory.createEntity(userData);
