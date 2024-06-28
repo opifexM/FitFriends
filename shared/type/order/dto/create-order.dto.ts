@@ -5,13 +5,6 @@ import { PurchaseType } from '../../enum/purchase-type.enum';
 import { ORDER } from '../order.constant';
 
 export class CreateOrderDto {
-  @IsMongoId()
-  @ApiProperty({
-    example: '60d0fe4f5311236168a109ca',
-    description: 'The unique identifier of the user',
-  })
-  public user: string;
-
   @IsEnum(PurchaseType)
   @ApiProperty({
     example: PurchaseType.SUBSCRIPTION,

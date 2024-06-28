@@ -1,8 +1,8 @@
 @host = http://localhost:3000
 @reviewId = 666df752625dab224f5fa707
-@userId = 6669e5a12b10829b5ace1060
-@trainingId = 666deb9e10ff48d5830d5607
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4MzI1MjE3LCJleHAiOjE3MTg2MjUyMTd9.0bGUe-SCjIzP4dOGeF-37v0oG-BHzBo2MSSmE9OVynreX474iFgheJHVwVoacoRVI9-xTPPGhaojp3KKW7OwOg
+@trainingId = 666de6e37510aa28b5e1a442
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
+
 
 ### Create a new review
 POST {{host}}/api/reviews HTTP/1.1
@@ -10,10 +10,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "user": "{{userId}}",
   "training": "{{trainingId}}",
-  "text": "The training session was incredibly informative and engaging. The coach demonstrated deep knowledge and provided practical insights. The interactive activities helped reinforce the concepts, making it easier to apply them in real-world scenarios. Overall, it was a highly valuable experience.",
-  "rating": 4
+  "text": "1111The training session was incredibly informative and engaging. The coach demonstrated deep knowledge and provided practical insights. The interactive activities helped reinforce the concepts, making it easier to apply them in real-world scenarios. Overall, it was a highly valuable experience.",
+  "rating": 1
 }
 
 
@@ -34,4 +33,9 @@ Content-Type: application/json
 
 ### Delete review by ID
 DELETE {{host}}/api/reviews/{{reviewId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get review list by trainingId
+GET {{host}}/api/reviews/training/{{trainingId}} HTTP/1.1
 Authorization: Bearer {{token}}

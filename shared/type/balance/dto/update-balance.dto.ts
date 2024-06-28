@@ -5,8 +5,16 @@ export class UpdateBalanceDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty({
-    example: 5,
-    description: 'The number of available training',
+    example: 10,
+    description: 'The total number of trainings',
   })
-  public count?: number;
+  public totalCount?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    example: 5,
+    description: 'The number of available trainings',
+  })
+  public availableCount?: number;
 }

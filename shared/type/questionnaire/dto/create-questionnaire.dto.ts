@@ -4,8 +4,8 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
-  IsMongoId,
   IsNumber,
+  IsOptional,
   Max,
   Min,
 } from 'class-validator';
@@ -15,13 +15,6 @@ import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
 
 export class CreateQuestionnaireDto {
-  @IsMongoId()
-  @ApiProperty({
-    example: '60d0fe4f5311236168a109ca',
-    description: 'The unique identifier of the user',
-  })
-  public user: string;
-
   @IsEnum(SkillLevelType)
   @ApiProperty({
     example: SkillLevelType.BEGINNER,
@@ -72,10 +65,11 @@ export class CreateQuestionnaireDto {
   })
   public dailyCalorieBurn: number;
 
+  @IsOptional()
   @IsBoolean()
   @ApiProperty({
     example: true,
     description: 'Is the user ready for training',
   })
-  public isReadyForTraining: boolean;
+  public isReadyForTraining?: boolean;
 }

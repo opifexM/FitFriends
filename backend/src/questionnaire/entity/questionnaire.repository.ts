@@ -25,4 +25,17 @@ export class QuestionnaireRepository extends BaseRepository<QuestionnaireEntity>
     const plainObject = entityDocument.toObject({ versionKey: false });
     return QuestionnaireFactory.createEntity(plainObject);
   }
+
+  public async findByUserId(
+    userId: string,
+  ): Promise<QuestionnaireEntity | null> {
+    this.logger.log(`Finding questionnaire by user ID: '${userId}'`);
+    const foundDocument = await this.questionnaireModel
+      .findOne({
+        user: userId,
+      })
+      .sort({ createdAt: -1 });
+
+    return this.createEntityFromDocument(foundDocument);
+  }
 }

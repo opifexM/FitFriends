@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { useField } from 'formik';
+import { useState } from 'react';
 import { LocationType } from 'shared/type/enum/location-type.enum.ts';
 
 interface LocationProps {

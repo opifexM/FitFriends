@@ -1,45 +1,47 @@
 import classNames from 'classnames';
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GenderType } from 'shared/type/enum/gender-type.enum.ts';
 import { LocationType } from 'shared/type/enum/location-type.enum.ts';
 import { RoleType } from 'shared/type/enum/role-type.enum.ts';
+import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import { registerAction } from '../../store/api-action/user-auth-action.ts';
-import { Location } from '../location/location.tsx';
+import { Dropdown } from '../dropdown/dropdown.tsx';
 import { registerValidationSchema } from './register-validation-schema.ts';
 
 interface FormValues {
   name: string;
   email: string;
-  birthday: string;
+  birthday: Date | undefined;
   password: string;
-  sex: string;
-  role: string;
-  location: string;
+  sex: GenderType | undefined;
+  role: RoleType | undefined;
+  location: LocationType | undefined;
   userAgreement: boolean;
 }
 
 export function Registration() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const initialValues: FormValues = {
     name: '',
     email: '',
-    birthday: '',
+    birthday: undefined,
     password: '',
-    sex: '',
-    role: '',
-    location: '',
+    sex: undefined,
+    role: undefined,
+    location: undefined,
     userAgreement: false,
   };
 
-  //todo file-upload
+  //todo file-upload profilePictureId, avatarId
   const handleSubmit = async (
     values: FormValues,
     { setSubmitting, setFieldError }: FormikHelpers<FormValues>,
   ) => {
-    console.log(values);
     dispatch(
       registerAction({
         email: values.email,
@@ -47,7 +49,7 @@ export function Registration() {
         role: values.role as RoleType,
         location: values.location as LocationType,
         name: values.name,
-        dateOfBirth: values.birthday as unknown as Date,
+        dateOfBirth: values.birthday as Date,
         gender: values.sex as GenderType,
         profilePictureId: '123e4567-e89b-12d3-a456-426614174000',
         avatarId: '123e4567-e89b-12d3-a456-426614174000',
@@ -55,14 +57,15 @@ export function Registration() {
     )
       .unwrap()
       .then((value) => {
-        toast.success(`Login '${value.email}' is successful`, {
+        toast.success(`Registration '${value.email}' is successful`, {
           position: 'top-right',
         });
+        navigate(AppRoute.Login);
       })
       .catch(() => {
         setFieldError(
           'email',
-          'It was not possible to login with the entered data',
+          'It was not possible to register with the entered data',
         );
       });
     setSubmitting(false);
@@ -163,7 +166,11 @@ export function Registration() {
                       </span>
                     </label>
                   </div>
-                  <Location name="location" />
+                  <Dropdown
+                    name={'location'}
+                    options={LocationType}
+                    label={'Ваша локация'}
+                  />
                   <div className="custom-input">
                     <label>
                       <span className="custom-input__label">Пароль</span>

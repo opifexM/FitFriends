@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { PublicUserDto } from '../../user/dto/public-user.dto';
 
 export class ReviewDto {
   @Expose()
@@ -11,10 +12,10 @@ export class ReviewDto {
 
   @Expose()
   @ApiProperty({
-    example: '60d0fe4f5311236168a109ca',
-    description: 'The unique identifier of the user',
+    description: 'The coach of training',
+    type: PublicUserDto,
   })
-  public user: string;
+  public user: PublicUserDto;
 
   @Expose()
   @ApiProperty({

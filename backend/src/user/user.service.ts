@@ -14,7 +14,7 @@ import { TokenService } from '../token-module/token.service';
 import { UserEntity } from './entity/user.entity';
 import { UserFactory } from './entity/user.factory';
 import { UserRepository } from './entity/user.repository';
-import { USER_MESSAGES } from './user.constant';
+import { USER_DEFAULT, USER_MESSAGES } from './user.constant';
 
 @Injectable()
 export class UserService {
@@ -56,9 +56,9 @@ export class UserService {
       password: hashPassword,
       gender: gender,
       role: role,
-      profilePictureId: profilePictureId,
-      avatarId: avatarId ?? '(none)',
-      description: description ?? '(none)',
+      profilePictureId: profilePictureId ?? USER_DEFAULT.PROFILE_PICTURE_ID,
+      avatarId: avatarId ?? USER_DEFAULT.AVATAR_ID,
+      description: description ?? USER_DEFAULT.DESCRIPTION,
     };
 
     const userEntity = UserFactory.createEntity(userData);

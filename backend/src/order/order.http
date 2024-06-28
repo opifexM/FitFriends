@@ -1,8 +1,7 @@
 @host = http://localhost:3000
-@orderId = 666e0547ef8cac8ac83bd479
-@userId = 6669e5a12b10829b5ace1060
+@orderId = 667e169ca57c257a1dcd5d68
 @trainingId = 666deb9e10ff48d5830d5607
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4MzI1MjE3LCJleHAiOjE3MTg2MjUyMTd9.0bGUe-SCjIzP4dOGeF-37v0oG-BHzBo2MSSmE9OVynreX474iFgheJHVwVoacoRVI9-xTPPGhaojp3KKW7OwOg
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
 
 ### Create a new order
 POST {{host}}/api/orders HTTP/1.1
@@ -10,7 +9,6 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "user": "{{userId}}",
   "purchase": "абонемент",
   "service": "{{trainingId}}",
   "price": 5000,

@@ -1,19 +1,15 @@
 import axios, { AxiosInstance } from 'axios';
-import {
-  AUTH_ACCESS_TOKEN_KEY_NAME,
-  BACKEND_REQUEST_TIMEOUT,
-  BACKEND_URL,
-} from '../../const.ts';
+import { AUTH_TOKEN, BACKEND } from '../const.ts';
 import { getToken } from './token.ts';
 
 function createAPI(): AxiosInstance {
   const api = axios.create({
-    baseURL: BACKEND_URL,
-    timeout: BACKEND_REQUEST_TIMEOUT,
+    baseURL: BACKEND.URL,
+    timeout: BACKEND.REQUEST_TIMEOUT,
   });
 
   api.interceptors.request.use((config) => {
-    const token = getToken(AUTH_ACCESS_TOKEN_KEY_NAME);
+    const token = getToken(AUTH_TOKEN.ACCESS_KEY);
     if (token && config.headers) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

@@ -4,6 +4,7 @@ import { GenderType } from '../../enum/gender-type.enum';
 import { SkillLevelType } from '../../enum/skill-level-type.enum';
 import { WorkoutDurationType } from '../../enum/workout-duration-type.enum';
 import { WorkoutType } from '../../enum/workout-type.enum';
+import { PublicUserDto } from '../../user/dto/public-user.dto';
 
 export class TrainingDto {
   @Expose()
@@ -86,10 +87,10 @@ export class TrainingDto {
 
   @Expose()
   @ApiProperty({
-    example: '60d0fe4f5311236168a109ca',
-    description: 'The unique identifier of the user',
+    description: 'The coach of training',
+    type: PublicUserDto,
   })
-  public coach: string;
+  public coach: PublicUserDto;
 
   @Expose()
   @ApiProperty({
@@ -97,6 +98,13 @@ export class TrainingDto {
     description: 'Indicates if the training is a special offer',
   })
   public isSpecialOffer: boolean;
+
+  @Expose()
+  @ApiProperty({
+    example: 3,
+    description: 'The number of training rating',
+  })
+  public rating: number;
 
   @Expose()
   @ApiProperty({

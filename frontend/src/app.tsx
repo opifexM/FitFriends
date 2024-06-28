@@ -13,7 +13,11 @@ import { IntroPage } from './page/intro-page/intro-page.tsx';
 import { LoginPage } from './page/login-page/login-page.tsx';
 import { MainPage } from './page/main-page/main-page.tsx';
 import { NotFoundPage } from './page/not-found-page/not-found-page.tsx';
+import { QuestionnairePage } from './page/questionnaire-page/questionnaire-page.tsx';
 import { RegistrationPage } from './page/registration-page/registration-page.tsx';
+import { TrainingCreatePage } from './page/training-create-page/training-create-page.tsx';
+import { TrainingDetailPage } from './page/training-detail-page/training-detail-page.tsx';
+import { TrainingListPage } from './page/training-list-page/training-list-page.tsx';
 import { checkAuthAction } from './store/api-action/user-auth-action.ts';
 import { getAuthorizationStatus } from './store/api-communication/api-communication.selectors.ts';
 
@@ -38,8 +42,6 @@ export function App({
   if (authorizationStatus === AuthorizationStatus.Unknown) {
     return null;
   }
-
-  console.log(authorizationStatus);
 
   return (
     <RouterComponent {...routerProps}>
@@ -89,6 +91,54 @@ export function App({
               declinedElement={AppRoute.Main}
             >
               <RegistrationPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.Questionnaire}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <QuestionnairePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.CreateTraining}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <TrainingCreatePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.ListTraining}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <TrainingListPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.TrainingCard}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <TrainingDetailPage />
             </PrivateRoute>
           }
         />

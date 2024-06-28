@@ -1,12 +1,21 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { RoleType } from 'shared/type/enum/role-type.enum';
 import { CreateTrainingDto } from 'shared/type/training/dto/create-training.dto';
 import { UpdateTrainingDto } from 'shared/type/training/dto/update-training.dto';
+import { TrainingQuery } from 'shared/type/training/training.query';
+import { TRAINING_LIST } from 'shared/type/training/traning.constant';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
+import { TrainingPaginationInterface } from './entity/training-pagination.interface';
 import { TrainingEntity } from './entity/training.entity';
 import { TrainingFactory } from './entity/training.factory';
 import { TrainingRepository } from './entity/training.repository';
-import { TRAINING_MESSAGES } from './training.constant';
+import { TRAINING_DEFAULT, TRAINING_MESSAGES } from './training.constant';
 
 @Injectable()
 export class TrainingService {
@@ -17,7 +26,10 @@ export class TrainingService {
     private readonly userService: UserService,
   ) {}
 
-  public async createTraining(dto: CreateTrainingDto): Promise<TrainingEntity> {
+  public async createTraining(
+    userId: string,
+    dto: CreateTrainingDto,
+  ): Promise<TrainingEntity> {
     const {
       name,
       backgroundId,
@@ -29,20 +41,22 @@ export class TrainingService {
       description,
       gender,
       videoId,
-      coach,
       isSpecialOffer,
     } = dto;
     this.logger.log('Attempting to create training');
 
-    const foundCoachUser = await this.userService.findUserById(coach);
+    const foundCoachUser = await this.userService.findUserById(userId);
     if (!foundCoachUser) {
-      this.logger.warn(`User-coach with id '${coach}' not found`);
+      this.logger.warn(`User-coach with id '${userId}' not found`);
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundCoachUser.role !== RoleType.COACH) {
+      this.logger.warn(`User '${foundCoachUser.name}' is not coach`);
+      throw new NotFoundException(USER_MESSAGES.NOT_COACH);
     }
 
     const trainingData = {
       name: name,
-      backgroundId: backgroundId,
       skillLevel: skillLevel,
       workout: workout,
       workoutDuration: workoutDuration,
@@ -50,10 +64,11 @@ export class TrainingService {
       caloriesBurned: caloriesBurned,
       description: description,
       gender: gender,
-      videoId: videoId,
-      isSpecialOffer: isSpecialOffer,
+      isSpecialOffer: isSpecialOffer ?? false,
       rating: 0,
       coach: foundCoachUser.id,
+      videoId: videoId ?? TRAINING_DEFAULT.VIDEO_ID,
+      backgroundId: backgroundId ?? TRAINING_DEFAULT.BACKGROUND_ID,
     };
 
     const trainingEntity = TrainingFactory.createEntity(trainingData);
@@ -75,11 +90,22 @@ export class TrainingService {
   }
 
   public async updateTrainingById(
+    userId: string,
     trainingId: string,
     dto: UpdateTrainingDto,
   ): Promise<TrainingEntity> {
     this.logger.log(`Updating training with ID: '${trainingId}'`);
     const updatedTraining = await this.findTrainingById(trainingId);
+    if (!updatedTraining) {
+      this.logger.warn(`Training not found with ID: '${trainingId}'`);
+      throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
+    }
+    if (userId !== updatedTraining.coach.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to training access owned by Coach ID '${updatedTraining.coach.toString()}'`,
+      );
+      throw new ForbiddenException(TRAINING_MESSAGES.NO_ACCESS);
+    }
 
     if (dto.name !== undefined) updatedTraining.name = dto.name;
     if (dto.backgroundId !== undefined)
@@ -102,12 +128,21 @@ export class TrainingService {
     return this.trainingRepository.update(trainingId, updatedTraining);
   }
 
-  public async deleteTrainingById(trainingId: string): Promise<TrainingEntity> {
+  public async deleteTrainingById(
+    userId: string,
+    trainingId: string,
+  ): Promise<TrainingEntity> {
     this.logger.log(`Deleting training with ID: '${trainingId}'`);
     const foundTraining = await this.trainingRepository.findById(trainingId);
     if (!foundTraining) {
       this.logger.warn(`Training not found with ID: '${trainingId}'`);
       throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
+    }
+    if (userId !== foundTraining.coach.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to training access owned by Coach ID '${foundTraining.coach.toString()}'`,
+      );
+      throw new ForbiddenException(TRAINING_MESSAGES.NO_ACCESS);
     }
 
     const deletedTraining =
@@ -119,5 +154,40 @@ export class TrainingService {
 
   public async exists(trainingId: string): Promise<boolean> {
     return this.trainingRepository.exists(trainingId);
+  }
+
+  public async findTrainingByQuery(
+    trainingQuery?: TrainingQuery,
+  ): Promise<TrainingPaginationInterface<TrainingEntity>> {
+    this.logger.log('Finding all trainings');
+
+    const limit = Math.min(
+      trainingQuery?.limit ?? Number.MAX_VALUE,
+      TRAINING_LIST.LIMIT,
+    );
+    const currentPage =
+      trainingQuery?.currentPage ?? TRAINING_LIST.DEFAULT_FILTER_PAGE;
+    const priceFrom = trainingQuery?.priceFrom;
+    const priceTo = trainingQuery?.priceTo;
+    const caloriesFrom = trainingQuery?.caloriesFrom;
+    const caloriesTo = trainingQuery?.caloriesTo;
+    const ratingFrom = trainingQuery?.ratingFrom;
+    const ratingTo = trainingQuery?.ratingTo;
+    const workout = trainingQuery?.workout;
+    const trainingSortType =
+      trainingQuery?.trainingSortType ?? TRAINING_LIST.DEFAULT_SORT_TYPE;
+
+    return this.trainingRepository.findAllByQuery({
+      limit,
+      currentPage,
+      priceFrom,
+      priceTo,
+      caloriesFrom,
+      caloriesTo,
+      ratingFrom,
+      ratingTo,
+      workout,
+      trainingSortType,
+    });
   }
 }

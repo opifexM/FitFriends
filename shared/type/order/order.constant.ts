@@ -3,4 +3,4 @@ export const ORDER = {
     MIN: 1,
     MAX: 50,
   },
-};
+} as const;

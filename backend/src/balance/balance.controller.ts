@@ -16,10 +16,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { fillDto } from 'shared/lib/common';
-import { CreateBalanceDto } from 'shared/type/balance/dto/create-balance.dto';
 import { BalanceDto } from 'shared/type/balance/dto/balance.dto';
+import { CreateBalanceDto } from 'shared/type/balance/dto/create-balance.dto';
 import { UpdateBalanceDto } from 'shared/type/balance/dto/update-balance.dto';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
+import { GetUserId } from '../decorator/get-user.decorator';
 import { JwtAuthGuard } from '../user/authentication/guard/jwt-auth.guard';
 import { BalanceService } from './balance.service';
 
@@ -42,9 +43,11 @@ export class BalanceController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   public async createBalance(
     @Body() dto: CreateBalanceDto,
+    @GetUserId() userId: string,
   ): Promise<BalanceDto> {
     this.logger.log('Creating new balance');
-    const createdBalance = await this.balanceService.createBalance(dto);
+
+    const createdBalance = await this.balanceService.createBalance(userId, dto);
 
     return fillDto(BalanceDto, createdBalance.toPOJO());
   }
@@ -61,9 +64,13 @@ export class BalanceController {
   @ApiResponse({ status: 404, description: 'Balance not found.' })
   public async getBalance(
     @Param('balanceId', MongoIdValidationPipe) balanceId: string,
+    @GetUserId() userId: string,
   ): Promise<BalanceDto> {
     this.logger.log(`Retrieving balance with ID: '${balanceId}'`);
-    const foundBalance = await this.balanceService.findBalanceById(balanceId);
+    const foundBalance = await this.balanceService.findBalanceById(
+      userId,
+      balanceId,
+    );
 
     return fillDto(BalanceDto, foundBalance.toPOJO());
   }
@@ -81,9 +88,11 @@ export class BalanceController {
   public async updateBalance(
     @Param('balanceId', MongoIdValidationPipe) balanceId: string,
     @Body() dto: UpdateBalanceDto,
+    @GetUserId() userId: string,
   ): Promise<BalanceDto> {
     this.logger.log(`Updating balance with ID '${balanceId}'`);
     const updatedBalance = await this.balanceService.updateBalanceById(
+      userId,
       balanceId,
       dto,
     );
@@ -103,10 +112,13 @@ export class BalanceController {
   @ApiResponse({ status: 404, description: 'Balance not found.' })
   public async deleteBalance(
     @Param('balanceId', MongoIdValidationPipe) balanceId: string,
+    @GetUserId() userId: string,
   ): Promise<BalanceDto> {
     this.logger.log(`Attempting to delete balance with ID: ${balanceId}`);
-    const deletedBalance =
-      await this.balanceService.deleteBalanceById(balanceId);
+    const deletedBalance = await this.balanceService.deleteBalanceById(
+      userId,
+      balanceId,
+    );
     this.logger.log(`Balance deleted with ID: '${deletedBalance.id}'`);
 
     return fillDto(BalanceDto, deletedBalance.toPOJO());

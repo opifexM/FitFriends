@@ -20,6 +20,7 @@ import { CreateQuestionnaireDto } from 'shared/type/questionnaire/dto/create-que
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto';
 import { UpdateQuestionnaireDto } from 'shared/type/questionnaire/dto/update-questionnaire.dto';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
+import { GetUserId } from '../decorator/get-user.decorator';
 import { JwtAuthGuard } from '../user/authentication/guard/jwt-auth.guard';
 import { QuestionnaireService } from './questionnaire.service';
 
@@ -42,12 +43,33 @@ export class QuestionnaireController {
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   public async createQuestionnaire(
     @Body() dto: CreateQuestionnaireDto,
+    @GetUserId() userId: string,
   ): Promise<QuestionnaireDto> {
     this.logger.log('Creating new questionnaire');
     const createdQuestionnaire =
-      await this.questionnaireService.createQuestionnaire(dto);
+      await this.questionnaireService.createQuestionnaire(userId, dto);
 
     return fillDto(QuestionnaireDto, createdQuestionnaire.toPOJO());
+  }
+
+  @Get('latest')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get last questionnaire by user ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The last questionnaire has been successfully retrieved.',
+    type: QuestionnaireDto,
+  })
+  @ApiResponse({ status: 404, description: 'Last questionnaire not found.' })
+  public async getLastQuestionnaire(
+    @GetUserId() userId: string,
+  ): Promise<QuestionnaireDto> {
+    this.logger.log(`Retrieving last questionnaire with User ID: '${userId}'`);
+    const foundQuestionnaire =
+      await this.questionnaireService.findLatestQuestionnaireByUserId(userId);
+
+    return fillDto(QuestionnaireDto, foundQuestionnaire.toPOJO());
   }
 
   @Get(':questionnaireId')
@@ -83,10 +105,12 @@ export class QuestionnaireController {
   public async updateQuestionnaire(
     @Param('questionnaireId', MongoIdValidationPipe) questionnaireId: string,
     @Body() dto: UpdateQuestionnaireDto,
+    @GetUserId() userId: string,
   ): Promise<QuestionnaireDto> {
     this.logger.log(`Updating questionnaire with ID '${questionnaireId}'`);
     const updatedQuestionnaire =
       await this.questionnaireService.updateQuestionnaireById(
+        userId,
         questionnaireId,
         dto,
       );
@@ -106,12 +130,16 @@ export class QuestionnaireController {
   @ApiResponse({ status: 404, description: 'Questionnaire not found.' })
   public async deleteQuestionnaire(
     @Param('questionnaireId', MongoIdValidationPipe) questionnaireId: string,
+    @GetUserId() userId: string,
   ): Promise<QuestionnaireDto> {
     this.logger.log(
       `Attempting to delete questionnaire with ID: ${questionnaireId}`,
     );
     const deletedQuestionnaire =
-      await this.questionnaireService.deleteQuestionnaireById(questionnaireId);
+      await this.questionnaireService.deleteQuestionnaireById(
+        userId,
+        questionnaireId,
+      );
     this.logger.log(
       `Questionnaire deleted with ID: '${deletedQuestionnaire.id}'`,
     );

@@ -1,6 +1,3 @@
-import { SortDirection } from 'shared/type/sort-direction.interface.ts';
-import { SortType } from 'shared/type/sort-type.enum.ts';
-
 export const AppRoute = {
   Main: '/',
   Login: '/login',
@@ -8,6 +5,11 @@ export const AppRoute = {
   Intro: '/intro',
   User: '/user',
   UserId: '/user/:id',
+  Questionnaire: '/questionnaire',
+  Training: '/training',
+  CreateTraining: '/create-training',
+  ListTraining: '/trainings',
+  TrainingCard: '/training/:trainingId',
 } as const;
 export type AppRouteType = (typeof AppRoute)[keyof typeof AppRoute];
 
@@ -20,25 +22,29 @@ export const APIRoute = {
   CheckAuth: 'users/check',
   RefreshAuth: 'users/refresh',
   CreateQuestionnaire: 'questionnaires',
-  GetQuestionnaire: 'questionnaires/:productId',
-  UpdateQuestionnaire: 'questionnaires/:productId',
-  DeleteQuestionnaire: 'questionnaires/:productId',
+  GetQuestionnaire: 'questionnaires/:questionnaireId',
+  GetLatestQuestionnaire: 'questionnaires/latest',
+  UpdateQuestionnaire: 'questionnaires/:questionnaireId',
+  DeleteQuestionnaire: 'questionnaires/:questionnaireId',
   CreateBalance: 'balances',
-  GetBalance: 'balances/:productId',
-  UpdateBalance: 'balances/:productId',
-  DeleteBalance: 'balances/:productId',
+  GetBalance: 'balances/:balanceId',
+  UpdateBalance: 'balances/:balanceId',
+  DeleteBalance: 'balances/:balanceId',
   CreateTraining: 'trainings',
-  GetTraining: 'trainings/:productId',
-  UpdateTraining: 'trainings/:productId',
-  DeleteTraining: 'trainings/:productId',
+  GetTraining: 'trainings/:trainingId',
+  GetTrainingList: 'trainings',
+  UpdateTraining: 'trainings/:trainingId',
+  DeleteTraining: 'trainings/:trainingId',
   CreateReview: 'reviews',
-  GetReview: 'reviews/:productId',
-  UpdateReview: 'reviews/:productId',
-  DeleteReview: 'reviews/:productId',
+  GetReview: 'reviews/:reviewId',
+  GetReviewByTraining: 'reviews/training/:trainingId',
+  GetLatestReview: 'reviews/latest',
+  UpdateReview: 'reviews/:reviewId',
+  DeleteReview: 'reviews/:reviewId',
   CreateOrder: 'orders',
-  GetOrder: 'orders/:productId',
-  UpdateOrder: 'orders/:productId',
-  DeleteOrder: 'orders/:productId',
+  GetOrder: 'orders/:orderId',
+  UpdateOrder: 'orders/:orderId',
+  DeleteOrder: 'orders/:orderId',
 } as const;
 
 export const AuthorizationStatus = {
@@ -51,13 +57,15 @@ export type AuthorizationStatusType =
 
 export const NameSpace = {
   ApiCommunication: 'API_COMMUNICATION',
+  UiSetting: 'UI_SETTINGS',
 } as const;
 
-export const BACKEND_URL = 'http://localhost:3000/api';
-export const BACKEND_REQUEST_TIMEOUT = 5000;
-export const AUTH_ACCESS_TOKEN_KEY_NAME = 'fit-friends-access-token';
-export const AUTH_REFRESH_TOKEN_KEY_NAME = 'fit-friends-refresh-token';
+export const BACKEND = {
+  URL: 'http://localhost:3000/api',
+  REQUEST_TIMEOUT: 5000,
+} as const;
 
-export const DEFAULT_SORT_TYPE = SortType.BY_PRICE;
-export const DEFAULT_SORT_DIRECTION = SortDirection.ASC;
-export const DEFAULT_FILTER_PAGE = 1;
+export const AUTH_TOKEN = {
+  ACCESS_KEY: 'fit-friends-access-token',
+  REFRESH_KEY: 'fit-friends-refresh-token',
+} as const;

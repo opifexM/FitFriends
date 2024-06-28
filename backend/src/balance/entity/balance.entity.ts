@@ -3,7 +3,8 @@ import { Entity } from 'shared/base/entity';
 import { Balance } from 'shared/type/balance/balance';
 
 export class BalanceEntity extends Entity implements Balance {
-  public count: number;
+  public totalCount: number;
+  public availableCount: number;
   public createdAt: Date;
   public training: Types.ObjectId;
   public updatedAt: Date;
@@ -20,7 +21,8 @@ export class BalanceEntity extends Entity implements Balance {
     }
 
     this.id = balance.id ?? '';
-    this.count = balance.count;
+    this.totalCount = balance.totalCount;
+    this.availableCount = balance.availableCount;
     this.createdAt = balance.createdAt;
     this.updatedAt = balance.updatedAt;
     this.training = balance.training;
@@ -30,7 +32,8 @@ export class BalanceEntity extends Entity implements Balance {
   public toPOJO() {
     return {
       id: this.id,
-      count: this.count,
+      totalCount: this.totalCount,
+      availableCount: this.availableCount,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       user: this.user,

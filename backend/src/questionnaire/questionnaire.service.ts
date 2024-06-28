@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateQuestionnaireDto } from 'shared/type/questionnaire/dto/create-questionnaire.dto';
 import { UpdateQuestionnaireDto } from 'shared/type/questionnaire/dto/update-questionnaire.dto';
 import { USER_MESSAGES } from '../user/user.constant';
@@ -18,10 +23,10 @@ export class QuestionnaireService {
   ) {}
 
   public async createQuestionnaire(
+    userId: string,
     dto: CreateQuestionnaireDto,
   ): Promise<QuestionnaireEntity> {
     const {
-      user,
       skillLevel,
       workout,
       workoutDuration,
@@ -31,9 +36,9 @@ export class QuestionnaireService {
     } = dto;
     this.logger.log('Attempting to create questionnaire');
 
-    const foundUser = await this.userService.findUserById(user);
+    const foundUser = await this.userService.findUserById(userId);
     if (!foundUser) {
-      this.logger.warn(`User with id '${user}' not found`);
+      this.logger.warn(`User with id '${userId}' not found`);
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
     }
 
@@ -44,7 +49,7 @@ export class QuestionnaireService {
       workoutDuration: workoutDuration,
       caloriesToLose: caloriesToLose,
       dailyCalorieBurn: dailyCalorieBurn,
-      isReadyForTraining: isReadyForTraining,
+      isReadyForTraining: isReadyForTraining ?? false,
     };
 
     const questionnaireEntity =
@@ -56,6 +61,22 @@ export class QuestionnaireService {
     );
 
     return createdQuestionnaire;
+  }
+
+  public async findLatestQuestionnaireByUserId(
+    userId: string,
+  ): Promise<QuestionnaireEntity> {
+    this.logger.log(`Looking for last questionnaire with user ID: '${userId}'`);
+    const foundQuestionnaire =
+      await this.questionnaireRepository.findByUserId(userId);
+    if (!foundQuestionnaire) {
+      this.logger.warn(
+        `Last questionnaire not found with user ID: '${userId}'`,
+      );
+      throw new NotFoundException(QUESTIONNAIRE_MESSAGES.NOT_FOUND);
+    }
+
+    return foundQuestionnaire;
   }
 
   public async findQuestionnaireById(
@@ -73,12 +94,20 @@ export class QuestionnaireService {
   }
 
   public async updateQuestionnaireById(
+    userId: string,
     questionnaireId: string,
     dto: UpdateQuestionnaireDto,
   ): Promise<QuestionnaireEntity> {
     this.logger.log(`Updating questionnaire with ID: '${questionnaireId}'`);
     const updatedQuestionnaire =
       await this.findQuestionnaireById(questionnaireId);
+
+    if (userId !== updatedQuestionnaire.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to questionnaire access owned by User ID '${updatedQuestionnaire.user.toString()}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
+    }
 
     if (dto.skillLevel !== undefined)
       updatedQuestionnaire.skillLevel = dto.skillLevel;
@@ -99,6 +128,7 @@ export class QuestionnaireService {
   }
 
   public async deleteQuestionnaireById(
+    userId: string,
     questionnaireId: string,
   ): Promise<QuestionnaireEntity> {
     this.logger.log(`Deleting questionnaire with ID: '${questionnaireId}'`);
@@ -107,6 +137,12 @@ export class QuestionnaireService {
     if (!foundQuestionnaire) {
       this.logger.warn(`Questionnaire not found with ID: '${questionnaireId}'`);
       throw new NotFoundException(QUESTIONNAIRE_MESSAGES.NOT_FOUND);
+    }
+    if (userId !== foundQuestionnaire.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to questionnaire access owned by User ID '${foundQuestionnaire.user.toString()}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
     }
 
     const deletedQuestionnaire =

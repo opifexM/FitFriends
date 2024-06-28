@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBalanceDto } from 'shared/type/balance/dto/create-balance.dto';
 import { UpdateBalanceDto } from 'shared/type/balance/dto/update-balance.dto';
 import { TRAINING_MESSAGES } from '../training/training.constant';
@@ -20,13 +25,16 @@ export class BalanceService {
     private readonly trainingService: TrainingService,
   ) {}
 
-  public async createBalance(dto: CreateBalanceDto): Promise<BalanceEntity> {
-    const { user, training, count } = dto;
+  public async createBalance(
+    userId: string,
+    dto: CreateBalanceDto,
+  ): Promise<BalanceEntity> {
+    const { training, totalCount, availableCount } = dto;
     this.logger.log('Attempting to create balance');
 
-    const foundUser = await this.userService.findUserById(user);
+    const foundUser = await this.userService.findUserById(userId);
     if (!foundUser) {
-      this.logger.warn(`User with id '${user}' not found`);
+      this.logger.warn(`User with id '${userId}' not found`);
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
     }
 
@@ -39,7 +47,8 @@ export class BalanceService {
     const balanceData = {
       user: foundUser.id,
       training: foundTraining.id,
-      count: count,
+      totalCount: totalCount,
+      availableCount: availableCount,
     };
 
     const balanceEntity = BalanceFactory.createEntity(balanceData);
@@ -49,36 +58,48 @@ export class BalanceService {
     return createdBalance;
   }
 
-  public async findBalanceById(balanceId: string): Promise<BalanceEntity> {
+  public async findBalanceById(
+    userId: string,
+    balanceId: string,
+  ): Promise<BalanceEntity> {
     this.logger.log(`Looking for balance with ID: '${balanceId}'`);
     const foundBalance = await this.balanceRepository.findById(balanceId);
     if (!foundBalance) {
       this.logger.warn(`Balance not found with ID: '${balanceId}'`);
       throw new NotFoundException(BALANCE_MESSAGES.NOT_FOUND);
     }
+    if (userId !== foundBalance.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' do not have access to balance ID '${balanceId}'`,
+      );
+      throw new ForbiddenException(BALANCE_MESSAGES.NO_ACCESS);
+    }
 
     return foundBalance;
   }
 
   public async updateBalanceById(
+    userId: string,
     balanceId: string,
     dto: UpdateBalanceDto,
   ): Promise<BalanceEntity> {
     this.logger.log(`Updating balance with ID: '${balanceId}'`);
-    const updatedBalance = await this.findBalanceById(balanceId);
+    const updatedBalance = await this.findBalanceById(userId, balanceId);
 
-    if (dto.count !== undefined) updatedBalance.count = dto.count;
+    if (dto.totalCount !== undefined)
+      updatedBalance.totalCount = dto.totalCount;
+    if (dto.availableCount !== undefined)
+      updatedBalance.availableCount = dto.availableCount;
 
     return this.balanceRepository.update(balanceId, updatedBalance);
   }
 
-  public async deleteBalanceById(balanceId: string): Promise<BalanceEntity> {
+  public async deleteBalanceById(
+    userId: string,
+    balanceId: string,
+  ): Promise<BalanceEntity> {
     this.logger.log(`Deleting balance with ID: '${balanceId}'`);
-    const foundBalance = await this.balanceRepository.findById(balanceId);
-    if (!foundBalance) {
-      this.logger.warn(`Balance not found with ID: '${balanceId}'`);
-      throw new NotFoundException(BALANCE_MESSAGES.NOT_FOUND);
-    }
+    await this.findBalanceById(userId, balanceId);
 
     const deletedBalance = await this.balanceRepository.deleteById(balanceId);
     this.logger.log(`Balance with ID: '${balanceId}' deleted`);

@@ -10,4 +10,4 @@ export const QUESTIONNAIRE = {
     MIN: 1000,
     MAX: 5000,
   },
-};
+} as const;

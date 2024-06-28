@@ -1,7 +1,7 @@
 @host = http://localhost:3000
 @questionnaireId = 666debfe10ff48d5830d5614
-@userId = 6669e5a12b10829b5ace1060
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4MzI1MjE3LCJleHAiOjE3MTg2MjUyMTd9.0bGUe-SCjIzP4dOGeF-37v0oG-BHzBo2MSSmE9OVynreX474iFgheJHVwVoacoRVI9-xTPPGhaojp3KKW7OwOg
+@userId = 66730db5df58bd000c95a7e0
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4NzI4MDUyLCJleHAiOjE3MjEzMjAwNTJ9.Yk6nnS2PYw7DLv2kJ_A1ngU4XIhGh9K8J9a2rMAAp5ZiQNEZWqxJpXsHptqM0JABN1A6ey0oQjEj4MymIwjuHw
 
 ### Create a new questionnaire
 POST {{host}}/api/questionnaires HTTP/1.1
@@ -9,7 +9,6 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "user": "{{userId}}",
   "skillLevel": "любитель",
   "workout": ["стрейчинг", "аэробика"],
   "workoutDuration": "30-50 мин",
@@ -21,6 +20,11 @@ Content-Type: application/json
 
 ### Get questionnaire by ID
 GET {{host}}/api/questionnaires/{{questionnaireId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get last questionnaire by user ID
+GET {{host}}/api/questionnaires/latest HTTP/1.1
 Authorization: Bearer {{token}}
 
 

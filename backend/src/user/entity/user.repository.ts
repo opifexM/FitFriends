@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Document } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { BaseRepository } from '../../database/base-mongo.repository';
 import { UserEntity } from './user.entity';
 import { UserFactory } from './user.factory';

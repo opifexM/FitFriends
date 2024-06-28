@@ -19,4 +19,4 @@ export const USER = {
     MIN: 10,
     MAX: 140,
   },
-};
+} as const;

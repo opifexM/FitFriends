@@ -20,7 +20,10 @@ export class BalanceModel extends Document {
   public user: UserModel;
 
   @Prop({ required: true })
-  public count: number;
+  public totalCount: number;
+
+  @Prop({ required: true })
+  public availableCount: number;
 
   @Prop({ type: Types.ObjectId, ref: 'TrainingModel', required: true })
   public training: Training;

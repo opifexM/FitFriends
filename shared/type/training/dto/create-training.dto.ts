@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEnum,
-  IsMongoId,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   Length,
@@ -27,12 +27,13 @@ export class CreateTrainingDto {
   })
   public name: string;
 
+  @IsOptional()
   @IsUUID()
   @ApiProperty({
     example: '123e4567-e89b-12d3-a456-426614174001',
     description: 'The background ID for the training',
   })
-  public backgroundId: string;
+  public backgroundId?: string;
 
   @IsEnum(SkillLevelType)
   @ApiProperty({
@@ -98,17 +99,11 @@ export class CreateTrainingDto {
   })
   public videoId: string;
 
-  @IsMongoId()
-  @ApiProperty({
-    example: '60d0fe4f5311236168a109ca',
-    description: 'The unique identifier of the user',
-  })
-  public coach: string;
-
+  @IsOptional()
   @IsBoolean()
   @ApiProperty({
     example: true,
     description: 'Indicates if the training is a special offer',
   })
-  public isSpecialOffer: boolean;
+  public isSpecialOffer?: boolean;
 }

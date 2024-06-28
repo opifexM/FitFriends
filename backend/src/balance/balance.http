@@ -1,8 +1,7 @@
 @host = http://localhost:3000
-@balanceId = 666decaac3099213b4f893f8
-@userId = 6669e5a12b10829b5ace1060
+@balanceId = 667e1669a57c257a1dcd5d56
 @trainingId = 666deb9e10ff48d5830d5607
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4MzI1MjE3LCJleHAiOjE3MTg2MjUyMTd9.0bGUe-SCjIzP4dOGeF-37v0oG-BHzBo2MSSmE9OVynreX474iFgheJHVwVoacoRVI9-xTPPGhaojp3KKW7OwOg
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
 
 ### Create a new balance
 POST {{host}}/api/balances HTTP/1.1
@@ -10,9 +9,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "user": "{{userId}}",
   "training": "{{trainingId}}",
-  "count": 5000
+  "totalCount": 15,
+  "availableCount": 4
 }
 
 
@@ -27,7 +26,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "count": 3500
+  "availableCount": 5
 }
 
 

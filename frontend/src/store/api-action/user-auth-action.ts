@@ -7,7 +7,7 @@ import { LoggedDto } from 'shared/type/user/dto/logged.dto.ts';
 import { LoginDto } from 'shared/type/user/dto/login.dto.ts';
 import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import { APIRoute } from '../../const.ts';
-import { handleApiError } from '../services/api-error-handler.ts';
+import { handleApiError } from '../../services/api-error-handler.ts';
 import { ThunkApiConfig } from '../state.ts';
 
 export const checkAuthAction = createAsyncThunk<

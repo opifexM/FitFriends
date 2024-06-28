@@ -25,10 +25,17 @@ export class BalanceDto {
 
   @Expose()
   @ApiProperty({
-    example: 5,
-    description: 'The number of available training',
+    example: 10,
+    description: 'The total number of trainings',
   })
-  public count: number;
+  public totalCount: number;
+
+  @Expose()
+  @ApiProperty({
+    example: 5,
+    description: 'The number of available trainings',
+  })
+  public availableCount: number;
 
   @Expose()
   @ApiProperty({
