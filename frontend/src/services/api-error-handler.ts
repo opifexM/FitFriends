@@ -18,7 +18,9 @@ function handleApiError(error: unknown): string {
     detailedMessages = Array.isArray(message) ? message.join(' ') : message;
 
     if (details?.length) {
-      const additionalMessages = details.map((detail) => detail.messages.join(' ')).join(' ');
+      const additionalMessages = details
+        .map((detail) => detail.messages.join(' '))
+        .join(' ');
       detailedMessages += ` ${additionalMessages}`;
     }
 
