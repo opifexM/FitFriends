@@ -13,7 +13,7 @@ Content-Type: application/json
   "backgroundId": "123e4567-e89b-12d3-a456-426614174001",
   "skillLevel": "любитель",
   "workout": "стрейчинг",
-  "workoutDuration": "30-50 мин",
+  "workoutDuration": "30-50 минут",
   "price": 3500,
   "caloriesBurned": 3780,
   "description": "A high-intensity interval training session to burn maximum calories",

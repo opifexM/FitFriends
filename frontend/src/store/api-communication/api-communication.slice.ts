@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
@@ -11,11 +12,13 @@ import {
 } from '../../const.ts';
 import { dropToken, saveToken } from '../../services/token.ts';
 import {
+  createOrder,
   createQuestionnaire,
   createReview,
   createTraining,
   fetchLatestQuestionnaire,
   fetchLatestReview,
+  fetchPurchase,
   fetchReviewByTraining,
   fetchTraining,
   fetchTrainingDetail,
@@ -40,6 +43,7 @@ interface ApiCommunicationState {
   currentTraining: TrainingDto | null;
   reviews: ReviewDto[];
   lastReview: ReviewDto | null;
+  purchases: TrainingDto[];
 }
 
 const initialState: ApiCommunicationState = {
@@ -53,6 +57,7 @@ const initialState: ApiCommunicationState = {
   currentTraining: null,
   reviews: [],
   lastReview: null,
+  purchases: [],
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -261,6 +266,33 @@ export const apiCommunicationSlice = createSlice({
       })
       .addCase(updateReview.fulfilled, (state, action) => {
         state.lastReview = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(createOrder.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createOrder.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(createOrder.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+
+      .addCase(fetchPurchase.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchPurchase.rejected, (state) => {
+        state.purchases = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchPurchase.fulfilled, (state, action) => {
+        const { currentPage, entities } = action.payload;
+        if (currentPage === BALANCE_PURCHASE_LIST.DEFAULT_FILTER_PAGE) {
+          state.purchases = entities;
+        } else {
+          state.purchases = [...state.purchases, ...entities];
+        }
         state.isLoading = false;
       });
   },

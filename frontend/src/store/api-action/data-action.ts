@@ -1,5 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
+import { BalanceTrainingQuery } from 'shared/type/balance/balance-training.query.ts';
+import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto.ts';
+import { OrderDto } from 'shared/type/order/dto/order.dto.ts';
 import { CreateQuestionnaireDto } from 'shared/type/questionnaire/dto/create-questionnaire.dto.ts';
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
 import { CreateReviewDto } from 'shared/type/review/dto/create-review.dto.ts';
@@ -243,6 +246,46 @@ export const updateReview = createAsyncThunk<
       const url = APIRoute.UpdateReview.replace(':reviewId', reviewId);
 
       const { data } = await api.patch<ReviewDto>(url, reviewData);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const createOrder = createAsyncThunk<
+  OrderDto,
+  CreateOrderDto,
+  ThunkApiConfig
+>('data/createOrder', async (reviewData, { extra: api, rejectWithValue }) => {
+  try {
+    const { data } = await api.post<OrderDto>(APIRoute.CreateOrder, reviewData);
+
+    return data;
+  } catch (error) {
+    toast.warning(handleApiError(error), {
+      position: 'top-right',
+    });
+    return rejectWithValue(handleApiError(error));
+  }
+});
+
+export const fetchPurchase = createAsyncThunk<
+  TrainingPaginationDto,
+  BalanceTrainingQuery,
+  ThunkApiConfig
+>(
+  'data/fetchPurchase',
+  async (balanceTrainingQuery, { extra: api, rejectWithValue }) => {
+    try {
+      const { data } = await api.get<TrainingPaginationDto>(
+        APIRoute.GetBalancePurchase,
+        { params: balanceTrainingQuery },
+      );
 
       return data;
     } catch (error) {

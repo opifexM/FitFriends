@@ -1,6 +1,6 @@
 @host = http://localhost:3000
-@orderId = 667e169ca57c257a1dcd5d68
-@trainingId = 666deb9e10ff48d5830d5607
+@orderId = 66807d51e5737344c3e593c8
+@trainingId = 6677075e2fc4442aaadc3c55
 @token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
 
 ### Create a new order
@@ -11,9 +11,9 @@ Content-Type: application/json
 {
   "purchase": "абонемент",
   "service": "{{trainingId}}",
-  "price": 5000,
-  "count": 2,
-  "payment": "visa"
+  "count": 1,
+  "payment": "visa",
+  "totalPrice": 0
 }
 
 

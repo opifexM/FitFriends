@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { PaymentStatusType } from '../../enum/payment-status-type.enum';
 import { PaymentType } from '../../enum/payment-type.enum';
 import { PurchaseType } from '../../enum/purchase-type.enum';
 
@@ -42,6 +43,13 @@ export class OrderDto {
 
   @Expose()
   @ApiProperty({
+    example: 550,
+    description: 'The total price of the order',
+  })
+  public totalPrice: number;
+
+  @Expose()
+  @ApiProperty({
     example: 2,
     description: 'The quantity of the service purchased',
   })
@@ -54,6 +62,14 @@ export class OrderDto {
     enum: PaymentType,
   })
   public payment: PaymentType;
+
+  @Expose()
+  @ApiProperty({
+    example: PaymentStatusType.PAID,
+    description: 'The payment status of the training',
+    enum: PaymentStatusType,
+  })
+  public paymentStatus: PaymentStatusType;
 
   @Expose()
   @ApiProperty({

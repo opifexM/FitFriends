@@ -9,10 +9,15 @@ interface PrivateRouteProps {
   declinedElement: AppRouteType;
 }
 
-export function PrivateRoute({ authorizationStatus, requiredAuthorizationStatus, children, declinedElement }: Readonly<PrivateRouteProps>) {
-  return (
-    requiredAuthorizationStatus === authorizationStatus
-      ? children
-      : <Navigate to={declinedElement}/>
+export function PrivateRoute({
+  authorizationStatus,
+  requiredAuthorizationStatus,
+  children,
+  declinedElement,
+}: Readonly<PrivateRouteProps>) {
+  return requiredAuthorizationStatus === authorizationStatus ? (
+    children
+  ) : (
+    <Navigate to={declinedElement} />
   );
 }

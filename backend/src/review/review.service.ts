@@ -62,7 +62,7 @@ export class ReviewService {
 
   public async findLatestReviewByUserId(userId: string): Promise<ReviewEntity> {
     this.logger.log(`Looking for last review with user ID: '${userId}'`);
-    const foundReview = await this.reviewRepository.findByUserId(userId);
+    const foundReview = await this.reviewRepository.findLatestByUserId(userId);
     if (!foundReview) {
       this.logger.warn(`Last review not found with user ID: '${userId}'`);
       throw new NotFoundException(REVIEW_MESSAGES.NOT_FOUND);

@@ -11,7 +11,7 @@
     "test": "vitest --passWithNoTests"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "2.2.5",
+    "@reduxjs/toolkit": "2.2.6",
     "axios": "1.7.2",
     "classnames": "^2.5.1",
     "formik": "^2.4.6",
@@ -47,7 +47,7 @@
     "faker": "6.6.6",
     "jsdom": "24.1.0",
     "typescript": "5.5.2",
-    "vite": "5.3.1",
+    "vite": "5.3.2",
     "vite-plugin-css-modules": "^0.0.1",
     "vitest": "1.6.0"
   },

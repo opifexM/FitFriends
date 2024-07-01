@@ -1,12 +1,9 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Logger,
   Param,
-  Patch,
-  Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -16,9 +13,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { fillDto } from 'shared/lib/common';
+import { BalanceTrainingQuery } from 'shared/type/balance/balance-training.query';
 import { BalanceDto } from 'shared/type/balance/dto/balance.dto';
-import { CreateBalanceDto } from 'shared/type/balance/dto/create-balance.dto';
-import { UpdateBalanceDto } from 'shared/type/balance/dto/update-balance.dto';
+import { TrainingPaginationDto } from 'shared/type/training/dto/training-pagination.dto';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
 import { GetUserId } from '../decorator/get-user.decorator';
 import { JwtAuthGuard } from '../user/authentication/guard/jwt-auth.guard';
@@ -31,25 +28,31 @@ export class BalanceController {
 
   constructor(private readonly balanceService: BalanceService) {}
 
-  @Post('')
+  @Get('purchase')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new balance' })
+  @ApiOperation({ summary: 'Get user purchase list' })
   @ApiResponse({
-    status: 201,
-    description: 'The balance has been successfully created.',
-    type: BalanceDto,
+    status: 200,
+    description: 'The training purchase list has been successfully retrieved.',
+    type: TrainingPaginationDto,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async createBalance(
-    @Body() dto: CreateBalanceDto,
+  @ApiResponse({ status: 404, description: 'Purchase not found.' })
+  public async getAllReviewByTrainingId(
     @GetUserId() userId: string,
-  ): Promise<BalanceDto> {
-    this.logger.log('Creating new balance');
+    @Query() query: BalanceTrainingQuery,
+  ): Promise<TrainingPaginationDto> {
+    this.logger.log(`Retrieving training purchase list for user ID ${userId}'`);
 
-    const createdBalance = await this.balanceService.createBalance(userId, dto);
+    const trainingPaginationData =
+      await this.balanceService.findAllPurchaseTraining(userId, query);
 
-    return fillDto(BalanceDto, createdBalance.toPOJO());
+    return fillDto(TrainingPaginationDto, {
+      ...trainingPaginationData,
+      entities: trainingPaginationData.entities.map((product) =>
+        product.toPOJO(),
+      ),
+    });
   }
 
   @Get(':balanceId')
@@ -73,54 +76,5 @@ export class BalanceController {
     );
 
     return fillDto(BalanceDto, foundBalance.toPOJO());
-  }
-
-  @Patch(':balanceId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update balance' })
-  @ApiResponse({
-    status: 200,
-    description: 'The balance has been successfully updated.',
-    type: BalanceDto,
-  })
-  @ApiResponse({ status: 404, description: 'Balance not found.' })
-  public async updateBalance(
-    @Param('balanceId', MongoIdValidationPipe) balanceId: string,
-    @Body() dto: UpdateBalanceDto,
-    @GetUserId() userId: string,
-  ): Promise<BalanceDto> {
-    this.logger.log(`Updating balance with ID '${balanceId}'`);
-    const updatedBalance = await this.balanceService.updateBalanceById(
-      userId,
-      balanceId,
-      dto,
-    );
-
-    return fillDto(BalanceDto, updatedBalance.toPOJO());
-  }
-
-  @Delete(':balanceId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete balance by ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'The balance has been successfully deleted.',
-    type: BalanceDto,
-  })
-  @ApiResponse({ status: 404, description: 'Balance not found.' })
-  public async deleteBalance(
-    @Param('balanceId', MongoIdValidationPipe) balanceId: string,
-    @GetUserId() userId: string,
-  ): Promise<BalanceDto> {
-    this.logger.log(`Attempting to delete balance with ID: ${balanceId}`);
-    const deletedBalance = await this.balanceService.deleteBalanceById(
-      userId,
-      balanceId,
-    );
-    this.logger.log(`Balance deleted with ID: '${deletedBalance.id}'`);
-
-    return fillDto(BalanceDto, deletedBalance.toPOJO());
   }
 }

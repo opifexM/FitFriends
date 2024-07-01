@@ -70,7 +70,9 @@ export class ReviewRepository extends BaseRepository<ReviewEntity> {
     };
   }
 
-  public async findByUserId(userId: string): Promise<ReviewEntity | null> {
+  public async findLatestByUserId(
+    userId: string,
+  ): Promise<ReviewEntity | null> {
     this.logger.log(`Finding review by user ID: '${userId}'`);
     const foundDocument = await this.model
       .findOne({

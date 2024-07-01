@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { BackgroundSymbol } from '../../component/background-symbol/background-symbol.tsx';
 import { Header } from '../../component/header/header.tsx';
+import { OrderCreatePopup } from '../../component/order-create-popup/order-create-popup.tsx';
 import { ReviewCreatePopup } from '../../component/review-create-popup/review-create-popup.tsx';
 import { ReviewList } from '../../component/review-list/review-list.tsx';
 import { TrainingDetail } from '../../component/training-detail/training-detail.tsx';
@@ -16,14 +17,12 @@ import {
   getCurrentTraining,
   getReviews,
 } from '../../store/api-communication/api-communication.selectors.ts';
-import { getIsReviewCreatePopupOpen } from '../../store/ui-settings/ui-settings.selectors.ts';
 
 export function TrainingDetailPage() {
   const { trainingId } = useParams<{ trainingId: string }>();
   const dispatch = useAppDispatch();
   const currentTraining = useAppSelector(getCurrentTraining);
   const reviews = useAppSelector(getReviews);
-  const isReviewCreatePopupOpen = useAppSelector(getIsReviewCreatePopupOpen);
 
   useEffect(() => {
     if (trainingId) {
@@ -42,7 +41,8 @@ export function TrainingDetailPage() {
       <BackgroundSymbol />
       <Header />
       <main>
-        {isReviewCreatePopupOpen && <ReviewCreatePopup />}
+        <ReviewCreatePopup />
+        <OrderCreatePopup />
         <section className="inner-page">
           <div className="container">
             <div className="inner-page__wrapper">

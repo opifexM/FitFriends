@@ -1,35 +1,15 @@
 @host = http://localhost:3000
-@balanceId = 667e1669a57c257a1dcd5d56
-@trainingId = 666deb9e10ff48d5830d5607
+@balanceId = 66807d51e5737344c3e593cb
 @token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
-
-### Create a new balance
-POST {{host}}/api/balances HTTP/1.1
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "training": "{{trainingId}}",
-  "totalCount": 15,
-  "availableCount": 4
-}
-
 
 ### Get balance by ID
 GET {{host}}/api/balances/{{balanceId}} HTTP/1.1
 Authorization: Bearer {{token}}
 
-
-### Update balance
-PATCH {{host}}/api/balances/{{balanceId}} HTTP/1.1
+### Get training purchase
+GET {{host}}/api/balances/purchase HTTP/1.1
 Authorization: Bearer {{token}}
-Content-Type: application/json
 
-{
-  "availableCount": 5
-}
-
-
-### Delete balance by ID
-DELETE {{host}}/api/balances/{{balanceId}} HTTP/1.1
+### Get activetraining purchase
+GET {{host}}/api/balances/purchase?active=true HTTP/1.1
 Authorization: Bearer {{token}}

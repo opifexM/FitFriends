@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { PaymentStatusType } from 'shared/type/enum/payment-status-type.enum';
 import { PaymentType } from 'shared/type/enum/payment-type.enum';
 import { PurchaseType } from 'shared/type/enum/purchase-type.enum';
 import { TrainingModel } from '../../training/entity/training.schema';
@@ -38,6 +39,9 @@ export class OrderModel extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'UserModel', required: true })
   public user: UserModel;
+
+  @Prop({ required: true, enum: PaymentStatusType })
+  public paymentStatus: PaymentStatusType;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(OrderModel);

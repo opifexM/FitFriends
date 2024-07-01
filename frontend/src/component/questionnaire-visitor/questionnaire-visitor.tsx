@@ -90,7 +90,7 @@ export function QuestionnaireVisitor() {
         .catch(() => {
           setFieldError(
             'submit',
-            'It was not possible to update questionnaire with the entered data',
+            'It was not possible to created questionnaire with the entered data',
           );
         });
     }

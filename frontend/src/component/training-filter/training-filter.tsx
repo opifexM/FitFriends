@@ -3,8 +3,8 @@ import { TrainingSortType } from 'shared/type/training/training-sort-type.enum.t
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
 import {
-  setTrainingSortType,
-  setWorkout,
+  setTrainingFilterTrainingSortType,
+  setTrainingFilterWorkout,
 } from '../../store/ui-settings/ui-settings.slice.ts';
 
 export function TrainingFilter() {
@@ -23,6 +23,7 @@ export function TrainingFilter() {
     // }
   };
 
+  //todo filter
   return (
     <div className="gym-catalog-form">
       <h2 className="visually-hidden">Мои тренировки Фильтр</h2>
@@ -154,7 +155,7 @@ export function TrainingFilter() {
                             );
                           }
                           if (updatedWorkout.length) {
-                            dispatch(setWorkout(updatedWorkout));
+                            dispatch(setTrainingFilterWorkout(updatedWorkout));
                           }
                         }}
                       />
@@ -184,7 +185,11 @@ export function TrainingFilter() {
                     TrainingSortType.BY_LOW_PRICE
                   }
                   onChange={() =>
-                    dispatch(setTrainingSortType(TrainingSortType.BY_LOW_PRICE))
+                    dispatch(
+                      setTrainingFilterTrainingSortType(
+                        TrainingSortType.BY_LOW_PRICE,
+                      ),
+                    )
                   }
                 />
                 <span className="btn-radio-sort__label">Дешевле</span>
@@ -199,7 +204,9 @@ export function TrainingFilter() {
                   }
                   onChange={() =>
                     dispatch(
-                      setTrainingSortType(TrainingSortType.BY_HIGH_PRICE),
+                      setTrainingFilterTrainingSortType(
+                        TrainingSortType.BY_HIGH_PRICE,
+                      ),
                     )
                   }
                 />
@@ -215,7 +222,9 @@ export function TrainingFilter() {
                   }
                   onChange={() =>
                     dispatch(
-                      setTrainingSortType(TrainingSortType.BY_FREE_PRICE),
+                      setTrainingFilterTrainingSortType(
+                        TrainingSortType.BY_FREE_PRICE,
+                      ),
                     )
                   }
                 />

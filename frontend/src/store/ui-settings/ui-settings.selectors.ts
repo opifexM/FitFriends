@@ -5,6 +5,10 @@ export const getTrainingFilter = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].trainingFilter;
 
+export const getPurchaseFilter = (
+  state: Pick<State, typeof NameSpace.UiSetting>,
+) => state[NameSpace.UiSetting].purchaseFilter;
+
 export const getIsPurchasePopupOpen = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].isPurchasePopupOpen;

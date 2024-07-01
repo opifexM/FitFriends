@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Document, Model, Promise } from 'mongoose';
+import { PaginationResult } from 'shared/type/pagination.interface';
 import { SortDirection } from 'shared/type/sort-direction.interface';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum';
 import { TrainingQuery } from 'shared/type/training/training.query';
@@ -115,7 +116,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       .skip(skip)
       .limit(limit);
 
-    const trainingCount = await this.model.countDocuments(filterCriteria);
+    const totalItem = await this.model.countDocuments(filterCriteria);
 
     const priceStats = await this.model.aggregate([
       { $match: filterCriteria },
@@ -150,15 +151,15 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       },
     ]);
 
-    this.logger.log(`Retrieved [${trainings.length}] products`);
+    this.logger.log(`Retrieved [${trainings.length}] trainings`);
 
     return {
       entities: trainings.map((training) =>
         this.createEntityFromDocument(training),
       ),
-      totalPages: Math.ceil(trainingCount / limit),
+      totalPages: Math.ceil(totalItem / limit),
       currentPage: currentPage,
-      totalItems: trainingCount,
+      totalItems: totalItem,
       itemsPerPage: limit,
       priceMin: priceStats[0]?.minPrice || 0,
       priceMax: priceStats[0]?.maxPrice || 0,
@@ -166,6 +167,40 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       caloriesMax: caloriesStats[0]?.maxCaloriesBurned || 0,
       ratingMin: ratingStats[0]?.minRating || 0,
       ratingMax: ratingStats[0]?.maxRating || 0,
+    };
+  }
+
+  public async findAllByTrainingList(
+    trainingListIds: string[],
+    currentPage: number,
+    limit: number,
+  ): Promise<PaginationResult<TrainingEntity>> {
+    const skip = (currentPage - 1) * limit;
+    this.logger.log(
+      `Retrieving trainings by list ids '[${trainingListIds.length}]', skip: '${skip}', limit: '${limit}'`,
+    );
+
+    const filterCriteria = {
+      _id: { $in: trainingListIds },
+    };
+
+    const trainings = await this.model
+      .find(filterCriteria)
+      .skip(skip)
+      .limit(limit);
+
+    const trainingItem = await this.model.countDocuments(filterCriteria);
+
+    this.logger.log(`Retrieved [${trainings.length}] trainings`);
+
+    return {
+      entities: trainings.map((training) =>
+        this.createEntityFromDocument(training),
+      ),
+      totalPages: Math.ceil(trainingItem / limit),
+      currentPage: currentPage,
+      totalItems: trainingItem,
+      itemsPerPage: limit,
     };
   }
 }

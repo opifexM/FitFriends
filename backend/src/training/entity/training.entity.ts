@@ -6,7 +6,7 @@ import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum
 import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { Training } from 'shared/type/training/training';
 
-export class TrainingEntity extends Entity {
+export class TrainingEntity extends Entity implements Training {
   public backgroundId: string;
   public caloriesBurned: number;
   public coach: Types.ObjectId;
@@ -22,6 +22,7 @@ export class TrainingEntity extends Entity {
   public videoId: string;
   public workout: WorkoutType;
   public workoutDuration: WorkoutDurationType;
+  public discountPercent: number;
 
   constructor(training?: Training) {
     super();
@@ -41,6 +42,7 @@ export class TrainingEntity extends Entity {
     this.description = training.description;
     this.gender = training.gender;
     this.isSpecialOffer = training.isSpecialOffer;
+    this.discountPercent = training.discountPercent;
     this.name = training.name;
     this.price = training.price;
     this.rating = training.rating;
@@ -61,6 +63,7 @@ export class TrainingEntity extends Entity {
       description: this.description,
       gender: this.gender,
       isSpecialOffer: this.isSpecialOffer,
+      discountPercent: this.discountPercent,
       name: this.name,
       price: this.price,
       rating: this.rating,

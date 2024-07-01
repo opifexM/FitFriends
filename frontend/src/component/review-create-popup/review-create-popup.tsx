@@ -10,6 +10,7 @@ import {
   getCurrentTraining,
   getLastReview,
 } from '../../store/api-communication/api-communication.selectors.ts';
+import { getIsReviewCreatePopupOpen } from '../../store/ui-settings/ui-settings.selectors.ts';
 import { setIsReviewCreatePopupOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 import { reviewCreateValidationSchema } from './review-create-validation-schema.ts';
 
@@ -22,8 +23,9 @@ export function ReviewCreatePopup() {
   const dispatch = useAppDispatch();
   const review = useAppSelector(getLastReview);
   const training = useAppSelector(getCurrentTraining);
+  const isReviewCreatePopupOpen = useAppSelector(getIsReviewCreatePopupOpen);
 
-  if (!training) {
+  if (!training || !isReviewCreatePopupOpen) {
     return null;
   }
 

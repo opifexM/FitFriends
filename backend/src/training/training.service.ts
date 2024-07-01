@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { RoleType } from 'shared/type/enum/role-type.enum';
+import { PaginationResult } from 'shared/type/pagination.interface';
 import { CreateTrainingDto } from 'shared/type/training/dto/create-training.dto';
 import { UpdateTrainingDto } from 'shared/type/training/dto/update-training.dto';
 import { TrainingQuery } from 'shared/type/training/training.query';
@@ -42,6 +43,7 @@ export class TrainingService {
       gender,
       videoId,
       isSpecialOffer,
+      discountPercent,
     } = dto;
     this.logger.log('Attempting to create training');
 
@@ -69,6 +71,7 @@ export class TrainingService {
       coach: foundCoachUser.id,
       videoId: videoId ?? TRAINING_DEFAULT.VIDEO_ID,
       backgroundId: backgroundId ?? TRAINING_DEFAULT.BACKGROUND_ID,
+      discountPercent: discountPercent ?? TRAINING_DEFAULT.DISCOUNT_PERCENT,
     };
 
     const trainingEntity = TrainingFactory.createEntity(trainingData);
@@ -124,6 +127,8 @@ export class TrainingService {
     if (dto.videoId !== undefined) updatedTraining.videoId = dto.videoId;
     if (dto.isSpecialOffer !== undefined)
       updatedTraining.isSpecialOffer = dto.isSpecialOffer;
+    if (dto.discountPercent !== undefined)
+      updatedTraining.discountPercent = dto.discountPercent;
 
     return this.trainingRepository.update(trainingId, updatedTraining);
   }
@@ -159,7 +164,7 @@ export class TrainingService {
   public async findTrainingByQuery(
     trainingQuery?: TrainingQuery,
   ): Promise<TrainingPaginationInterface<TrainingEntity>> {
-    this.logger.log('Finding all trainings');
+    this.logger.log('Finding training by query');
 
     const limit = Math.min(
       trainingQuery?.limit ?? Number.MAX_VALUE,
@@ -189,5 +194,19 @@ export class TrainingService {
       workout,
       trainingSortType,
     });
+  }
+
+  public async findTrainingByIdList(
+    trainingListIds: string[],
+    page: number,
+    limit: number,
+  ): Promise<PaginationResult<TrainingEntity>> {
+    this.logger.log(`Finding trainings by Id list [${trainingListIds}]`);
+
+    return this.trainingRepository.findAllByTrainingList(
+      trainingListIds,
+      page,
+      limit,
+    );
   }
 }

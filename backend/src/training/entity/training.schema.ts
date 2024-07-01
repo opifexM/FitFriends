@@ -57,6 +57,9 @@ export class TrainingModel extends Document {
 
   @Prop({ required: true })
   public isSpecialOffer: boolean;
+
+  @Prop({ required: true })
+  public discountPercent: number;
 }
 
 export const TrainingSchema = SchemaFactory.createForClass(TrainingModel);

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum.ts';
 import {
@@ -27,8 +28,15 @@ interface TrainingFilter {
   currentPage: number;
 }
 
+interface PurchaseFilter {
+  isActive: boolean;
+  totalPages: number;
+  currentPage: number;
+}
+
 interface UiSettingsSlice {
   trainingFilter: TrainingFilter;
+  purchaseFilter: PurchaseFilter;
   isReviewCreatePopupOpen: boolean;
   isPurchasePopupOpen: boolean;
 }
@@ -52,6 +60,11 @@ const initialState: UiSettingsSlice = {
     totalPages: 0,
     currentPage: TRAINING_LIST.DEFAULT_FILTER_PAGE,
   },
+  purchaseFilter: {
+    totalPages: 0,
+    currentPage: BALANCE_PURCHASE_LIST.DEFAULT_FILTER_PAGE,
+    isActive: false,
+  },
   isReviewCreatePopupOpen: false,
   isPurchasePopupOpen: false,
 };
@@ -69,85 +82,101 @@ export const uiSettingsSlice = createSlice({
     resetTrainingFilter: (state) => {
       state.trainingFilter = initialState.trainingFilter;
     },
-    setWorkout: (state, action: PayloadAction<WorkoutType[]>) => {
+    setTrainingFilterWorkout: (state, action: PayloadAction<WorkoutType[]>) => {
       state.trainingFilter.workout = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setTrainingSortType: (state, action: PayloadAction<TrainingSortType>) => {
+    setTrainingFilterTrainingSortType: (
+      state,
+      action: PayloadAction<TrainingSortType>,
+    ) => {
       state.trainingFilter.trainingSortType = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setPriceFrom: (state, action: PayloadAction<number>) => {
+    setTrainingFilterPriceFrom: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceFrom = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setPriceTo: (state, action: PayloadAction<number>) => {
+    setTrainingFilterPriceTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceTo = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setCaloriesFrom: (state, action: PayloadAction<number>) => {
+    setTrainingFilterCaloriesFrom: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesFrom = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setCaloriesTo: (state, action: PayloadAction<number>) => {
+    setTrainingFilterCaloriesTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesTo = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setRatingFrom: (state, action: PayloadAction<number>) => {
+    setTrainingFilterRatingFrom: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingFrom = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setRatingTo: (state, action: PayloadAction<number>) => {
+    setTrainingFilterRatingTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingTo = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setPriceMin: (state, action: PayloadAction<number>) => {
+    setTrainingFilterPriceMin: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceMin = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setPriceMax: (state, action: PayloadAction<number>) => {
+    setTrainingFilterPriceMax: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceMax = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setCaloriesMin: (state, action: PayloadAction<number>) => {
+    setTrainingFilterCaloriesMin: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesMin = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setCaloriesMax: (state, action: PayloadAction<number>) => {
+    setTrainingFilterCaloriesMax: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesMax = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setRatingMin: (state, action: PayloadAction<number>) => {
+    setTrainingFilterRatingMin: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingMin = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setRatingMax: (state, action: PayloadAction<number>) => {
+    setTrainingFilterRatingMax: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingMax = action.payload;
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
     },
-    setTotalPages: (state, action: PayloadAction<number>) => {
+    setTrainingFilterTotalPages: (state, action: PayloadAction<number>) => {
       state.trainingFilter.totalPages = action.payload;
     },
-    increaseCurrentPage: (state) => {
+    increaseTrainingFilterCurrentPage: (state) => {
       state.trainingFilter.currentPage++;
     },
-    resetCurrentPage: (state) => {
+    resetTrainingFilterCurrentPage: (state) => {
       state.trainingFilter.currentPage =
         initialState.trainingFilter.currentPage;
+    },
+    resetPurchaseFilter: (state) => {
+      state.purchaseFilter = initialState.purchaseFilter;
+    },
+    setPurchaseFilterIsActive: (state, action: PayloadAction<boolean>) => {
+      state.purchaseFilter.isActive = action.payload;
+    },
+    increasePurchaseFilterCurrentPage: (state) => {
+      state.purchaseFilter.currentPage++;
+    },
+    resetPurchaseFilterCurrentPage: (state) => {
+      state.purchaseFilter.currentPage =
+        initialState.purchaseFilter.currentPage;
     },
   },
   extraReducers(builder) {
@@ -185,23 +214,27 @@ export const uiSettingsSlice = createSlice({
 
 export const {
   resetTrainingFilter,
-  setPriceFrom,
-  setPriceTo,
-  setCaloriesFrom,
-  setCaloriesTo,
-  setRatingFrom,
-  setRatingTo,
-  setWorkout,
-  setTrainingSortType,
-  setCaloriesMin,
-  setPriceMax,
-  setCaloriesMax,
-  setPriceMin,
-  setRatingMax,
-  setTotalPages,
-  setRatingMin,
-  resetCurrentPage,
-  increaseCurrentPage,
+  setTrainingFilterPriceFrom,
+  setTrainingFilterPriceTo,
+  setTrainingFilterCaloriesFrom,
+  setTrainingFilterCaloriesTo,
+  setTrainingFilterRatingFrom,
+  setTrainingFilterRatingTo,
+  setTrainingFilterWorkout,
+  setTrainingFilterTrainingSortType,
+  setTrainingFilterCaloriesMin,
+  setTrainingFilterPriceMax,
+  setTrainingFilterCaloriesMax,
+  setTrainingFilterPriceMin,
+  setTrainingFilterRatingMax,
+  setTrainingFilterTotalPages,
+  setTrainingFilterRatingMin,
+  resetTrainingFilterCurrentPage,
+  increaseTrainingFilterCurrentPage,
   setIsReviewCreatePopupOpen,
   setIsPurchasePopupOpen,
+  increasePurchaseFilterCurrentPage,
+  setPurchaseFilterIsActive,
+  resetPurchaseFilterCurrentPage,
+  resetPurchaseFilter,
 } = uiSettingsSlice.actions;

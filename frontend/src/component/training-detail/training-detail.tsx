@@ -1,10 +1,13 @@
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
+import { useAppDispatch } from '../../hook';
+import { setIsPurchasePopupOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 
 interface TrainingInfoProps {
   training: TrainingDto;
 }
 
 export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
+  const dispatch = useAppDispatch();
   const {
     name,
     rating,
@@ -15,7 +18,17 @@ export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
     caloriesBurned,
     gender,
     coach,
+    isSpecialOffer,
+    discountPercent,
   } = training;
+
+  function handlePurchaseCreate() {
+    dispatch(setIsPurchasePopupOpen(true));
+  }
+
+  function getPrice() {
+    return isSpecialOffer ? price - (price * discountPercent) / 100 : price;
+  }
 
   //todo avatar picture
   return (
@@ -112,11 +125,20 @@ export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
               <div className="training-info__input training-info__input--price">
                 <label>
                   <span className="training-info__label">Стоимость</span>
-                  <input type="text" name="price" value={price} disabled />
+                  <input
+                    type="text"
+                    name="price"
+                    value={`${getPrice()} ₽`}
+                    disabled
+                  />
                 </label>
                 <div className="training-info__error">Введите число</div>
               </div>
-              <button className="btn training-info__buy" type="button">
+              <button
+                className="btn training-info__buy"
+                type="button"
+                onClick={handlePurchaseCreate}
+              >
                 Купить
               </button>
             </div>

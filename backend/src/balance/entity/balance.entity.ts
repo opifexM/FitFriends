@@ -5,10 +5,10 @@ import { Balance } from 'shared/type/balance/balance';
 export class BalanceEntity extends Entity implements Balance {
   public totalCount: number;
   public availableCount: number;
-  public createdAt: Date;
   public training: Types.ObjectId;
-  public updatedAt: Date;
   public user: Types.ObjectId;
+  public createdAt: Date;
+  public updatedAt: Date;
 
   constructor(balance?: Balance) {
     super();

@@ -4,12 +4,12 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateBalanceDto } from 'shared/type/balance/dto/create-balance.dto';
-import { UpdateBalanceDto } from 'shared/type/balance/dto/update-balance.dto';
-import { TRAINING_MESSAGES } from '../training/training.constant';
+import { BalanceTrainingQuery } from 'shared/type/balance/balance-training.query';
+import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant';
+import { PaginationResult } from 'shared/type/pagination.interface';
+import { TrainingEntity } from '../training/entity/training.entity';
 import { TrainingService } from '../training/training.service';
-import { USER_MESSAGES } from '../user/user.constant';
-import { UserService } from '../user/user.service';
+import { UserEntity } from '../user/entity/user.entity';
 import { BALANCE_MESSAGES } from './balance.constant';
 import { BalanceEntity } from './entity/balance.entity';
 import { BalanceFactory } from './entity/balance.factory';
@@ -21,41 +21,74 @@ export class BalanceService {
 
   constructor(
     private readonly balanceRepository: BalanceRepository,
-    private readonly userService: UserService,
     private readonly trainingService: TrainingService,
   ) {}
 
   public async createBalance(
-    userId: string,
-    dto: CreateBalanceDto,
+    user: UserEntity,
+    training: TrainingEntity,
+    count: number,
   ): Promise<BalanceEntity> {
-    const { training, totalCount, availableCount } = dto;
-    this.logger.log('Attempting to create balance');
-
-    const foundUser = await this.userService.findUserById(userId);
-    if (!foundUser) {
-      this.logger.warn(`User with id '${userId}' not found`);
-      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
-    }
-
-    const foundTraining = await this.trainingService.findTrainingById(training);
-    if (!foundTraining) {
-      this.logger.warn(`Training with id '${training}' not found`);
-      throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
-    }
+    this.logger.log(`Attempting to create balance for user '${user.name}'`);
 
     const balanceData = {
-      user: foundUser.id,
-      training: foundTraining.id,
-      totalCount: totalCount,
-      availableCount: availableCount,
+      user: user.id,
+      training: training.id,
+      totalCount: count,
+      availableCount: count,
     };
 
     const balanceEntity = BalanceFactory.createEntity(balanceData);
     const createdBalance = await this.balanceRepository.save(balanceEntity);
-    this.logger.log(`Balance created with ID: '${createdBalance.id}'`);
+    this.logger.log(
+      `Balance created with ID: '${createdBalance.id}' user '${user.name}' and training '${training.name}'`,
+    );
 
     return createdBalance;
+  }
+
+  public async updateBalanceById(
+    balance: BalanceEntity,
+    user: UserEntity,
+    count: number,
+  ): Promise<BalanceEntity> {
+    this.logger.log(
+      `Updating balance with ID: '${balance.id}' for user '${user.name}'`,
+    );
+    console.log(user.id);
+    console.log(balance.user.toString());
+
+    if (user.id !== balance.user.toString()) {
+      this.logger.warn(
+        `User ID '${user.id}' attempted to balance access owned by User ID '${balance.user.toString()}'`,
+      );
+      throw new ForbiddenException(BALANCE_MESSAGES.NO_ACCESS);
+    }
+
+    balance.totalCount += count;
+    balance.availableCount += count;
+
+    return this.balanceRepository.update(balance.id, balance);
+  }
+
+  public async createOrUpdateBalance(
+    user: UserEntity,
+    training: TrainingEntity,
+    count: number,
+  ): Promise<BalanceEntity> {
+    this.logger.log(
+      `Attempting to create or update balance for user '${user.name}' and training '${training.name}'`,
+    );
+
+    const foundBalance = await this.balanceRepository.findByUserIdAndTrainingId(
+      user.id,
+      training.id,
+    );
+    if (foundBalance) {
+      return this.updateBalanceById(foundBalance, user, count);
+    } else {
+      return this.createBalance(user, training, count);
+    }
   }
 
   public async findBalanceById(
@@ -78,28 +111,13 @@ export class BalanceService {
     return foundBalance;
   }
 
-  public async updateBalanceById(
-    userId: string,
-    balanceId: string,
-    dto: UpdateBalanceDto,
-  ): Promise<BalanceEntity> {
-    this.logger.log(`Updating balance with ID: '${balanceId}'`);
-    const updatedBalance = await this.findBalanceById(userId, balanceId);
-
-    if (dto.totalCount !== undefined)
-      updatedBalance.totalCount = dto.totalCount;
-    if (dto.availableCount !== undefined)
-      updatedBalance.availableCount = dto.availableCount;
-
-    return this.balanceRepository.update(balanceId, updatedBalance);
-  }
-
-  public async deleteBalanceById(
-    userId: string,
-    balanceId: string,
-  ): Promise<BalanceEntity> {
+  public async deleteBalanceById(balanceId: string): Promise<BalanceEntity> {
     this.logger.log(`Deleting balance with ID: '${balanceId}'`);
-    await this.findBalanceById(userId, balanceId);
+    const foundBalance = await this.balanceRepository.findById(balanceId);
+    if (!foundBalance) {
+      this.logger.warn(`Balance not found with ID: '${balanceId}'`);
+      throw new NotFoundException(BALANCE_MESSAGES.NOT_FOUND);
+    }
 
     const deletedBalance = await this.balanceRepository.deleteById(balanceId);
     this.logger.log(`Balance with ID: '${balanceId}' deleted`);
@@ -109,5 +127,33 @@ export class BalanceService {
 
   public async exists(balanceId: string): Promise<boolean> {
     return this.balanceRepository.exists(balanceId);
+  }
+
+  public async findAllPurchaseTraining(
+    userId: string,
+    balanceQuery?: BalanceTrainingQuery,
+  ): Promise<PaginationResult<TrainingEntity>> {
+    const limit = Math.min(
+      balanceQuery?.limit ?? Number.MAX_VALUE,
+      BALANCE_PURCHASE_LIST.LIMIT,
+    );
+    const page =
+      balanceQuery?.currentPage ?? BALANCE_PURCHASE_LIST.DEFAULT_FILTER_PAGE;
+    const isActive = balanceQuery?.active ?? false;
+
+    this.logger.log(
+      `Finding all purchase training by user ID: '${userId}', active: '${isActive}'`,
+    );
+
+    const trainingListIds = await this.balanceRepository.findAllByUserId(
+      userId,
+      isActive,
+    );
+
+    return this.trainingService.findTrainingByIdList(
+      trainingListIds,
+      page,
+      limit,
+    );
   }
 }

@@ -22,6 +22,7 @@ interface FormValues {
 }
 
 //todo video-upload videoId
+//todo rating
 
 export function TrainingCreate() {
   const dispatch = useAppDispatch();

@@ -9,6 +9,7 @@ import {
 import { PrivateRoute } from './component/private-route/private-route.tsx';
 import { AppRoute, AuthorizationStatus } from './const.ts';
 import { useAppDispatch, useAppSelector } from './hook';
+import { BalancePurchasePage } from './page/balance-purchase-page/balance-purchase-page.tsx';
 import { IntroPage } from './page/intro-page/intro-page.tsx';
 import { LoginPage } from './page/login-page/login-page.tsx';
 import { MainPage } from './page/main-page/main-page.tsx';
@@ -139,6 +140,18 @@ export function App({
               declinedElement={AppRoute.Intro}
             >
               <TrainingDetailPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.BalancePurchase}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <BalancePurchasePage />
             </PrivateRoute>
           }
         />

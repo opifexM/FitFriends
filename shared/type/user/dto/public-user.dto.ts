@@ -1,8 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { GenderType } from '../../enum/gender-type.enum';
-import { LocationType } from '../../enum/location-type.enum';
-import { RoleType } from '../../enum/role-type.enum';
 
 export class PublicUserDto {
   @Expose()

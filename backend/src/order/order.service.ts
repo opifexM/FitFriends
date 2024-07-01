@@ -4,8 +4,10 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { PaymentStatusType } from 'shared/type/enum/payment-status-type.enum';
 import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto';
-import { UpdateOrderDto } from 'shared/type/order/dto/update-order.dto';
+import { BalanceService } from '../balance/balance.service';
+import { TRAINING_MESSAGES } from '../training/training.constant';
 import { TrainingService } from '../training/training.service';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
@@ -22,13 +24,14 @@ export class OrderService {
     private readonly orderRepository: OrderRepository,
     private readonly userService: UserService,
     private readonly trainingService: TrainingService,
+    private readonly balanceService: BalanceService,
   ) {}
 
   public async createOrder(
     userId: string,
     dto: CreateOrderDto,
   ): Promise<OrderEntity> {
-    const { purchase, service, payment, price, count } = dto;
+    const { purchase, service, payment, count, totalPrice } = dto;
     this.logger.log('Attempting to create order');
 
     const foundUser = await this.userService.findUserById(userId);
@@ -40,23 +43,44 @@ export class OrderService {
     const foundTraining = await this.trainingService.findTrainingById(service);
     if (!foundTraining) {
       this.logger.warn(`Training with id '${service}' not found`);
-      throw new NotFoundException(ORDER_MESSAGES.NOT_FOUND);
+      throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
     }
 
-    const totalPrice = price * count;
+    const expectedTotalPrice = foundTraining.isSpecialOffer
+      ? count *
+        (foundTraining.price -
+          (foundTraining.price * foundTraining.discountPercent) / 100)
+      : count * foundTraining.price;
+
+    if (totalPrice !== expectedTotalPrice) {
+      this.logger.warn(
+        `The total price '${totalPrice}' does not match the expected price '${expectedTotalPrice}'`,
+      );
+      throw new NotFoundException(ORDER_MESSAGES.PRICE_NOT_MATCH);
+    }
+
     const orderData = {
       user: foundUser.id,
       count: count,
       payment: payment,
-      price: price,
+      price: foundTraining.price,
       purchase: purchase,
       service: foundTraining.id,
-      totalPrice: totalPrice,
+      totalPrice: expectedTotalPrice,
+      paymentStatus: PaymentStatusType.PAID,
     };
 
     const orderEntity = OrderFactory.createEntity(orderData);
     const createdOrder = await this.orderRepository.save(orderEntity);
-    this.logger.log(`Order created with ID: '${createdOrder.id}'`);
+    this.logger.log(
+      `Order created with ID: '${createdOrder.id}' for user '${foundUser.name}'`,
+    );
+
+    await this.balanceService.createOrUpdateBalance(
+      foundUser,
+      foundTraining,
+      count,
+    );
 
     return createdOrder;
   }
@@ -79,35 +103,6 @@ export class OrderService {
     }
 
     return foundOrder;
-  }
-
-  public async updateOrderById(
-    userId: string,
-    orderId: string,
-    dto: UpdateOrderDto,
-  ): Promise<OrderEntity> {
-    this.logger.log(`Updating order with ID: '${orderId}'`);
-    const updatedOrder = await this.findOrderById(userId, orderId);
-
-    if (dto.purchase !== undefined) updatedOrder.purchase = dto.purchase;
-    if (dto.price !== undefined) updatedOrder.price = dto.price;
-    if (dto.count !== undefined) updatedOrder.count = dto.count;
-    if (dto.payment !== undefined) updatedOrder.payment = dto.payment;
-
-    return this.orderRepository.update(orderId, updatedOrder);
-  }
-
-  public async deleteOrderById(
-    userId: string,
-    orderId: string,
-  ): Promise<OrderEntity> {
-    this.logger.log(`Deleting order with ID: '${orderId}'`);
-    await this.findOrderById(userId, orderId);
-
-    const deletedOrder = await this.orderRepository.deleteById(orderId);
-    this.logger.log(`Order with ID: '${orderId}' deleted`);
-
-    return deletedOrder;
   }
 
   public async exists(orderId: string): Promise<boolean> {

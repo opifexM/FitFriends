@@ -36,3 +36,7 @@ export const getReviews = (
 export const getLastReview = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].lastReview;
+
+export const getPurchases = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].purchases;

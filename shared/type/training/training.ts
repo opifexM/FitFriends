@@ -1,8 +1,8 @@
+import { Types } from 'mongoose';
 import { GenderType } from '../enum/gender-type.enum';
 import { SkillLevelType } from '../enum/skill-level-type.enum';
 import { WorkoutDurationType } from '../enum/workout-duration-type.enum';
 import { WorkoutType } from '../enum/workout-type.enum';
-import { Types } from 'mongoose';
 
 export interface Training {
   id?: string;
@@ -19,6 +19,7 @@ export interface Training {
   rating: number;
   coach: Types.ObjectId;
   isSpecialOffer: boolean;
+  discountPercent: number;
   createdAt: Date;
   updatedAt: Date;
 }

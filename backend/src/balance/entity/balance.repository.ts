@@ -25,4 +25,43 @@ export class BalanceRepository extends BaseRepository<BalanceEntity> {
     const plainObject = entityDocument.toObject({ versionKey: false });
     return BalanceFactory.createEntity(plainObject);
   }
+
+  public async findByUserIdAndTrainingId(
+    userId: string,
+    trainingId: string,
+  ): Promise<BalanceEntity | null> {
+    this.logger.log(
+      `Finding balance by user ID: '${userId}', training ID: '${trainingId}'`,
+    );
+
+    const foundDocument = await this.balanceModel
+      .findOne({
+        user: userId,
+        training: trainingId,
+      })
+      .sort({ createdAt: -1 });
+
+    return this.createEntityFromDocument(foundDocument);
+  }
+
+  public async findAllByUserId(
+    userId: string,
+    isActive: boolean,
+  ): Promise<string[]> {
+    this.logger.log(
+      `Finding all purchase training by user ID: '${userId}', active: '${isActive}'`,
+    );
+
+    const filterCriteria: any = { user: userId };
+    if (isActive) {
+      filterCriteria['availableCount'] = { $gt: 0 };
+    }
+
+    const foundDocument = await this.balanceModel
+      .find(filterCriteria)
+      .populate('training');
+    this.logger.log(`Retrieved [${foundDocument.length}] purchase trainings`);
+
+    return foundDocument.map((balance) => balance.training.id);
+  }
 }

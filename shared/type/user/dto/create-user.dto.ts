@@ -1,18 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
-  IsEmail,
-  IsString,
-  Length,
   IsDate,
+  IsEmail,
   IsEnum,
-  IsUUID,
   IsOptional,
+  IsString,
+  IsUUID,
+  Length,
 } from 'class-validator';
-import { USER } from '../user.constant';
 import { GenderType } from '../../enum/gender-type.enum';
 import { LocationType } from '../../enum/location-type.enum';
 import { RoleType } from '../../enum/role-type.enum';
-import { Transform } from 'class-transformer';
+import { USER } from '../user.constant';
 
 export class CreateUserDto {
   @IsEmail()

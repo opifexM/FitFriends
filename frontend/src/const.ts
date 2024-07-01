@@ -10,6 +10,7 @@ export const AppRoute = {
   CreateTraining: '/create-training',
   ListTraining: '/trainings',
   TrainingCard: '/training/:trainingId',
+  BalancePurchase: '/my-purchase',
 } as const;
 export type AppRouteType = (typeof AppRoute)[keyof typeof AppRoute];
 
@@ -28,8 +29,7 @@ export const APIRoute = {
   DeleteQuestionnaire: 'questionnaires/:questionnaireId',
   CreateBalance: 'balances',
   GetBalance: 'balances/:balanceId',
-  UpdateBalance: 'balances/:balanceId',
-  DeleteBalance: 'balances/:balanceId',
+  GetBalancePurchase: 'balances/purchase',
   CreateTraining: 'trainings',
   GetTraining: 'trainings/:trainingId',
   GetTrainingList: 'trainings',
@@ -43,8 +43,6 @@ export const APIRoute = {
   DeleteReview: 'reviews/:reviewId',
   CreateOrder: 'orders',
   GetOrder: 'orders/:orderId',
-  UpdateOrder: 'orders/:orderId',
-  DeleteOrder: 'orders/:orderId',
 } as const;
 
 export const AuthorizationStatus = {

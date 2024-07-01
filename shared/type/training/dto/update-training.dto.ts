@@ -115,4 +115,12 @@ export class UpdateTrainingDto {
     description: 'Indicates if the training is a special offer',
   })
   public isSpecialOffer?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    example: 10,
+    description: 'The percentage of the discount provided',
+  })
+  public discountPercent?: number;
 }

@@ -16,16 +16,16 @@ export class CreateOrderDto {
   @IsMongoId()
   @ApiProperty({
     example: '60d0fe4f5311236168a109cb',
-    description: 'The unique identifier of the service',
+    description: 'The unique identifier of the service (training)',
   })
   public service: string;
 
   @IsNumber()
   @ApiProperty({
-    example: 4,
-    description: 'The price of the service',
+    example: 500,
+    description: 'The total price of the order',
   })
-  public price: number;
+  public totalPrice: number;
 
   @IsNumber()
   @Min(ORDER.COUNT.MIN)

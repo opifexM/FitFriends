@@ -101,6 +101,13 @@ export class TrainingDto {
 
   @Expose()
   @ApiProperty({
+    example: 10,
+    description: 'The percentage of the discount provided',
+  })
+  public discountPercent: number;
+
+  @Expose()
+  @ApiProperty({
     example: 3,
     description: 'The number of training rating',
   })
