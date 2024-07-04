@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { BackLink } from '../../component/back-link/back-link.tsx';
+import { Link } from 'react-router-dom';
 import { BackgroundSymbol } from '../../component/background-symbol/background-symbol.tsx';
 import { BalancePurchaseFilter } from '../../component/balance-purchase-filter/balance-purchase-filter.tsx';
 import { BalancePurchaseList } from '../../component/balance-purchase-list/balance-purchase-list.tsx';
 import { Header } from '../../component/header/header.tsx';
+import { AppRoute } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { fetchPurchase } from '../../store/api-action/data-action.ts';
 import { getPurchaseFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
@@ -29,7 +30,16 @@ export function BalancePurchasePage() {
         <section className="my-purchases">
           <div className="container">
             <div className="my-purchases__wrapper">
-              <BackLink />
+              <Link
+                to={AppRoute.PersonalAccount}
+                className="btn-flat my-purchases__back"
+                type="button"
+              >
+                <svg width="14" height="10" aria-hidden="true">
+                  <use xlinkHref="#arrow-left"></use>
+                </svg>
+                <span>Назад</span>
+              </Link>
               <BalancePurchaseFilter />
               <BalancePurchaseList />
             </div>

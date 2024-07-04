@@ -1,0 +1,7 @@
+export enum MenuType {
+  NONE = 'NONE',
+  MAIN = 'MAIN',
+  PERSONAL = 'PERSONAL',
+  FRIENDS = 'FRIENDS',
+  NOTIFICATION = 'NOTIFICATION',
+}

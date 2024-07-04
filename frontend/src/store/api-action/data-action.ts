@@ -14,6 +14,7 @@ import { CreateTrainingDto } from 'shared/type/training/dto/create-training.dto.
 import { TrainingPaginationDto } from 'shared/type/training/dto/training-pagination.dto.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
 import { TrainingQuery } from 'shared/type/training/training.query.ts';
+import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import { APIRoute } from '../../const.ts';
 import { handleApiError } from '../../services/api-error-handler.ts';
 import { ThunkApiConfig } from '../state.ts';
@@ -296,3 +297,20 @@ export const fetchPurchase = createAsyncThunk<
     }
   },
 );
+
+export const fetchUserDetail = createAsyncThunk<
+  UserDto,
+  undefined,
+  ThunkApiConfig
+>('data/fetchUserDetail', async (_arg, { extra: api, rejectWithValue }) => {
+  try {
+    const { data } = await api.get<UserDto>(APIRoute.GetUser);
+
+    return data;
+  } catch (error) {
+    toast.warning(handleApiError(error), {
+      position: 'top-right',
+    });
+    return rejectWithValue(handleApiError(error));
+  }
+});

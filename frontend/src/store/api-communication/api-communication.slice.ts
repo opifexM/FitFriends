@@ -4,6 +4,7 @@ import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dt
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
 import { TRAINING_LIST } from 'shared/type/training/traning.constant.ts';
+import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import {
   AUTH_TOKEN,
   AuthorizationStatus,
@@ -22,21 +23,21 @@ import {
   fetchReviewByTraining,
   fetchTraining,
   fetchTrainingDetail,
+  fetchUserDetail,
   updateQuestionnaire,
   updateReview,
 } from '../api-action/data-action.ts';
 import {
-  checkAuthAction,
-  loginAction,
-  refreshAuthAction,
-  registerAction,
+  checkAuth,
+  fetchUser,
+  loginAuth,
+  refreshAuth,
+  registerAuth,
+  updateUser,
 } from '../api-action/user-auth-action.ts';
 
 interface ApiCommunicationState {
   isLoading: boolean;
-  userName: string;
-  userLogin: string;
-  userId: string;
   authorizationStatus: AuthorizationStatusType;
   lastQuestionnaire: QuestionnaireDto | null;
   trainings: TrainingDto[];
@@ -44,13 +45,11 @@ interface ApiCommunicationState {
   reviews: ReviewDto[];
   lastReview: ReviewDto | null;
   purchases: TrainingDto[];
+  userDetail: UserDto | null;
 }
 
 const initialState: ApiCommunicationState = {
   isLoading: false,
-  userName: '',
-  userLogin: '',
-  userId: '',
   authorizationStatus: AuthorizationStatus.Unknown,
   lastQuestionnaire: null,
   trainings: [],
@@ -58,6 +57,7 @@ const initialState: ApiCommunicationState = {
   reviews: [],
   lastReview: null,
   purchases: [],
+  userDetail: null,
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -70,79 +70,84 @@ export const apiCommunicationSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(registerAction.pending, (state) => {
+      .addCase(registerAuth.pending, (state) => {
         dropToken(AUTH_TOKEN.ACCESS_KEY);
         dropToken(AUTH_TOKEN.REFRESH_KEY);
         state.isLoading = true;
       })
-      .addCase(registerAction.rejected, (state) => {
-        state.userLogin = '';
-        state.userId = '';
+      .addCase(registerAuth.rejected, (state) => {
         state.authorizationStatus = AuthorizationStatus.NoAuth;
         state.isLoading = false;
       })
-      .addCase(registerAction.fulfilled, (state) => {
-        state.userLogin = '';
-        state.userId = '';
+      .addCase(registerAuth.fulfilled, (state) => {
         state.authorizationStatus = AuthorizationStatus.NoAuth;
         state.isLoading = false;
       })
 
-      .addCase(loginAction.pending, (state) => {
+      .addCase(loginAuth.pending, (state) => {
         dropToken(AUTH_TOKEN.ACCESS_KEY);
         dropToken(AUTH_TOKEN.REFRESH_KEY);
         state.isLoading = true;
       })
-      .addCase(loginAction.rejected, (state) => {
-        state.userLogin = '';
-        state.userId = '';
+      .addCase(loginAuth.rejected, (state) => {
         state.authorizationStatus = AuthorizationStatus.NoAuth;
         state.isLoading = false;
       })
-      .addCase(loginAction.fulfilled, (state, action) => {
-        const { id, email, accessToken, refreshToken } = action.payload;
+      .addCase(loginAuth.fulfilled, (state, action) => {
+        const { accessToken, refreshToken } = action.payload;
         saveToken(AUTH_TOKEN.ACCESS_KEY, accessToken);
         saveToken(AUTH_TOKEN.REFRESH_KEY, refreshToken);
-        state.userLogin = email;
-        state.userId = id;
         state.authorizationStatus = AuthorizationStatus.Auth;
         state.isLoading = false;
       })
 
-      .addCase(checkAuthAction.pending, (state) => {
+      .addCase(fetchUser.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(checkAuthAction.rejected, (state) => {
+      .addCase(fetchUser.rejected, (state) => {
+        state.userDetail = null;
+        state.isLoading = false;
+      })
+      .addCase(fetchUser.fulfilled, (state, action) => {
+        state.userDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.userDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(checkAuth.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkAuth.rejected, (state) => {
         dropToken(AUTH_TOKEN.ACCESS_KEY);
         dropToken(AUTH_TOKEN.REFRESH_KEY);
-        state.userLogin = '';
-        state.userName = '';
-        state.userId = '';
         state.authorizationStatus = AuthorizationStatus.NoAuth;
         state.isLoading = false;
       })
-      .addCase(checkAuthAction.fulfilled, (state, action) => {
-        const { sub, email, name } = action.payload;
-        state.userLogin = email;
-        state.userName = name;
-        state.userId = sub;
+      .addCase(checkAuth.fulfilled, (state) => {
         state.authorizationStatus = AuthorizationStatus.Auth;
         state.isLoading = false;
       })
 
-      .addCase(refreshAuthAction.pending, (state) => {
+      .addCase(refreshAuth.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(refreshAuthAction.rejected, (state) => {
+      .addCase(refreshAuth.rejected, (state) => {
         dropToken(AUTH_TOKEN.ACCESS_KEY);
         dropToken(AUTH_TOKEN.REFRESH_KEY);
-        state.userLogin = '';
-        state.userName = '';
-        state.userId = '';
         state.authorizationStatus = AuthorizationStatus.NoAuth;
         state.isLoading = false;
       })
-      .addCase(refreshAuthAction.fulfilled, (state, action) => {
+      .addCase(refreshAuth.fulfilled, (state, action) => {
         const { refreshToken, accessToken } = action.payload;
         saveToken(AUTH_TOKEN.ACCESS_KEY, accessToken);
         saveToken(AUTH_TOKEN.REFRESH_KEY, refreshToken);
@@ -293,6 +298,18 @@ export const apiCommunicationSlice = createSlice({
         } else {
           state.purchases = [...state.purchases, ...entities];
         }
+        state.isLoading = false;
+      })
+
+      .addCase(fetchUserDetail.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchUserDetail.rejected, (state) => {
+        state.userDetail = null;
+        state.isLoading = false;
+      })
+      .addCase(fetchUserDetail.fulfilled, (state, action) => {
+        state.userDetail = action.payload;
         state.isLoading = false;
       });
   },

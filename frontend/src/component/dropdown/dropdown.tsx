@@ -6,9 +6,15 @@ interface DropdownProps {
   name: string;
   options: Record<string, string>;
   label: string;
+  disabled?: boolean;
 }
 
-export function Dropdown({ name, options, label }: Readonly<DropdownProps>) {
+export function Dropdown({
+  name,
+  options,
+  label,
+  disabled,
+}: Readonly<DropdownProps>) {
   const [open, setOpen] = useState(false);
   const [field, meta, helpers] = useField(name);
   const { setValue } = helpers;
@@ -63,6 +69,7 @@ export function Dropdown({ name, options, label }: Readonly<DropdownProps>) {
         aria-label="Выберите одну из опций"
         onClick={() => setOpen(!open)}
         aria-expanded={open}
+        disabled={disabled}
       >
         <span className="custom-select__text2">{value}</span>
         <span className="custom-select__icon">

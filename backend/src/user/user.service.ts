@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -74,6 +75,12 @@ export class UserService {
     if (!foundUser) {
       this.logger.warn(`User not found with ID: '${userId}'`);
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (userId !== foundUser.id) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to user details access owned by User ID '${foundUser.id}'`,
+      );
+      throw new ForbiddenException(USER_MESSAGES.NO_ACCESS);
     }
 
     return foundUser;

@@ -7,7 +7,7 @@ import { LocationType } from 'shared/type/enum/location-type.enum.ts';
 import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
-import { registerAction } from '../../store/api-action/user-auth-action.ts';
+import { registerAuth } from '../../store/api-action/user-auth-action.ts';
 import { Dropdown } from '../dropdown/dropdown.tsx';
 import { registerValidationSchema } from './register-validation-schema.ts';
 
@@ -43,7 +43,7 @@ export function Registration() {
     { setSubmitting, setFieldError }: FormikHelpers<FormValues>,
   ) => {
     dispatch(
-      registerAction({
+      registerAuth({
         email: values.email,
         password: values.password,
         role: values.role as RoleType,

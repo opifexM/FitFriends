@@ -28,6 +28,7 @@ import { LoginDto } from 'shared/type/user/dto/login.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { UserDto } from 'shared/type/user/dto/user.dto';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
+import { GetUserId } from '../decorator/get-user.decorator';
 import { JwtAuthGuard } from './authentication/guard/jwt-auth.guard';
 import { JwtRefreshGuard } from './authentication/guard/jwt-refresh.guard';
 import { LocalAuthGuard } from './authentication/guard/local-auth.guard';
@@ -67,7 +68,7 @@ export class UserController {
     type: UserDto,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  public async getUser(
+  public async getUserById(
     @Param('userId', MongoIdValidationPipe) userId: string,
   ): Promise<UserDto> {
     this.logger.log(`Retrieving user with ID: '${userId}'`);
@@ -76,7 +77,24 @@ export class UserController {
     return fillDto(UserDto, foundUser.toPOJO());
   }
 
-  @Patch(':userId')
+  @Get('')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'The current user has been successfully retrieved.',
+    type: UserDto,
+  })
+  @ApiResponse({ status: 404, description: 'Current user not found.' })
+  public async getUser(@GetUserId() userId: string): Promise<UserDto> {
+    this.logger.log(`Retrieving current user with ID: '${userId}'`);
+    const foundUser = await this.userService.findUserById(userId);
+
+    return fillDto(UserDto, foundUser.toPOJO());
+  }
+
+  @Patch('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user' })
@@ -87,7 +105,7 @@ export class UserController {
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   public async updateUser(
-    @Param('userId', MongoIdValidationPipe) userId: string,
+    @GetUserId() userId: string,
     @Body() dto: UpdateUserDto,
   ): Promise<UserDto> {
     this.logger.log(`Updating user with ID '${userId}'`);
@@ -96,7 +114,7 @@ export class UserController {
     return fillDto(UserDto, updatedUser.toPOJO());
   }
 
-  @Delete(':userId')
+  @Delete('')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete user by ID' })
@@ -106,9 +124,7 @@ export class UserController {
     type: UserDto,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  public async deleteUser(
-    @Param('userId', MongoIdValidationPipe) userId: string,
-  ): Promise<UserDto> {
+  public async deleteUser(@GetUserId() userId: string): Promise<UserDto> {
     this.logger.log(`Attempting to delete user with ID: ${userId}`);
     const deletedUser = await this.userService.deleteUserById(userId);
     this.logger.log(`User deleted with ID: '${deletedUser.id}'`);

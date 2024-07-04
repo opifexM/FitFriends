@@ -14,13 +14,16 @@ import { IntroPage } from './page/intro-page/intro-page.tsx';
 import { LoginPage } from './page/login-page/login-page.tsx';
 import { MainPage } from './page/main-page/main-page.tsx';
 import { NotFoundPage } from './page/not-found-page/not-found-page.tsx';
+import { PersonalAccountPage } from './page/personal-account/personal-account-page.tsx';
 import { QuestionnairePage } from './page/questionnaire-page/questionnaire-page.tsx';
 import { RegistrationPage } from './page/registration-page/registration-page.tsx';
 import { TrainingCreatePage } from './page/training-create-page/training-create-page.tsx';
 import { TrainingDetailPage } from './page/training-detail-page/training-detail-page.tsx';
 import { TrainingListPage } from './page/training-list-page/training-list-page.tsx';
-import { checkAuthAction } from './store/api-action/user-auth-action.ts';
+import { checkAuth } from './store/api-action/user-auth-action.ts';
 import { getAuthorizationStatus } from './store/api-communication/api-communication.selectors.ts';
+import { setMenuStatus } from './store/ui-settings/ui-settings.slice.ts';
+import { MenuType } from './type/menu-type.enum.ts';
 
 type CustomRouterProps = BrowserRouterProps | MemoryRouterProps;
 
@@ -37,7 +40,8 @@ export function App({
   const authorizationStatus = useAppSelector(getAuthorizationStatus);
 
   useEffect(() => {
-    dispatch(checkAuthAction());
+    dispatch(checkAuth());
+    dispatch(setMenuStatus(MenuType.NONE));
   }, [dispatch]);
 
   if (authorizationStatus === AuthorizationStatus.Unknown) {
@@ -152,6 +156,18 @@ export function App({
               declinedElement={AppRoute.Intro}
             >
               <BalancePurchasePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.PersonalAccount}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <PersonalAccountPage />
             </PrivateRoute>
           }
         />

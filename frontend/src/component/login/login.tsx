@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '../../hook';
-import { loginAction } from '../../store/api-action/user-auth-action.ts';
+import { loginAuth } from '../../store/api-action/user-auth-action.ts';
 import { loginValidationSchema } from './login-validation-schema.ts';
 
 interface FormValues {
@@ -23,7 +23,7 @@ export function Login() {
     { setSubmitting, setFieldError }: FormikHelpers<FormValues>,
   ) => {
     dispatch(
-      loginAction({
+      loginAuth({
         email: values.email,
         password: values.password,
       }),

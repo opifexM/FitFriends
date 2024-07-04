@@ -1,7 +1,13 @@
+import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const.ts';
+import { useAppSelector } from '../../hook';
+import { getMenuStatus } from '../../store/ui-settings/ui-settings.selectors.ts';
+import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function Header() {
+  const menuStatus = useAppSelector(getMenuStatus);
+
   return (
     <header className="header">
       <div className="container">
@@ -18,7 +24,9 @@ export function Header() {
           <ul className="main-nav__list">
             <li className="main-nav__item">
               <Link
-                className="main-nav__link is-active"
+                className={classNames('main-nav__link', {
+                  'is-active': menuStatus === MenuType.MAIN,
+                })}
                 to={AppRoute.Main}
                 aria-label="На главную"
               >
@@ -29,8 +37,10 @@ export function Header() {
             </li>
             <li className="main-nav__item">
               <Link
-                className="main-nav__link"
-                to={AppRoute.Main}
+                className={classNames('main-nav__link', {
+                  'is-active': menuStatus === MenuType.PERSONAL,
+                })}
+                to={AppRoute.PersonalAccount}
                 aria-label="Личный кабинет"
               >
                 <svg width="16" height="18" aria-hidden="true">
@@ -40,7 +50,9 @@ export function Header() {
             </li>
             <li className="main-nav__item">
               <Link
-                className="main-nav__link"
+                className={classNames('main-nav__link', {
+                  'is-active': menuStatus === MenuType.FRIENDS,
+                })}
                 to={AppRoute.Main}
                 aria-label="Друзья"
               >
@@ -51,7 +63,9 @@ export function Header() {
             </li>
             <li className="main-nav__item main-nav__item--notifications">
               <Link
-                className="main-nav__link"
+                className={classNames('main-nav__link', {
+                  'is-active': menuStatus === MenuType.NOTIFICATION,
+                })}
                 to={AppRoute.Main}
                 aria-label="Уведомления"
               >

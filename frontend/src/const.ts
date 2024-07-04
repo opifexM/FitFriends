@@ -11,14 +11,15 @@ export const AppRoute = {
   ListTraining: '/trainings',
   TrainingCard: '/training/:trainingId',
   BalancePurchase: '/my-purchase',
+  PersonalAccount: '/personal-account',
 } as const;
 export type AppRouteType = (typeof AppRoute)[keyof typeof AppRoute];
 
 export const APIRoute = {
   CreateUser: 'users',
-  GetUser: 'users/:userId',
-  UpdateUser: 'users/:userId',
-  DeleteUser: 'users/:userId',
+  GetUser: 'users',
+  UpdateUser: 'users',
+  DeleteUser: 'users',
   Login: 'users/login',
   CheckAuth: 'users/check',
   RefreshAuth: 'users/refresh',

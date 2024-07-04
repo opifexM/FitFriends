@@ -7,6 +7,7 @@ import {
   TRAINING_LIST,
 } from 'shared/type/training/traning.constant.ts';
 import { NameSpace } from '../../const.ts';
+import { MenuType } from '../../type/menu-type.enum.ts';
 import { fetchTraining } from '../api-action/data-action.ts';
 
 interface TrainingFilter {
@@ -39,6 +40,7 @@ interface UiSettingsSlice {
   purchaseFilter: PurchaseFilter;
   isReviewCreatePopupOpen: boolean;
   isPurchasePopupOpen: boolean;
+  menuStatus: MenuType;
 }
 
 const initialState: UiSettingsSlice = {
@@ -67,6 +69,7 @@ const initialState: UiSettingsSlice = {
   },
   isReviewCreatePopupOpen: false,
   isPurchasePopupOpen: false,
+  menuStatus: MenuType.NONE,
 };
 
 export const uiSettingsSlice = createSlice({
@@ -78,6 +81,9 @@ export const uiSettingsSlice = createSlice({
     },
     setIsPurchasePopupOpen: (state, action: PayloadAction<boolean>) => {
       state.isPurchasePopupOpen = action.payload;
+    },
+    setMenuStatus: (state, action: PayloadAction<MenuType>) => {
+      state.menuStatus = action.payload;
     },
     resetTrainingFilter: (state) => {
       state.trainingFilter = initialState.trainingFilter;
@@ -237,4 +243,5 @@ export const {
   setPurchaseFilterIsActive,
   resetPurchaseFilterCurrentPage,
   resetPurchaseFilter,
+  setMenuStatus,
 } = uiSettingsSlice.actions;

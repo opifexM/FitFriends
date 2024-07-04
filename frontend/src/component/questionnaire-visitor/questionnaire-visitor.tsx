@@ -1,12 +1,5 @@
 import classNames from 'classnames';
-import {
-  ErrorMessage,
-  Field,
-  FieldArray,
-  Form,
-  Formik,
-  FormikHelpers,
-} from 'formik';
+import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import { toast } from 'react-toastify';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum.ts';
 import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum.ts';
@@ -18,6 +11,7 @@ import {
   updateQuestionnaire,
 } from '../../store/api-action/data-action.ts';
 import { getLastQuestionnaire } from '../../store/api-communication/api-communication.selectors.ts';
+import { ArrayButton } from '../array-button/array-button.tsx';
 import { questionnaireVisitorValidationSchema } from './questionnaire-visitor-validation-schema.ts';
 
 interface FormValues {
@@ -116,36 +110,10 @@ export function QuestionnaireVisitor() {
                     <span className="questionnaire-user__legend">
                       Ваша специализация (тип) тренировок
                     </span>
-                    <FieldArray
-                      name="workout"
-                      render={(arrayHelpers) => (
-                        <div className="specialization-checkbox questionnaire-user__specializations">
-                          {Object.values(WorkoutType).map((type) => (
-                            <div className="btn-checkbox" key={type}>
-                              <label>
-                                <input
-                                  className="visually-hidden"
-                                  type="checkbox"
-                                  name="workout"
-                                  value={type}
-                                  checked={values.workout.includes(type)}
-                                  onChange={(e) => {
-                                    if (e.target.checked) {
-                                      arrayHelpers.push(type);
-                                    } else {
-                                      const idx = values.workout.indexOf(type);
-                                      arrayHelpers.remove(idx);
-                                    }
-                                  }}
-                                />
-                                <span className="btn-checkbox__btn">
-                                  {type}
-                                </span>
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                    <ArrayButton
+                      name={'workout'}
+                      options={WorkoutType}
+                      values={values.workout}
                     />
                     <ErrorMessage
                       name="workout"
