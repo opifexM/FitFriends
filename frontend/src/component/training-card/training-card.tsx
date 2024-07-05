@@ -30,7 +30,9 @@ export function TrainingCard({ training }: Readonly<TrainingCardProps>) {
               />
             </picture>
           </div>
-          <p className="thumbnail-training__price">{price || 'Бесплатно'}</p>
+          <p className="thumbnail-training__price">
+            {`${price} ₽` || 'Бесплатно'}
+          </p>
           <h3 className="thumbnail-training__title">{name}</h3>
           <div className="thumbnail-training__info">
             <ul className="thumbnail-training__hashtags-list">

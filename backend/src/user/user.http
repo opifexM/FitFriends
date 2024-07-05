@@ -19,13 +19,17 @@ Content-Type: application/json
 }
 
 
+### Get current user
+GET {{host}}/api/users HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
 ### Get user by ID
 GET {{host}}/api/users/{{userId}} HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 
 ### Update user
-PATCH {{host}}/api/users/{{userId}} HTTP/1.1
+PATCH {{host}}/api/users HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -35,7 +39,7 @@ Content-Type: application/json
 
 
 ### Delete user by ID
-DELETE {{host}}/api/users/{{userId}} HTTP/1.1
+DELETE {{host}}/api/users HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 

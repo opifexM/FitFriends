@@ -17,6 +17,10 @@ export const getTrainings = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].trainings;
 
+export const getTrainingsForYou = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].trainingsForYou;
+
 export const getCurrentTraining = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].currentTraining;

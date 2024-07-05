@@ -57,6 +57,34 @@ export class TrainingController {
     return fillDto(TrainingDto, createdTraining.toPOJO());
   }
 
+  @Get('/for-you')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get special for you training list' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The special for you training list has been successfully retrieved.',
+    type: TrainingPaginationDto,
+  })
+  @ApiResponse({ status: 404, description: 'Training not found.' })
+  public async getForYouTraining(
+    @GetUserId() userId: string,
+  ): Promise<TrainingPaginationDto> {
+    this.logger.log(
+      `Retrieving 'special for you training' list for user ID: ${userId}'`,
+    );
+    const trainingPaginationData =
+      await this.trainingService.findForYouTraining(userId);
+
+    return fillDto(TrainingPaginationDto, {
+      ...trainingPaginationData,
+      entities: trainingPaginationData.entities.map((product) =>
+        product.toPOJO(),
+      ),
+    });
+  }
+
   @Get(':trainingId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -86,7 +114,7 @@ export class TrainingController {
     description: 'The training list has been successfully retrieved.',
     type: TrainingPaginationDto,
   })
-  @ApiResponse({ status: 404, description: 'Products not found.' })
+  @ApiResponse({ status: 404, description: 'Training not found.' })
   public async getAllTraining(
     @Query() query: TrainingQuery,
   ): Promise<TrainingPaginationDto> {

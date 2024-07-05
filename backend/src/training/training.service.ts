@@ -10,6 +10,8 @@ import { CreateTrainingDto } from 'shared/type/training/dto/create-training.dto'
 import { UpdateTrainingDto } from 'shared/type/training/dto/update-training.dto';
 import { TrainingQuery } from 'shared/type/training/training.query';
 import { TRAINING_LIST } from 'shared/type/training/traning.constant';
+import { QUESTIONNAIRE_MESSAGES } from '../questionnaire/questionnaire.constant';
+import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
 import { TrainingPaginationInterface } from './entity/training-pagination.interface';
@@ -25,6 +27,7 @@ export class TrainingService {
   constructor(
     private readonly trainingRepository: TrainingRepository,
     private readonly userService: UserService,
+    private readonly questionnaireService: QuestionnaireService,
   ) {}
 
   public async createTraining(
@@ -208,5 +211,40 @@ export class TrainingService {
       page,
       limit,
     );
+  }
+
+  public async findForYouTraining(
+    userId: string,
+  ): Promise<PaginationResult<TrainingEntity>> {
+    const questionnaire =
+      await this.questionnaireService.findLatestQuestionnaireByUserId(userId);
+    if (!questionnaire) {
+      this.logger.warn(`Questionnaire for user id '${userId}' not found`);
+      throw new NotFoundException(QUESTIONNAIRE_MESSAGES.NOT_FOUND);
+    }
+
+    this.logger.log(
+      `Finding 'special for you training' by Id list [${questionnaire.workout}]`,
+    );
+
+    return this.trainingRepository.findAllByWorkoutList(questionnaire.workout);
+  }
+
+  public async updateTrainingRatingById(
+    trainingId: string,
+    rating: number,
+  ): Promise<TrainingEntity> {
+    this.logger.log(
+      `System updating training '${trainingId}' rating with '${rating}'`,
+    );
+
+    const updatedTraining = await this.findTrainingById(trainingId);
+    if (!updatedTraining) {
+      this.logger.warn(`Training not found with ID: '${trainingId}'`);
+      throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
+    }
+    updatedTraining.rating = rating;
+
+    return this.trainingRepository.update(trainingId, updatedTraining);
   }
 }

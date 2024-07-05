@@ -17,6 +17,8 @@ import {
   getCurrentTraining,
   getReviews,
 } from '../../store/api-communication/api-communication.selectors.ts';
+import { setMenuStatus } from '../../store/ui-settings/ui-settings.slice.ts';
+import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function TrainingDetailPage() {
   const { trainingId } = useParams<{ trainingId: string }>();
@@ -31,6 +33,10 @@ export function TrainingDetailPage() {
       dispatch(fetchLatestReview());
     }
   }, [dispatch, trainingId]);
+
+  useEffect(() => {
+    dispatch(setMenuStatus(MenuType.NONE));
+  }, [dispatch]);
 
   if (!trainingId || !currentTraining) {
     return null;

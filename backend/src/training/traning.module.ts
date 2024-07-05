@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { QuestionnaireModule } from '../questionnaire/questionnaire.module';
 import { UserModule } from '../user/user.module';
 import { TrainingRepository } from './entity/training.repository';
 import { TrainingModel, TrainingSchema } from './entity/training.schema';
@@ -12,6 +13,7 @@ import { TrainingService } from './training.service';
       { name: TrainingModel.name, schema: TrainingSchema },
     ]),
     UserModule,
+    QuestionnaireModule,
   ],
   controllers: [TrainingController],
   providers: [TrainingService, TrainingRepository],

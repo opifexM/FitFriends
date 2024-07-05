@@ -3,12 +3,18 @@ import { BackgroundSymbol } from '../../component/background-symbol/background-s
 import { QuestionnaireVisitor } from '../../component/questionnaire-visitor/questionnaire-visitor.tsx';
 import { useAppDispatch } from '../../hook';
 import { fetchLatestQuestionnaire } from '../../store/api-action/data-action.ts';
+import { setMenuStatus } from '../../store/ui-settings/ui-settings.slice.ts';
+import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function QuestionnairePage() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchLatestQuestionnaire());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(setMenuStatus(MenuType.NONE));
   }, [dispatch]);
 
   return (

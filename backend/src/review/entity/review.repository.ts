@@ -82,4 +82,20 @@ export class ReviewRepository extends BaseRepository<ReviewEntity> {
 
     return this.createEntityFromDocument(foundDocument);
   }
+
+  public async calculateRating(trainingId: string): Promise<number> {
+    const reviews = await this.model.find({ training: trainingId });
+    if (!reviews.length) {
+      return 0;
+    }
+    const reviewEntities = reviews.map((review) =>
+      this.createEntityFromDocument(review),
+    );
+
+    const totalRating = reviewEntities.reduce(
+      (acc, review) => acc + review.rating,
+      0,
+    );
+    return Math.trunc(totalRating / reviews.length);
+  }
 }

@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@trainingId = 666deb9e10ff48d5830d5607
+@trainingId = 666de6e37510aa28b5e1a442
 @userId = 6669e5a12b10829b5ace1060
 @token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
 
@@ -67,4 +67,9 @@ Authorization: Bearer {{token}}
 ### Get trainings with sort by price and filter price
 @trainingSortType2 = BY_HIGH_PRICE
 GET {{host}}/api/trainings?trainingSortType={{trainingSortType2}}&priceFrom={{priceFrom}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get special for you training
+GET {{host}}/api/trainings/for-you HTTP/1.1
 Authorization: Bearer {{token}}

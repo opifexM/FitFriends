@@ -18,5 +18,6 @@ import { QuestionnaireService } from './questionnaire.service';
   ],
   controllers: [QuestionnaireController],
   providers: [QuestionnaireService, QuestionnaireRepository],
+  exports: [QuestionnaireService],
 })
 export class QuestionnaireModule {}

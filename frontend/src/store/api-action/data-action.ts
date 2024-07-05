@@ -123,7 +123,7 @@ export const createTraining = createAsyncThunk<
 
 export const fetchTraining = createAsyncThunk<
   TrainingPaginationDto,
-  TrainingQuery,
+  TrainingQuery | undefined,
   ThunkApiConfig
 >(
   'data/fetchTraining',
@@ -143,6 +143,25 @@ export const fetchTraining = createAsyncThunk<
     }
   },
 );
+
+export const fetchTrainingFouYou = createAsyncThunk<
+  TrainingPaginationDto,
+  undefined,
+  ThunkApiConfig
+>('data/fetchTrainingFouYou', async (_arg, { extra: api, rejectWithValue }) => {
+  try {
+    const { data } = await api.get<TrainingPaginationDto>(
+      APIRoute.GetTrainingFouYouList,
+    );
+
+    return data;
+  } catch (error) {
+    toast.warning(handleApiError(error), {
+      position: 'top-right',
+    });
+    return rejectWithValue(handleApiError(error));
+  }
+});
 
 export const fetchTrainingDetail = createAsyncThunk<
   TrainingDto,

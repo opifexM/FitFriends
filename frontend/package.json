@@ -25,6 +25,7 @@
     "react-router-dom": "6.24.1",
     "react-toastify": "^10.0.5",
     "shared": "1.0.0",
+    "swiper": "^11.1.4",
     "yup": "^1.4.0"
   },
   "devDependencies": {

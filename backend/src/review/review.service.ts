@@ -57,6 +57,14 @@ export class ReviewService {
     const createdReview = await this.reviewRepository.save(reviewEntity);
     this.logger.log(`Review created with ID: '${createdReview.id}'`);
 
+    const calculatedRating = await this.reviewRepository.calculateRating(
+      createdReview.training.toString(),
+    );
+    await this.trainingService.updateTrainingRatingById(
+      createdReview.training.toString(),
+      calculatedRating,
+    );
+
     return createdReview;
   }
 
@@ -103,7 +111,20 @@ export class ReviewService {
     if (dto.rating !== undefined) updatedReview.rating = dto.rating;
     if (dto.text !== undefined) updatedReview.text = dto.text;
 
-    return this.reviewRepository.update(reviewId, updatedReview);
+    const reviewEntity = await this.reviewRepository.update(
+      reviewId,
+      updatedReview,
+    );
+
+    const calculatedRating = await this.reviewRepository.calculateRating(
+      updatedReview.training.toString(),
+    );
+    await this.trainingService.updateTrainingRatingById(
+      reviewEntity.training.toString(),
+      calculatedRating,
+    );
+
+    return reviewEntity;
   }
 
   public async deleteReviewById(
@@ -125,6 +146,14 @@ export class ReviewService {
 
     const deletedReview = await this.reviewRepository.deleteById(reviewId);
     this.logger.log(`Review with ID: '${reviewId}' deleted`);
+
+    const calculatedRating = await this.reviewRepository.calculateRating(
+      deletedReview.training.toString(),
+    );
+    await this.trainingService.updateTrainingRatingById(
+      deletedReview.training.toString(),
+      calculatedRating,
+    );
 
     return deletedReview;
   }

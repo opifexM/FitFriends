@@ -30,3 +30,10 @@ export const TRAINING_LIST = {
   DEFAULT_SORT_TYPE: TrainingSortType.BY_DATE,
   DEFAULT_FILTER_PAGE: 1,
 } as const;
+
+export const TRAINING_MAIN = {
+  SPECIAL_FOU_YOU_LIMIT: 9,
+  SPECIAL_LIMIT: 3,
+  POPULAR_LIMIT: 4,
+  LOOK_FOR_COMPANY_LIMIT: 4,
+} as const;

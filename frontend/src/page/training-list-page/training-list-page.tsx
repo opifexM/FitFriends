@@ -6,6 +6,8 @@ import { TrainingList } from '../../component/training-list/training-list.tsx';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { fetchTraining } from '../../store/api-action/data-action.ts';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
+import { setMenuStatus } from '../../store/ui-settings/ui-settings.slice.ts';
+import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function TrainingListPage() {
   const dispatch = useAppDispatch();
@@ -14,6 +16,10 @@ export function TrainingListPage() {
   useEffect(() => {
     dispatch(fetchTraining(trainingFilter));
   }, [dispatch, trainingFilter]);
+
+  useEffect(() => {
+    dispatch(setMenuStatus(MenuType.NONE));
+  }, [dispatch]);
 
   return (
     <div className="wrapper">

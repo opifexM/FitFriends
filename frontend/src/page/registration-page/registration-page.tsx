@@ -1,7 +1,17 @@
+import { useEffect } from 'react';
 import { BackgroundSymbol } from '../../component/background-symbol/background-symbol.tsx';
 import { Registration } from '../../component/registration/registration.tsx';
+import { useAppDispatch } from '../../hook';
+import { setMenuStatus } from '../../store/ui-settings/ui-settings.slice.ts';
+import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function RegistrationPage() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setMenuStatus(MenuType.NONE));
+  }, [dispatch]);
+
   return (
     <div className="wrapper">
       <BackgroundSymbol />

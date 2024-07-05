@@ -34,6 +34,7 @@ export const APIRoute = {
   CreateTraining: 'trainings',
   GetTraining: 'trainings/:trainingId',
   GetTrainingList: 'trainings',
+  GetTrainingFouYouList: 'trainings/for-you',
   UpdateTraining: 'trainings/:trainingId',
   DeleteTraining: 'trainings/:trainingId',
   CreateReview: 'reviews',

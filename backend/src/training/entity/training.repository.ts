@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Document, Model, Promise } from 'mongoose';
+import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { PaginationResult } from 'shared/type/pagination.interface';
 import { SortDirection } from 'shared/type/sort-direction.interface';
+import { Training } from 'shared/type/training/training';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum';
 import { TrainingQuery } from 'shared/type/training/training.query';
 import { BaseRepository } from '../../database/base-mongo.repository';
@@ -201,6 +203,38 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       currentPage: currentPage,
       totalItems: trainingItem,
       itemsPerPage: limit,
+    };
+  }
+
+  public async findAllByWorkoutList(
+    workouts: WorkoutType[],
+  ): Promise<PaginationResult<TrainingEntity>> {
+    this.logger.log(
+      `Retrieving 'special for you training' by list ids '[${workouts.length}]'`,
+    );
+
+    const filterCriteria = {
+      workout: { $in: workouts },
+    };
+
+    const trainings = await this.model.find(filterCriteria);
+    const trainingEntities = trainings.map((training) =>
+      this.createEntityFromDocument(training),
+    );
+
+    const uniqueTrainings = Array.from(
+      new Map(
+        trainingEntities.map((training) => [training.workout, training]),
+      ).values(),
+    );
+    this.logger.log(`Retrieved [${uniqueTrainings.length}] trainings`);
+
+    return {
+      currentPage: 1,
+      itemsPerPage: uniqueTrainings.length,
+      totalItems: uniqueTrainings.length,
+      totalPages: 1,
+      entities: uniqueTrainings,
     };
   }
 }

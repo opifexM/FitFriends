@@ -23,6 +23,7 @@ import {
   fetchReviewByTraining,
   fetchTraining,
   fetchTrainingDetail,
+  fetchTrainingFouYou,
   fetchUserDetail,
   updateQuestionnaire,
   updateReview,
@@ -46,6 +47,7 @@ interface ApiCommunicationState {
   lastReview: ReviewDto | null;
   purchases: TrainingDto[];
   userDetail: UserDto | null;
+  trainingsForYou: TrainingDto[];
 }
 
 const initialState: ApiCommunicationState = {
@@ -58,6 +60,7 @@ const initialState: ApiCommunicationState = {
   lastReview: null,
   purchases: [],
   userDetail: null,
+  trainingsForYou: [],
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -213,6 +216,18 @@ export const apiCommunicationSlice = createSlice({
         } else {
           state.trainings = [...state.trainings, ...entities];
         }
+        state.isLoading = false;
+      })
+
+      .addCase(fetchTrainingFouYou.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchTrainingFouYou.rejected, (state) => {
+        state.trainingsForYou = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchTrainingFouYou.fulfilled, (state, action) => {
+        state.trainingsForYou = action.payload.entities;
         state.isLoading = false;
       })
 
