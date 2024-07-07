@@ -10,3 +10,4 @@
 /shared/type/user.js
 /shared/type/user.js.map
 *.env
+/frontend/public/file/
