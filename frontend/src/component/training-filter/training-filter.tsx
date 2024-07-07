@@ -1,29 +1,58 @@
+import 'nouislider/dist/nouislider.css';
+import { ChangeEvent } from 'react';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
 import {
+  resetTrainingFilterRange,
+  setTrainingFilterCaloriesFrom,
+  setTrainingFilterCaloriesTo,
+  setTrainingFilterPriceFrom,
+  setTrainingFilterPriceTo,
+  setTrainingFilterRatingFrom,
+  setTrainingFilterRatingTo,
   setTrainingFilterTrainingSortType,
   setTrainingFilterWorkout,
 } from '../../store/ui-settings/ui-settings.slice.ts';
+import { RangeSlider } from '../range-slider/range-slider.tsx';
 
 export function TrainingFilter() {
   const dispatch = useAppDispatch();
   const trainingFilter = useAppSelector(getTrainingFilter);
 
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    console.log(`name: ${name}, value: ${value}`);
+  if (!trainingFilter) {
+    return null;
+  }
 
-    // if (state.trainingFilter.priceFrom) {
-    //   state.trainingFilter.priceFrom = Math.min(
-    //     priceMin,
-    //     state.trainingFilter.priceFrom,
-    //   );
-    // }
+  const handlePriceChange = ([priceFrom, priceTo]: [number, number]) => {
+    dispatch(setTrainingFilterPriceFrom(priceFrom));
+    dispatch(setTrainingFilterPriceTo(priceTo));
   };
 
-  //todo filter
+  const handleCaloriesChange = ([caloriesFrom, caloriesTo]: [
+    number,
+    number,
+  ]) => {
+    dispatch(setTrainingFilterCaloriesFrom(caloriesFrom));
+    dispatch(setTrainingFilterCaloriesTo(caloriesTo));
+  };
+
+  const handleRatingChange = ([ratingFrom, ratingTo]: [number, number]) => {
+    dispatch(setTrainingFilterRatingFrom(ratingFrom));
+    dispatch(setTrainingFilterRatingTo(ratingTo));
+  };
+
+  const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const numberValue = Number(value);
+    if (name === 'priceFrom') {
+      dispatch(setTrainingFilterPriceFrom(numberValue));
+    } else if (name === 'priceTo') {
+      dispatch(setTrainingFilterPriceTo(numberValue));
+    }
+  };
+
   return (
     <div className="gym-catalog-form">
       <h2 className="visually-hidden">Мои тренировки Фильтр</h2>
@@ -43,93 +72,94 @@ export function TrainingFilter() {
           <div className="gym-catalog-form__block gym-catalog-form__block--price">
             <h4 className="gym-catalog-form__block-title">Цена, ₽</h4>
             <div className="filter-price">
-              <div className="filter-price__input-text filter-price__input-text--min">
+              <div
+                style={{ marginRight: '0' }}
+                className="filter-price__input-text filter-price__input-text--min"
+              >
                 <input
+                  style={{ width: '100%' }}
                   type="number"
-                  id="text-min"
-                  name="text-min"
+                  id="priceFrom"
+                  name="priceFrom"
                   min={trainingFilter.priceMin}
                   max={trainingFilter.priceTo}
                   value={trainingFilter.priceFrom}
                   onChange={handleFilterChange}
                 />
-                <label htmlFor="text-min">от</label>
+                <label htmlFor="priceFrom">от</label>
               </div>
               <div className="filter-price__input-text filter-price__input-text--max">
                 <input
+                  style={{ width: '90%' }}
                   type="number"
-                  id="text-max"
-                  name="text-max"
+                  id="priceTo"
+                  name="priceTo"
                   min={trainingFilter.priceFrom}
                   max={trainingFilter.priceMax}
                   value={trainingFilter.priceTo}
                   onChange={handleFilterChange}
                 />
-                <label htmlFor="text-max">до</label>
+                <label htmlFor="priceTo">до</label>
               </div>
             </div>
             <div className="filter-range">
-              <div className="filter-range__scale">
-                <div className="filter-range__bar">
-                  <span className="visually-hidden">Полоса прокрутки</span>
-                </div>
-              </div>
-              <div className="filter-range__control">
-                <button className="filter-range__min-toggle">
-                  <span className="visually-hidden">Минимальное значение</span>
-                </button>
-                <button className="filter-range__max-toggle">
-                  <span className="visually-hidden">Максимальное значение</span>
-                </button>
-              </div>
+              <RangeSlider
+                min={trainingFilter.priceMin}
+                max={trainingFilter.priceMax}
+                start={[trainingFilter.priceFrom, trainingFilter.priceTo]}
+                onChange={handlePriceChange}
+              />
             </div>
           </div>
           <div className="gym-catalog-form__block gym-catalog-form__block--calories">
             <h4 className="gym-catalog-form__block-title">Калории</h4>
             <div className="filter-calories">
               <div className="filter-calories__input-text filter-calories__input-text--min">
-                <input type="number" id="text-min-cal" name="text-min-cal" />
-                <label htmlFor="text-min-cal">от</label>
+                <input
+                  style={{ width: '151px' }}
+                  type="number"
+                  id="caloriesFrom"
+                  name="caloriesFrom"
+                  min={trainingFilter.caloriesMin}
+                  max={trainingFilter.caloriesTo}
+                  value={trainingFilter.caloriesFrom}
+                  onChange={handleFilterChange}
+                />
+                <label htmlFor="caloriesFrom">от</label>
               </div>
               <div className="filter-calories__input-text filter-calories__input-text--max">
-                <input type="number" id="text-max-cal" name="text-max-cal" />
-                <label htmlFor="text-max-cal">до</label>
+                <input
+                  style={{ width: '135px' }}
+                  type="number"
+                  id="caloriesTo"
+                  name="caloriesTo"
+                  min={trainingFilter.caloriesFrom}
+                  max={trainingFilter.caloriesMax}
+                  value={trainingFilter.caloriesTo}
+                  onChange={handleFilterChange}
+                />
+                <label htmlFor="caloriesTo">до</label>
               </div>
             </div>
             <div className="filter-range">
-              <div className="filter-range__scale">
-                <div className="filter-range__bar">
-                  <span className="visually-hidden">Полоса прокрутки</span>
-                </div>
-              </div>
-              <div className="filter-range__control">
-                <button className="filter-range__min-toggle">
-                  <span className="visually-hidden">Минимальное значение</span>
-                </button>
-                <button className="filter-range__max-toggle">
-                  <span className="visually-hidden">Максимальное значение</span>
-                </button>
-              </div>
+              <RangeSlider
+                min={trainingFilter.caloriesMin}
+                max={trainingFilter.caloriesMax}
+                start={[trainingFilter.caloriesFrom, trainingFilter.caloriesTo]}
+                onChange={handleCaloriesChange}
+              />
             </div>
           </div>
           <div className="gym-catalog-form__block gym-catalog-form__block--rating">
             <h4 className="gym-catalog-form__block-title">Рейтинг</h4>
             <div className="filter-raiting">
-              <div className="filter-raiting__scale">
-                <div className="filter-raiting__bar">
-                  <span className="visually-hidden">Полоса прокрутки</span>
-                </div>
-              </div>
-              <div className="filter-raiting__control">
-                <button className="filter-raiting__min-toggle">
-                  <span className="visually-hidden">Минимальное значение</span>
-                </button>
-                <span>1</span>
-                <button className="filter-raiting__max-toggle">
-                  <span className="visually-hidden">Максимальное значение</span>
-                </button>
-                <span>5</span>
-              </div>
+              <RangeSlider
+                min={trainingFilter.ratingMin}
+                max={trainingFilter.ratingMax}
+                start={[trainingFilter.ratingFrom, trainingFilter.ratingTo]}
+                onChange={handleRatingChange}
+                showValue
+              />
             </div>
           </div>
           <div className="gym-catalog-form__block gym-catalog-form__block--type">
@@ -156,6 +186,7 @@ export function TrainingFilter() {
                           }
                           if (updatedWorkout.length) {
                             dispatch(setTrainingFilterWorkout(updatedWorkout));
+                            dispatch(resetTrainingFilterRange());
                           }
                         }}
                       />

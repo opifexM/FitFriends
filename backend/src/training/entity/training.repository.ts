@@ -68,6 +68,10 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
     if (workout && workout.length > 0) {
       filterCriteria['workout'] = { $in: workout };
     }
+
+    const { priceStats, caloriesStats, ratingStats } =
+      await this.calculateRestrictionRange(filterCriteria);
+
     if (priceFrom !== undefined) {
       filterCriteria['price'] = { ...filterCriteria['price'], $gte: priceFrom };
     }
@@ -119,6 +123,32 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
 
     const totalItem = await this.model.countDocuments(filterCriteria);
 
+    this.logger.log(`Retrieved [${trainings.length}] trainings`);
+
+    return {
+      entities: trainings.map((training) =>
+        this.createEntityFromDocument(training),
+      ),
+      totalPages: Math.ceil(totalItem / limit),
+      currentPage: currentPage,
+      totalItems: totalItem,
+      itemsPerPage: limit,
+      priceMin: priceStats[0]?.minPrice || 0,
+      priceMax: priceStats[0]?.maxPrice || 0,
+      caloriesMin: caloriesStats[0]?.minCaloriesBurned || 0,
+      caloriesMax: caloriesStats[0]?.maxCaloriesBurned || 0,
+      ratingMin: ratingStats[0]?.minRating || 0,
+      ratingMax: ratingStats[0]?.maxRating || 0,
+    };
+  }
+
+  private async calculateRestrictionRange(filterCriteria: {
+    [p: string]: any;
+  }): Promise<{
+    caloriesStats: Array<any>;
+    priceStats: Array<any>;
+    ratingStats: Array<any>;
+  }> {
     const priceStats = await this.model.aggregate([
       { $match: filterCriteria },
       {
@@ -151,24 +181,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
         },
       },
     ]);
-
-    this.logger.log(`Retrieved [${trainings.length}] trainings`);
-
-    return {
-      entities: trainings.map((training) =>
-        this.createEntityFromDocument(training),
-      ),
-      totalPages: Math.ceil(totalItem / limit),
-      currentPage: currentPage,
-      totalItems: totalItem,
-      itemsPerPage: limit,
-      priceMin: priceStats[0]?.minPrice || 0,
-      priceMax: priceStats[0]?.maxPrice || 0,
-      caloriesMin: caloriesStats[0]?.minCaloriesBurned || 0,
-      caloriesMax: caloriesStats[0]?.maxCaloriesBurned || 0,
-      ratingMin: ratingStats[0]?.minRating || 0,
-      ratingMax: ratingStats[0]?.maxRating || 0,
-    };
+    return { priceStats, caloriesStats, ratingStats };
   }
 
   public async findAllByTrainingList(

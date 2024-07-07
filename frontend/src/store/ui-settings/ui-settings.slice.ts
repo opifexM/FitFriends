@@ -30,6 +30,7 @@ interface TrainingFilter {
   ratingMax: number;
   totalPages: number;
   currentPage: number;
+  isReset: boolean;
 }
 
 interface PurchaseFilter {
@@ -56,7 +57,7 @@ const initialState: UiSettingsSlice = {
     caloriesFrom: TRAINING.CALORIES.MIN,
     caloriesTo: TRAINING.CALORIES.MAX,
     ratingFrom: TRAINING.RATING.MIN,
-    ratingTo: TRAINING.CALORIES.MAX,
+    ratingTo: TRAINING.RATING.MAX,
     priceMin: 0,
     priceMax: 0,
     caloriesMin: 0,
@@ -65,6 +66,7 @@ const initialState: UiSettingsSlice = {
     ratingMax: 0,
     totalPages: 0,
     currentPage: TRAINING_LIST.DEFAULT_FILTER_PAGE,
+    isReset: true,
   },
   purchaseFilter: {
     totalPages: 0,
@@ -90,8 +92,8 @@ export const uiSettingsSlice = createSlice({
     setMenuStatus: (state, action: PayloadAction<MenuType>) => {
       state.menuStatus = action.payload;
     },
-    resetTrainingFilter: (state) => {
-      state.trainingFilter = initialState.trainingFilter;
+    resetTrainingFilterRange: (state) => {
+      state.trainingFilter.isReset = true;
     },
     setTrainingFilterWorkout: (state, action: PayloadAction<WorkoutType[]>) => {
       state.trainingFilter.workout = action.payload;
@@ -205,6 +207,7 @@ export const uiSettingsSlice = createSlice({
         } = action.payload;
         state.trainingFilter.currentPage = currentPage;
         state.trainingFilter.totalPages = totalPages;
+
         state.trainingFilter.caloriesMax = caloriesMax;
         state.trainingFilter.caloriesMin = caloriesMin;
         state.trainingFilter.priceMax = priceMax;
@@ -212,14 +215,40 @@ export const uiSettingsSlice = createSlice({
         state.trainingFilter.ratingMax = ratingMax;
         state.trainingFilter.ratingMin = ratingMin;
 
-        state.trainingFilter.priceFrom = Math.max(
-          priceMin,
-          state.trainingFilter.priceFrom,
-        );
-        state.trainingFilter.priceTo = Math.min(
-          priceMax,
-          state.trainingFilter.priceTo,
-        );
+        if (state.trainingFilter.isReset) {
+          state.trainingFilter.priceFrom = priceMin;
+          state.trainingFilter.priceTo = priceMax;
+          state.trainingFilter.caloriesFrom = caloriesMin;
+          state.trainingFilter.caloriesTo = caloriesMax;
+          state.trainingFilter.ratingFrom = ratingMin;
+          state.trainingFilter.ratingTo = ratingMax;
+          state.trainingFilter.isReset = false;
+        } else {
+          state.trainingFilter.priceFrom = Math.max(
+            priceMin,
+            state.trainingFilter.priceFrom,
+          );
+          state.trainingFilter.priceTo = Math.min(
+            priceMax,
+            state.trainingFilter.priceTo,
+          );
+          state.trainingFilter.caloriesFrom = Math.max(
+            caloriesMin,
+            state.trainingFilter.caloriesFrom,
+          );
+          state.trainingFilter.caloriesTo = Math.min(
+            caloriesMax,
+            state.trainingFilter.caloriesTo,
+          );
+          state.trainingFilter.ratingFrom = Math.max(
+            ratingMin,
+            state.trainingFilter.ratingFrom,
+          );
+          state.trainingFilter.ratingTo = Math.min(
+            ratingMax,
+            state.trainingFilter.ratingTo,
+          );
+        }
       })
 
       .addCase(fetchTrainingFouYou.rejected, (state, action) => {
@@ -231,7 +260,7 @@ export const uiSettingsSlice = createSlice({
 });
 
 export const {
-  resetTrainingFilter,
+  resetTrainingFilterRange,
   setTrainingFilterPriceFrom,
   setTrainingFilterPriceTo,
   setTrainingFilterCaloriesFrom,
