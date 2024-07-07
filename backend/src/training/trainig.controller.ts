@@ -8,8 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -36,6 +39,7 @@ export class TrainingController {
 
   @Post('')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('videoFile'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new training' })
   @ApiResponse({
@@ -47,11 +51,15 @@ export class TrainingController {
   public async createTraining(
     @Body() dto: CreateTrainingDto,
     @GetUserId() userId: string,
+    @UploadedFile() videoFile?: Express.Multer.File,
   ): Promise<TrainingDto> {
-    this.logger.log(`Creating new training with User ID: '${userId}'`);
+    this.logger.log(
+      `Creating new training with User ID: '${userId}', Video file: '${videoFile}'`,
+    );
     const createdTraining = await this.trainingService.createTraining(
       userId,
       dto,
+      videoFile,
     );
 
     return fillDto(TrainingDto, createdTraining.toPOJO());
@@ -97,8 +105,11 @@ export class TrainingController {
   @ApiResponse({ status: 404, description: 'Training not found.' })
   public async getTraining(
     @Param('trainingId', MongoIdValidationPipe) trainingId: string,
+    @GetUserId() userId: string,
   ): Promise<TrainingDto> {
-    this.logger.log(`Retrieving training with ID: '${trainingId}'`);
+    this.logger.log(
+      `Retrieving training with ID: '${trainingId}', user ID: '${userId}'`,
+    );
     const foundTraining =
       await this.trainingService.findTrainingById(trainingId);
 

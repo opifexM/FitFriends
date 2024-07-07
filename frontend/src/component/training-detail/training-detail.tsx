@@ -1,12 +1,19 @@
+import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
+import { PurchaseStatusType } from 'shared/type/enum/purchase-status-type.enum.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
+import { UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import { setIsPurchasePopupOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 
 interface TrainingInfoProps {
   training: TrainingDto;
+  currentBalance: BalanceDto | undefined;
 }
 
-export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
+export function TrainingDetail({
+  training,
+  currentBalance,
+}: Readonly<TrainingInfoProps>) {
   const dispatch = useAppDispatch();
   const {
     name,
@@ -30,7 +37,6 @@ export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
     return isSpecialOffer ? price - (price * discountPercent) / 100 : price;
   }
 
-  //todo avatar picture
   return (
     <div className="training-info">
       <h2 className="visually-hidden">Информация о тренировке</h2>
@@ -40,11 +46,11 @@ export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
             <picture>
               <source
                 type="image/webp"
-                srcSet="img/content/avatars/coaches//photo-1.webp, img/content/avatars/coaches//photo-1@2x.webp 2x"
+                srcSet={`${UPLOAD_DIRECTORY}${coach.avatarId}`}
               />
               <img
-                src="img/content/avatars/coaches//photo-1.png"
-                srcSet="img/content/avatars/coaches//photo-1@2x.png 2x"
+                src={`${UPLOAD_DIRECTORY}${coach.avatarId}`}
+                srcSet={`${UPLOAD_DIRECTORY}${coach.avatarId} 2x`}
                 width="64"
                 height="64"
                 alt="Изображение тренера"
@@ -138,6 +144,10 @@ export function TrainingDetail({ training }: Readonly<TrainingInfoProps>) {
                 className="btn training-info__buy"
                 type="button"
                 onClick={handlePurchaseCreate}
+                disabled={
+                  currentBalance &&
+                  currentBalance.purchaseStatus !== PurchaseStatusType.FINISHED
+                }
               >
                 Купить
               </button>

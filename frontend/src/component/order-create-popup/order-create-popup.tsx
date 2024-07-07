@@ -4,8 +4,12 @@ import { PaymentType } from 'shared/type/enum/payment-type.enum.ts';
 import { PurchaseType } from 'shared/type/enum/purchase-type.enum.ts';
 import { CREATE_ORDER } from 'shared/type/order/order.constant.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
+import { UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
-import { createOrder } from '../../store/api-action/data-action.ts';
+import {
+  createOrder,
+  fetchBalances,
+} from '../../store/api-action/data-action.ts';
 import { getCurrentTraining } from '../../store/api-communication/api-communication.selectors.ts';
 import { getIsPurchasePopupOpen } from '../../store/ui-settings/ui-settings.selectors.ts';
 import { setIsPurchasePopupOpen } from '../../store/ui-settings/ui-settings.slice.ts';
@@ -65,6 +69,7 @@ export function OrderCreatePopup() {
           position: 'top-right',
         });
         dispatch(setIsPurchasePopupOpen(false));
+        dispatch(fetchBalances());
       })
       .catch(() => {
         setFieldError(
@@ -80,7 +85,6 @@ export function OrderCreatePopup() {
     dispatch(setIsPurchasePopupOpen(false));
   };
 
-  //todo product picture
   return (
     <div className="popup-form popup-form--buy">
       <section className="popup">
@@ -112,11 +116,11 @@ export function OrderCreatePopup() {
                       <picture>
                         <source
                           type="image/webp"
-                          srcSet="img/content/popup/popup-energy.webp, img/content/popup/popup-energy@2x.webp 2x"
+                          srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
                         />
                         <img
-                          src="img/content/popup/popup-energy.jpg"
-                          srcSet="img/content/popup/popup-energy@2x.jpg 2x"
+                          src={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
+                          srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId} 2x`}
                           width="98"
                           height="80"
                           alt=""

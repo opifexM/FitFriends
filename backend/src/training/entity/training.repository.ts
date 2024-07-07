@@ -5,7 +5,6 @@ import { Document, Model, Promise } from 'mongoose';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { PaginationResult } from 'shared/type/pagination.interface';
 import { SortDirection } from 'shared/type/sort-direction.interface';
-import { Training } from 'shared/type/training/training';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum';
 import { TrainingQuery } from 'shared/type/training/training.query';
 import { BaseRepository } from '../../database/base-mongo.repository';

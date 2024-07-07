@@ -9,7 +9,8 @@ import { PaginationResult } from 'shared/type/pagination.interface';
 import { CreateTrainingDto } from 'shared/type/training/dto/create-training.dto';
 import { UpdateTrainingDto } from 'shared/type/training/dto/update-training.dto';
 import { TrainingQuery } from 'shared/type/training/training.query';
-import { TRAINING_LIST } from 'shared/type/training/traning.constant';
+import { TRAINING, TRAINING_LIST } from 'shared/type/training/traning.constant';
+import { FileService } from '../file-module/file.service';
 import { QUESTIONNAIRE_MESSAGES } from '../questionnaire/questionnaire.constant';
 import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 import { USER_MESSAGES } from '../user/user.constant';
@@ -28,11 +29,13 @@ export class TrainingService {
     private readonly trainingRepository: TrainingRepository,
     private readonly userService: UserService,
     private readonly questionnaireService: QuestionnaireService,
+    private readonly fileService: FileService,
   ) {}
 
   public async createTraining(
     userId: string,
     dto: CreateTrainingDto,
+    videoFile?: Express.Multer.File,
   ): Promise<TrainingEntity> {
     const {
       name,
@@ -44,7 +47,6 @@ export class TrainingService {
       caloriesBurned,
       description,
       gender,
-      videoId,
       isSpecialOffer,
       discountPercent,
     } = dto;
@@ -59,6 +61,13 @@ export class TrainingService {
       this.logger.warn(`User '${foundCoachUser.name}' is not coach`);
       throw new NotFoundException(USER_MESSAGES.NOT_COACH);
     }
+    const videoId = videoFile
+      ? await this.fileService.uploadFile(
+          videoFile,
+          [...TRAINING.VIDEO.FORMATS],
+          TRAINING.VIDEO.MAX_SIZE_KB,
+        )
+      : TRAINING_DEFAULT.VIDEO_ID;
 
     const trainingData = {
       name: name,
@@ -72,7 +81,7 @@ export class TrainingService {
       isSpecialOffer: isSpecialOffer ?? false,
       rating: 0,
       coach: foundCoachUser.id,
-      videoId: videoId ?? TRAINING_DEFAULT.VIDEO_ID,
+      videoId: videoId,
       backgroundId: backgroundId ?? TRAINING_DEFAULT.BACKGROUND_ID,
       discountPercent: discountPercent ?? TRAINING_DEFAULT.DISCOUNT_PERCENT,
     };

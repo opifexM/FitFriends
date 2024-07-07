@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
-import { AppRoute } from '../../const.ts';
+import { AppRoute, UPLOAD_DIRECTORY } from '../../const.ts';
 
 interface TrainingCardProps {
   training: TrainingDto;
@@ -10,7 +10,6 @@ export function TrainingCard({ training }: Readonly<TrainingCardProps>) {
   const { id, price, name, workout, caloriesBurned, description } = training;
   const trainingRoute = `${AppRoute.Training}/${id}`;
 
-  //todo picture
   return (
     <li className="training-catalog__item">
       <div className="thumbnail-training">
@@ -19,11 +18,11 @@ export function TrainingCard({ training }: Readonly<TrainingCardProps>) {
             <picture>
               <source
                 type="image/webp"
-                srcSet="img/content/thumbnails/training-02.webp, img/content/thumbnails/training-02@2x.webp 2x"
+                srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
               />
               <img
-                src="img/content/thumbnails/training-02.jpg"
-                srcSet="img/content/thumbnails/training-02@2x.jpg 2x"
+                src={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
+                srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId} 2x`}
                 width="330"
                 height="190"
                 alt=""

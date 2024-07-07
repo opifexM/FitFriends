@@ -72,19 +72,12 @@ export class CreateUserDto {
   public role: RoleType;
 
   @IsUUID()
+  @IsOptional()
   @ApiProperty({
     example: '123e4567-e89b-12d3-a456-426614174000',
     description: 'The profile picture ID of the user',
   })
-  public profilePictureId: string;
-
-  @IsOptional()
-  @IsUUID()
-  @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'The avatar picture ID of the user',
-  })
-  public avatarId?: string;
+  public profilePictureId?: string;
 
   @IsOptional()
   @IsString()
@@ -97,4 +90,12 @@ export class CreateUserDto {
     maxLength: USER.DESCRIPTION.MAX,
   })
   public description?: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Image file for the avatar',
+  })
+  public avatarFile?: any;
 }

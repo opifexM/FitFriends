@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CryptoModule } from '../crypto/crypto.module';
+import { FileModule } from '../file-module/file.module';
 import { TokenModule } from '../token-module/token.module';
 import { JwtAccessStrategy } from './authentication/strategy/jwt-access.strategy';
 import { JwtRefreshStrategy } from './authentication/strategy/jwt-refresh.strategy';
@@ -17,6 +18,7 @@ import { UserService } from './user.service';
     CryptoModule,
     ConfigModule,
     TokenModule,
+    FileModule,
   ],
   controllers: [UserController],
   providers: [

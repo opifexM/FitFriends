@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
+import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
@@ -13,10 +14,13 @@ import {
 } from '../../const.ts';
 import { dropToken, saveToken } from '../../services/token.ts';
 import {
+  activateBalancePurchase,
   createOrder,
   createQuestionnaire,
   createReview,
   createTraining,
+  deactivateBalancePurchase,
+  fetchBalances,
   fetchLatestQuestionnaire,
   fetchLatestReview,
   fetchPurchase,
@@ -46,6 +50,7 @@ interface ApiCommunicationState {
   reviews: ReviewDto[];
   lastReview: ReviewDto | null;
   purchases: TrainingDto[];
+  balances: BalanceDto[];
   userDetail: UserDto | null;
   trainingsForYou: TrainingDto[];
 }
@@ -61,6 +66,7 @@ const initialState: ApiCommunicationState = {
   purchases: [],
   userDetail: null,
   trainingsForYou: [],
+  balances: [],
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -313,6 +319,38 @@ export const apiCommunicationSlice = createSlice({
         } else {
           state.purchases = [...state.purchases, ...entities];
         }
+        state.isLoading = false;
+      })
+
+      .addCase(fetchBalances.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchBalances.rejected, (state) => {
+        state.balances = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchBalances.fulfilled, (state, action) => {
+        state.balances = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(activateBalancePurchase.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(activateBalancePurchase.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(activateBalancePurchase.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+
+      .addCase(deactivateBalancePurchase.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deactivateBalancePurchase.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(deactivateBalancePurchase.fulfilled, (state) => {
         state.isLoading = false;
       })
 

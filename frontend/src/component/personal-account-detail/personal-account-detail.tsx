@@ -4,6 +4,7 @@ import { GenderType } from 'shared/type/enum/gender-type.enum.ts';
 import { LocationType } from 'shared/type/enum/location-type.enum.ts';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
+import { UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { updateQuestionnaire } from '../../store/api-action/data-action.ts';
 import { updateUser } from '../../store/api-action/user-auth-action.ts';
@@ -25,6 +26,7 @@ interface FormValues {
   gender: GenderType;
   skillLevel: SkillLevelType;
   isEditMode: boolean;
+  file: File | null;
 }
 
 export function PersonalAccountDetail() {
@@ -46,11 +48,12 @@ export function PersonalAccountDetail() {
     gender: userDetail.gender,
     skillLevel: questionnaire.skillLevel,
     isEditMode: false,
+    file: null,
   };
 
   const handleSubmit = async (
     values: FormValues,
-    { setSubmitting, setFieldError, setFieldValue }: FormikHelpers<FormValues>,
+    { setSubmitting, setFieldError }: FormikHelpers<FormValues>,
   ) => {
     Promise.all([
       dispatch(
@@ -68,11 +71,11 @@ export function PersonalAccountDetail() {
       ),
       dispatch(
         updateUser({
-          avatarId: values.avatarId,
           name: values.name,
           description: values.description,
           location: values.location,
           gender: values.gender,
+          avatarFile: values.file,
         }),
       ),
     ])
@@ -80,7 +83,6 @@ export function PersonalAccountDetail() {
         toast.success('User details updated successful', {
           position: 'top-right',
         });
-        setFieldValue('isEditMode', false);
       })
       .catch(() => {
         setFieldError(
@@ -89,10 +91,12 @@ export function PersonalAccountDetail() {
         );
       });
 
+    if (values.file) {
+      URL.revokeObjectURL(values.file.name);
+    }
     setSubmitting(false);
   };
 
-  //todo avatarId
   return (
     <section className="user-info">
       <Formik
@@ -109,16 +113,31 @@ export function PersonalAccountDetail() {
                   <input
                     className="visually-hidden"
                     type="file"
-                    name="user-photo-1"
-                    accept="image/png, image/jpeg"
+                    name="file"
+                    accept=".png, .jpeg"
+                    disabled={!values.isEditMode}
+                    onChange={(event) => {
+                      setFieldValue(
+                        'file',
+                        event.currentTarget.files?.[0] ?? null,
+                      );
+                    }}
                   />
                   <span className="input-load-avatar__avatar">
                     <img
-                      src="img/content/user-photo-1.png"
-                      srcSet="img/content/user-photo-1@2x.png 2x"
+                      src={
+                        values.file
+                          ? URL.createObjectURL(values.file)
+                          : `${UPLOAD_DIRECTORY}${userDetail.avatarId}?t=${new Date().getTime()}`
+                      }
+                      srcSet={
+                        values.file
+                          ? URL.createObjectURL(values.file)
+                          : `${UPLOAD_DIRECTORY}${userDetail.avatarId}?t=${new Date().getTime()}`
+                      }
                       width="98"
                       height="98"
-                      alt="user photo"
+                      alt="user avatar"
                     />
                   </span>
                 </label>

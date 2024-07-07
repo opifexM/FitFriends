@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { FileModule } from '../file-module/file.module';
 import { QuestionnaireModule } from '../questionnaire/questionnaire.module';
 import { UserModule } from '../user/user.module';
 import { TrainingRepository } from './entity/training.repository';
@@ -14,6 +15,7 @@ import { TrainingService } from './training.service';
     ]),
     UserModule,
     QuestionnaireModule,
+    FileModule,
   ],
   controllers: [TrainingController],
   providers: [TrainingService, TrainingRepository],

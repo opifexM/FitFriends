@@ -29,8 +29,11 @@ export const APIRoute = {
   UpdateQuestionnaire: 'questionnaires/:questionnaireId',
   DeleteQuestionnaire: 'questionnaires/:questionnaireId',
   CreateBalance: 'balances',
+  GetBalances: 'balances',
   GetBalance: 'balances/:balanceId',
   GetBalancePurchase: 'balances/purchase',
+  ActivateBalancePurchase: 'balances/:balanceId',
+  DeactivateBalancePurchase: 'balances/:balanceId',
   CreateTraining: 'trainings',
   GetTraining: 'trainings/:trainingId',
   GetTrainingList: 'trainings',
@@ -69,3 +72,5 @@ export const AUTH_TOKEN = {
   ACCESS_KEY: 'fit-friends-access-token',
   REFRESH_KEY: 'fit-friends-refresh-token',
 } as const;
+
+export const UPLOAD_DIRECTORY = 'file/';

@@ -9,11 +9,13 @@ import { TrainingDetail } from '../../component/training-detail/training-detail.
 import { VideoBlock } from '../../component/video-block/video-block.tsx';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import {
+  fetchBalances,
   fetchLatestReview,
   fetchReviewByTraining,
   fetchTrainingDetail,
 } from '../../store/api-action/data-action.ts';
 import {
+  getBalances,
   getCurrentTraining,
   getReviews,
 } from '../../store/api-communication/api-communication.selectors.ts';
@@ -25,10 +27,12 @@ export function TrainingDetailPage() {
   const dispatch = useAppDispatch();
   const currentTraining = useAppSelector(getCurrentTraining);
   const reviews = useAppSelector(getReviews);
+  const balances = useAppSelector(getBalances);
 
   useEffect(() => {
     if (trainingId) {
       dispatch(fetchTrainingDetail(trainingId));
+      dispatch(fetchBalances());
       dispatch(fetchReviewByTraining({ trainingId: trainingId }));
       dispatch(fetchLatestReview());
     }
@@ -41,6 +45,10 @@ export function TrainingDetailPage() {
   if (!trainingId || !currentTraining) {
     return null;
   }
+
+  const currentBalance = balances.find(
+    (balance) => balance.training === currentTraining.id,
+  );
 
   return (
     <div className="wrapper">
@@ -55,8 +63,14 @@ export function TrainingDetailPage() {
               <h1 className="visually-hidden">Карточка тренировки</h1>
               <ReviewList reviews={reviews} />
               <div className="training-card">
-                <TrainingDetail training={currentTraining} />
-                <VideoBlock />
+                <TrainingDetail
+                  training={currentTraining}
+                  currentBalance={currentBalance}
+                />
+                <VideoBlock
+                  training={currentTraining}
+                  currentBalance={currentBalance}
+                />
               </div>
             </div>
           </div>

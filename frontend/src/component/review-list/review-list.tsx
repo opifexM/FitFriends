@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
-import { AppRoute } from '../../const.ts';
+import { AppRoute, UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import { setIsReviewCreatePopupOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 
@@ -15,7 +15,6 @@ export function ReviewList({ reviews }: Readonly<ReviewBlockProps>) {
     dispatch(setIsReviewCreatePopupOpen(true));
   }
 
-  //todo avatar picture
   return (
     <aside className="reviews-side-bar">
       <Link
@@ -47,11 +46,11 @@ export function ReviewList({ reviews }: Readonly<ReviewBlockProps>) {
                   <picture>
                     <source
                       type="image/webp"
-                      srcSet="img/content/avatars/users//photo-1.webp, img/content/avatars/users//photo-1@2x.webp 2x"
+                      srcSet={`${UPLOAD_DIRECTORY}${user.avatarId}`}
                     />
                     <img
-                      src="img/content/avatars/users//photo-1.png"
-                      srcSet="img/content/avatars/users//photo-1@2x.png 2x"
+                      src={`${UPLOAD_DIRECTORY}${user.avatarId}`}
+                      srcSet={`${UPLOAD_DIRECTORY}${user.avatarId} 2x`}
                       width="64"
                       height="64"
                       alt="Изображение пользователя"

@@ -19,10 +19,8 @@ interface FormValues {
   caloriesBurned: number;
   description: string;
   gender: GenderType | undefined;
+  file: File | null;
 }
-
-//todo video-upload videoId
-//todo rating
 
 export function TrainingCreate() {
   const dispatch = useAppDispatch();
@@ -36,6 +34,7 @@ export function TrainingCreate() {
     caloriesBurned: TRAINING.CALORIES.MIN,
     description: '',
     gender: undefined,
+    file: null,
   };
 
   const handleSubmit = async (
@@ -52,7 +51,7 @@ export function TrainingCreate() {
         caloriesBurned: values.caloriesBurned,
         description: values.description,
         gender: values.gender as GenderType,
-        videoId: '123e4567-e89b-12d3-a456-426614174000',
+        videoFile: values.file,
       }),
     )
       .unwrap()
@@ -82,7 +81,7 @@ export function TrainingCreate() {
           onSubmit={handleSubmit}
           validationSchema={trainingCreateValidationSchema}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, setFieldValue, values }) => (
             <Form>
               <div className="create-training">
                 <div className="create-training__wrapper">
@@ -235,15 +234,23 @@ export function TrainingCreate() {
                     <div className="drag-and-drop create-training__drag-and-drop">
                       <label>
                         <span className="drag-and-drop__label">
-                          Загрузите сюда файлы формата MOV, AVI или MP4
+                          {values.file
+                            ? values.file.name
+                            : 'Загрузите сюда файлы формата MOV, AVI или MP4'}
                           <svg width="20" height="20" aria-hidden="true">
                             <use xlinkHref="#icon-import-video"></use>
                           </svg>
                         </span>
                         <input
                           type="file"
-                          name="import"
+                          name="file"
                           accept=".mov, .avi, .mp4"
+                          onChange={(event) => {
+                            setFieldValue(
+                              'file',
+                              event.currentTarget.files?.[0] ?? null,
+                            );
+                          }}
                         />
                       </label>
                     </div>

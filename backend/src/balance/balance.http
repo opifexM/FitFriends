@@ -6,10 +6,27 @@
 GET {{host}}/api/balances/{{balanceId}} HTTP/1.1
 Authorization: Bearer {{token}}
 
+
 ### Get training purchase
 GET {{host}}/api/balances/purchase HTTP/1.1
 Authorization: Bearer {{token}}
 
-### Get activetraining purchase
+
+### Get balances list
+GET {{host}}/api/balances HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get active training purchase
 GET {{host}}/api/balances/purchase?active=true HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Activate purchase
+POST {{host}}/api/balances/{{balanceId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Deactivate purchase
+DELETE {{host}}/api/balances/{{balanceId}} HTTP/1.1
 Authorization: Bearer {{token}}

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { PurchaseStatusType } from 'shared/type/enum/purchase-status-type.enum';
 import { Training } from 'shared/type/training/training';
 import { UserModel } from '../../user/entity/user.schema';
 
@@ -27,6 +28,9 @@ export class BalanceModel extends Document {
 
   @Prop({ type: Types.ObjectId, ref: 'TrainingModel', required: true })
   public training: Training;
+
+  @Prop({ required: true, enum: PurchaseStatusType })
+  public purchaseStatus: PurchaseStatusType;
 }
 
 export const BalanceSchema = SchemaFactory.createForClass(BalanceModel);

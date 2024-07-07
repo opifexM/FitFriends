@@ -40,3 +40,7 @@ export const getPurchases = (
 export const getUserDetail = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].userDetail;
+
+export const getBalances = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].balances;

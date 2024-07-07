@@ -7,9 +7,11 @@ export const TRAINING = {
   },
   PICTURE: {
     FORMATS: ['jpg', 'png'],
+    MAX_SIZE_KB: 10_000,
   },
   VIDEO: {
     FORMATS: ['mov', 'avi', 'mp4'],
+    MAX_SIZE_KB: 1_000_000,
   },
   DESCRIPTION: {
     MIN: 10,

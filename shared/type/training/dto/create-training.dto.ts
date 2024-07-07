@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -57,6 +58,7 @@ export class CreateTrainingDto {
   public workoutDuration: WorkoutDurationType;
 
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   @ApiProperty({
     example: 20,
     description: 'The price of the training',
@@ -64,6 +66,7 @@ export class CreateTrainingDto {
   public price: number;
 
   @IsNumber()
+  @Transform(({ value }) => Number(value))
   @Min(TRAINING.CALORIES.MIN)
   @Max(TRAINING.CALORIES.MAX)
   @ApiProperty({
@@ -92,13 +95,6 @@ export class CreateTrainingDto {
   })
   public gender: GenderType;
 
-  @IsUUID()
-  @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174002',
-    description: 'The video ID associated with the training',
-  })
-  public videoId: string;
-
   @IsOptional()
   @IsBoolean()
   @ApiProperty({
@@ -114,4 +110,12 @@ export class CreateTrainingDto {
     description: 'The percentage of the discount provided',
   })
   public discountPercent?: number;
+
+  @IsOptional()
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Video file for the training',
+  })
+  public videoFile?: any;
 }

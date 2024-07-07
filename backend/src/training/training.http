@@ -24,6 +24,7 @@ Content-Type: application/json
 }
 
 
+
 ### Get training by ID
 GET {{host}}/api/trainings/{{trainingId}} HTTP/1.1
 Authorization: Bearer {{token}}

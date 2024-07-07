@@ -7,7 +7,7 @@ export const USER_MESSAGES = {
 } as const;
 
 export const USER_DEFAULT = {
-  PROFILE_PICTURE_ID: '123e4567-e89b-12d3-a456-426614174001',
-  AVATAR_ID: '123e4567-e89b-12d3-a456-426614174001',
+  PROFILE_PICTURE_ID: 'default_background.jpg',
+  AVATAR_ID: 'default_avatar.png',
   DESCRIPTION: '(empty)',
 } as const;

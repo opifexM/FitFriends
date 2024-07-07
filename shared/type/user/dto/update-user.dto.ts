@@ -78,14 +78,6 @@ export class UpdateUserDto {
   public profilePictureId?: string;
 
   @IsOptional()
-  @IsUUID()
-  @ApiProperty({
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'The avatar picture ID of the user',
-  })
-  public avatarId?: string;
-
-  @IsOptional()
   @IsString()
   @Length(USER.DESCRIPTION.MIN, USER.DESCRIPTION.MAX)
   @ApiProperty({
@@ -96,4 +88,12 @@ export class UpdateUserDto {
     maxLength: USER.DESCRIPTION.MAX,
   })
   public description?: string;
+
+  @IsOptional()
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    description: 'Image file for the avatar',
+  })
+  public avatarFile?: any;
 }

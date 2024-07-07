@@ -17,5 +17,9 @@ export const getIsReviewCreatePopupOpen = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].isReviewCreatePopupOpen;
 
+export const getIsQuestionnaireOpen = (
+  state: Pick<State, typeof NameSpace.UiSetting>,
+) => state[NameSpace.UiSetting].isQuestionnaireOpen;
+
 export const getMenuStatus = (state: Pick<State, typeof NameSpace.UiSetting>) =>
   state[NameSpace.UiSetting].menuStatus;

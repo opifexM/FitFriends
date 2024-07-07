@@ -4,7 +4,7 @@ import {
   TRAINING_LIST,
   TRAINING_MAIN,
 } from 'shared/type/training/traning.constant.ts';
-import { AppRoute } from '../../const.ts';
+import { AppRoute, UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppSelector } from '../../hook';
 import { getTrainingsForYou } from '../../store/api-communication/api-communication.selectors.ts';
 
@@ -25,7 +25,6 @@ export function MainSpecialForYou() {
   const endIndex = startIndex + DISPLAY_ITEMS;
   const currentTrainings = trainingForYou.slice(startIndex, endIndex);
 
-  //todo pic
   const trainingForYouCard = currentTrainings.map((training) => (
     <li className="special-for-you__item" key={training.id}>
       <div className="thumbnail-preview">
@@ -33,11 +32,11 @@ export function MainSpecialForYou() {
           <picture>
             <source
               type="image/webp"
-              srcSet="img/content/thumbnails/preview-02.webp, img/content/thumbnails/preview-02@2x.webp 2x"
+              srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
             />
             <img
-              src="img/content/thumbnails/preview-02.jpg"
-              srcSet="img/content/thumbnails/preview-02@2x.jpg 2x"
+              src={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
+              srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId} 2x`}
               width="452"
               height="191"
               alt=""

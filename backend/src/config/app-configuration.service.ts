@@ -56,4 +56,8 @@ export class AppConfiguration {
   public get jwtAlgorithm(): string {
     return this.configService.get<string>('JWT_ALGORITHM');
   }
+
+  public get uploadDirectoryPath(): string {
+    return this.configService.get<string>('UPLOAD_DIRECTORY_PATH');
+  }
 }

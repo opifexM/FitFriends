@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { BalanceTrainingQuery } from 'shared/type/balance/balance-training.query.ts';
+import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
 import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto.ts';
 import { OrderDto } from 'shared/type/order/dto/order.dto.ts';
 import { CreateQuestionnaireDto } from 'shared/type/questionnaire/dto/create-questionnaire.dto.ts';
@@ -33,9 +34,6 @@ export const fetchLatestQuestionnaire = createAsyncThunk<
 
       return data;
     } catch (error) {
-      toast.warning(handleApiError(error), {
-        position: 'top-right',
-      });
       return rejectWithValue(handleApiError(error));
     }
   },
@@ -109,6 +107,11 @@ export const createTraining = createAsyncThunk<
       const { data } = await api.post<TrainingDto>(
         APIRoute.CreateTraining,
         trainingData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       );
 
       return data;
@@ -156,9 +159,6 @@ export const fetchTrainingFouYou = createAsyncThunk<
 
     return data;
   } catch (error) {
-    toast.warning(handleApiError(error), {
-      position: 'top-right',
-    });
     return rejectWithValue(handleApiError(error));
   }
 });
@@ -306,6 +306,71 @@ export const fetchPurchase = createAsyncThunk<
         APIRoute.GetBalancePurchase,
         { params: balanceTrainingQuery },
       );
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const fetchBalances = createAsyncThunk<
+  BalanceDto[],
+  undefined,
+  ThunkApiConfig
+>('data/fetchBalances', async (_arg, { extra: api, rejectWithValue }) => {
+  try {
+    const { data } = await api.get<BalanceDto[]>(APIRoute.GetBalances);
+
+    return data;
+  } catch (error) {
+    toast.warning(handleApiError(error), {
+      position: 'top-right',
+    });
+    return rejectWithValue(handleApiError(error));
+  }
+});
+
+export const activateBalancePurchase = createAsyncThunk<
+  BalanceDto[],
+  string,
+  ThunkApiConfig
+>(
+  'data/activateBalancePurchase',
+  async (balanceId, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.ActivateBalancePurchase.replace(
+        ':balanceId',
+        balanceId,
+      );
+      const { data } = await api.post<BalanceDto[]>(url);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const deactivateBalancePurchase = createAsyncThunk<
+  BalanceDto[],
+  string,
+  ThunkApiConfig
+>(
+  'data/deactivateBalancePurchase',
+  async (balanceId, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.DeactivateBalancePurchase.replace(
+        ':balanceId',
+        balanceId,
+      );
+      const { data } = await api.delete<BalanceDto[]>(url);
 
       return data;
     } catch (error) {

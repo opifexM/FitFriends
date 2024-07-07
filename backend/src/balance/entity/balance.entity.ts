@@ -1,12 +1,14 @@
 import { Types } from 'mongoose';
 import { Entity } from 'shared/base/entity';
 import { Balance } from 'shared/type/balance/balance';
+import { PurchaseStatusType } from 'shared/type/enum/purchase-status-type.enum';
 
 export class BalanceEntity extends Entity implements Balance {
   public totalCount: number;
   public availableCount: number;
   public training: Types.ObjectId;
   public user: Types.ObjectId;
+  public purchaseStatus: PurchaseStatusType;
   public createdAt: Date;
   public updatedAt: Date;
 
@@ -27,6 +29,7 @@ export class BalanceEntity extends Entity implements Balance {
     this.updatedAt = balance.updatedAt;
     this.training = balance.training;
     this.user = balance.user;
+    this.purchaseStatus = balance.purchaseStatus;
   }
 
   public toPOJO() {
@@ -38,6 +41,7 @@ export class BalanceEntity extends Entity implements Balance {
       updatedAt: this.updatedAt,
       user: this.user,
       training: this.training,
+      purchaseStatus: this.purchaseStatus,
     };
   }
 }

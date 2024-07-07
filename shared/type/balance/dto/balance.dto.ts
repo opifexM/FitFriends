@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { PurchaseStatusType } from '../../enum/purchase-status-type.enum';
 
 export class BalanceDto {
   @Expose()
@@ -36,6 +37,14 @@ export class BalanceDto {
     description: 'The number of available trainings',
   })
   public availableCount: number;
+
+  @Expose()
+  @ApiProperty({
+    example: PurchaseStatusType.IN_PROGRESS,
+    description: 'The status type of purchase',
+    enum: PurchaseStatusType,
+  })
+  public purchaseStatus: PurchaseStatusType;
 
   @Expose()
   @ApiProperty({

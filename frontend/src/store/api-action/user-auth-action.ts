@@ -70,34 +70,17 @@ export const registerAuth = createAsyncThunk<
   ThunkApiConfig
 >(
   'user/registerAuth',
-  async (
-    {
-      email,
-      password,
-      name,
-      role,
-      profilePictureId,
-      description,
-      gender,
-      dateOfBirth,
-      avatarId,
-      location,
-    },
-    { extra: api, rejectWithValue },
-  ) => {
+  async (trainingData, { extra: api, rejectWithValue }) => {
     try {
-      const { data } = await api.post<UserDto>(APIRoute.CreateUser, {
-        email,
-        name,
-        password,
-        role,
-        profilePictureId,
-        description,
-        gender,
-        dateOfBirth,
-        avatarId,
-        location,
-      });
+      const { data } = await api.post<UserDto>(
+        APIRoute.CreateUser,
+        trainingData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
 
       return data;
     } catch (error) {
@@ -115,7 +98,11 @@ export const updateUser = createAsyncThunk<
   ThunkApiConfig
 >('user/updateUser', async (userData, { extra: api, rejectWithValue }) => {
   try {
-    const { data } = await api.patch<UserDto>(APIRoute.UpdateUser, userData);
+    const { data } = await api.patch<UserDto>(APIRoute.UpdateUser, userData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
     return data;
   } catch (error) {

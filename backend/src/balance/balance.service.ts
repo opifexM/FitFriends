@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { BalanceTrainingQuery } from 'shared/type/balance/balance-training.query';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant';
+import { PurchaseStatusType } from 'shared/type/enum/purchase-status-type.enum';
 import { PaginationResult } from 'shared/type/pagination.interface';
 import { TrainingEntity } from '../training/entity/training.entity';
 import { TrainingService } from '../training/training.service';
@@ -36,6 +37,7 @@ export class BalanceService {
       training: training.id,
       totalCount: count,
       availableCount: count,
+      purchaseStatus: PurchaseStatusType.NOT_STARTED,
     };
 
     const balanceEntity = BalanceFactory.createEntity(balanceData);
@@ -55,8 +57,6 @@ export class BalanceService {
     this.logger.log(
       `Updating balance with ID: '${balance.id}' for user '${user.name}'`,
     );
-    console.log(user.id);
-    console.log(balance.user.toString());
 
     if (user.id !== balance.user.toString()) {
       this.logger.warn(
@@ -67,6 +67,7 @@ export class BalanceService {
 
     balance.totalCount += count;
     balance.availableCount += count;
+    balance.purchaseStatus = PurchaseStatusType.NOT_STARTED;
 
     return this.balanceRepository.update(balance.id, balance);
   }
@@ -113,12 +114,7 @@ export class BalanceService {
 
   public async deleteBalanceById(balanceId: string): Promise<BalanceEntity> {
     this.logger.log(`Deleting balance with ID: '${balanceId}'`);
-    const foundBalance = await this.balanceRepository.findById(balanceId);
-    if (!foundBalance) {
-      this.logger.warn(`Balance not found with ID: '${balanceId}'`);
-      throw new NotFoundException(BALANCE_MESSAGES.NOT_FOUND);
-    }
-
+    await this.balanceRepository.findById(balanceId);
     const deletedBalance = await this.balanceRepository.deleteById(balanceId);
     this.logger.log(`Balance with ID: '${balanceId}' deleted`);
 
@@ -145,7 +141,7 @@ export class BalanceService {
       `Finding all purchase training by user ID: '${userId}', active: '${isActive}'`,
     );
 
-    const trainingListIds = await this.balanceRepository.findAllByUserId(
+    const trainingListIds = await this.balanceRepository.findAllIdsByUserId(
       userId,
       isActive,
     );
@@ -155,5 +151,55 @@ export class BalanceService {
       page,
       limit,
     );
+  }
+
+  public async findAllBalances(userId: string): Promise<BalanceEntity[]> {
+    this.logger.log(`Finding all balances by user ID: '${userId}'`);
+
+    return await this.balanceRepository.findAllByUserId(userId, true);
+  }
+
+  public async activatePurchase(userId: string, balanceId: string) {
+    this.logger.log(
+      `Activate purchase with balance ID: '${balanceId}', User ID: '${userId}'`,
+    );
+    const foundBalance = await this.balanceRepository.findById(balanceId);
+    if (foundBalance.purchaseStatus === PurchaseStatusType.IN_PROGRESS) {
+      this.logger.warn(
+        `User ID '${userId}' cannot activate because purchase Status '${foundBalance.purchaseStatus}' is active`,
+      );
+      throw new ForbiddenException(BALANCE_MESSAGES.IN_PROGRESS);
+    }
+    if (foundBalance.availableCount < 1) {
+      this.logger.warn(
+        `User ID '${userId}' don't have enough balance '${foundBalance.availableCount}' for activation`,
+      );
+      throw new ForbiddenException(BALANCE_MESSAGES.NOT_ENOUGH_BALANCE);
+    }
+
+    foundBalance.availableCount--;
+    foundBalance.purchaseStatus = PurchaseStatusType.IN_PROGRESS;
+
+    return this.balanceRepository.update(foundBalance.id, foundBalance);
+  }
+
+  public async deactivatePurchase(userId: string, balanceId: string) {
+    this.logger.log(
+      `Deactivate purchase with balance ID: '${balanceId}', User ID: '${userId}'`,
+    );
+    const foundBalance = await this.balanceRepository.findById(balanceId);
+    if (foundBalance.purchaseStatus !== PurchaseStatusType.IN_PROGRESS) {
+      this.logger.warn(
+        `User ID '${userId}' cannot deactivated because purchase Status '${foundBalance.purchaseStatus}' is not active`,
+      );
+      throw new ForbiddenException(BALANCE_MESSAGES.NOT_ACTIVE);
+    }
+
+    foundBalance.purchaseStatus =
+      foundBalance.availableCount > 0
+        ? PurchaseStatusType.NOT_STARTED
+        : PurchaseStatusType.FINISHED;
+
+    return this.balanceRepository.update(foundBalance.id, foundBalance);
   }
 }

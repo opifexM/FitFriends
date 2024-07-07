@@ -42,6 +42,9 @@ export class ServerEnvConfig {
 
   @IsString()
   JWT_ALGORITHM: string;
+
+  @IsString()
+  UPLOAD_DIRECTORY_PATH: string;
 }
 
 export function validate(config: Record<string, unknown>) {

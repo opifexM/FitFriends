@@ -14,12 +14,13 @@ import { registerValidationSchema } from './register-validation-schema.ts';
 interface FormValues {
   name: string;
   email: string;
-  birthday: Date | undefined;
+  birthday: string;
   password: string;
   sex: GenderType | undefined;
   role: RoleType | undefined;
   location: LocationType | undefined;
   userAgreement: boolean;
+  file: File | null;
 }
 
 export function Registration() {
@@ -29,15 +30,15 @@ export function Registration() {
   const initialValues: FormValues = {
     name: '',
     email: '',
-    birthday: undefined,
+    birthday: '',
     password: '',
     sex: undefined,
     role: undefined,
     location: undefined,
     userAgreement: false,
+    file: null,
   };
 
-  //todo file-upload profilePictureId, avatarId
   const handleSubmit = async (
     values: FormValues,
     { setSubmitting, setFieldError }: FormikHelpers<FormValues>,
@@ -49,10 +50,9 @@ export function Registration() {
         role: values.role as RoleType,
         location: values.location as LocationType,
         name: values.name,
-        dateOfBirth: values.birthday as Date,
+        dateOfBirth: new Date(values.birthday),
         gender: values.sex as GenderType,
-        profilePictureId: '123e4567-e89b-12d3-a456-426614174000',
-        avatarId: '123e4567-e89b-12d3-a456-426614174000',
+        avatarFile: values.file,
       }),
     )
       .unwrap()
@@ -82,7 +82,7 @@ export function Registration() {
           onSubmit={handleSubmit}
           validationSchema={registerValidationSchema}
         >
-          {({ isSubmitting, errors, touched }) => (
+          {({ isSubmitting, errors, touched, setFieldValue, values }) => (
             <Form>
               <div className="sign-up">
                 <div className="sign-up__load-photo">
@@ -91,13 +91,30 @@ export function Registration() {
                       <input
                         className="visually-hidden"
                         type="file"
-                        accept="image/png, image/jpeg"
+                        name="file"
+                        accept=".png, .jpeg"
+                        onChange={(event) => {
+                          setFieldValue(
+                            'file',
+                            event.currentTarget.files?.[0] ?? null,
+                          );
+                        }}
                       />
-                      <span className="input-load-avatar__btn">
-                        <svg width="20" height="20" aria-hidden="true">
-                          <use xlinkHref="#icon-import"></use>
-                        </svg>
-                      </span>
+                      {values.file ? (
+                        <img
+                          src={URL.createObjectURL(values.file)}
+                          srcSet={URL.createObjectURL(values.file)}
+                          width="98"
+                          height="98"
+                          alt="user avatar"
+                        />
+                      ) : (
+                        <span className="input-load-avatar__btn">
+                          <svg width="20" height="20" aria-hidden="true">
+                            <use xlinkHref="#icon-import"></use>
+                          </svg>
+                        </span>
+                      )}
                     </label>
                   </div>
                   <div className="sign-up__description">

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
+import { PurchaseStatusType } from 'shared/type/enum/purchase-status-type.enum';
 import { BaseRepository } from '../../database/base-mongo.repository';
 import { BalanceEntity } from './balance.entity';
 import { BalanceFactory } from './balance.factory';
@@ -44,7 +45,7 @@ export class BalanceRepository extends BaseRepository<BalanceEntity> {
     return this.createEntityFromDocument(foundDocument);
   }
 
-  public async findAllByUserId(
+  public async findAllIdsByUserId(
     userId: string,
     isActive: boolean,
   ): Promise<string[]> {
@@ -63,5 +64,29 @@ export class BalanceRepository extends BaseRepository<BalanceEntity> {
     this.logger.log(`Retrieved [${foundDocument.length}] purchase trainings`);
 
     return foundDocument.map((balance) => balance.training.id);
+  }
+
+  public async findAllByUserId(
+    userId: string,
+    isActive: boolean,
+  ): Promise<BalanceEntity[]> {
+    this.logger.log(
+      `Finding all purchases by user ID: '${userId}', active: '${isActive}'`,
+    );
+
+    const filterCriteria: any = { user: userId };
+    if (isActive) {
+      filterCriteria['$or'] = [
+        { purchaseStatus: PurchaseStatusType.IN_PROGRESS },
+        { availableCount: { $gt: 0 } },
+      ];
+    }
+
+    const foundDocument = await this.balanceModel.find(filterCriteria);
+    this.logger.log(`Retrieved [${foundDocument.length}] purchases`);
+
+    return foundDocument.map((balance) =>
+      this.createEntityFromDocument(balance),
+    );
   }
 }

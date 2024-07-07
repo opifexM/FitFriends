@@ -8,7 +8,10 @@ import {
 } from 'shared/type/training/traning.constant.ts';
 import { NameSpace } from '../../const.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
-import { fetchTraining } from '../api-action/data-action.ts';
+import {
+  fetchTraining,
+  fetchTrainingFouYou,
+} from '../api-action/data-action.ts';
 
 interface TrainingFilter {
   workout: WorkoutType[];
@@ -40,6 +43,7 @@ interface UiSettingsSlice {
   purchaseFilter: PurchaseFilter;
   isReviewCreatePopupOpen: boolean;
   isPurchasePopupOpen: boolean;
+  isQuestionnaireOpen: boolean;
   menuStatus: MenuType;
 }
 
@@ -69,6 +73,7 @@ const initialState: UiSettingsSlice = {
   },
   isReviewCreatePopupOpen: false,
   isPurchasePopupOpen: false,
+  isQuestionnaireOpen: false,
   menuStatus: MenuType.NONE,
 };
 
@@ -186,35 +191,42 @@ export const uiSettingsSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addCase(fetchTraining.fulfilled, (state, action) => {
-      const {
-        currentPage,
-        totalPages,
-        caloriesMax,
-        caloriesMin,
-        priceMax,
-        priceMin,
-        ratingMax,
-        ratingMin,
-      } = action.payload;
-      state.trainingFilter.currentPage = currentPage;
-      state.trainingFilter.totalPages = totalPages;
-      state.trainingFilter.caloriesMax = caloriesMax;
-      state.trainingFilter.caloriesMin = caloriesMin;
-      state.trainingFilter.priceMax = priceMax;
-      state.trainingFilter.priceMin = priceMin;
-      state.trainingFilter.ratingMax = ratingMax;
-      state.trainingFilter.ratingMin = ratingMin;
+    builder
+      .addCase(fetchTraining.fulfilled, (state, action) => {
+        const {
+          currentPage,
+          totalPages,
+          caloriesMax,
+          caloriesMin,
+          priceMax,
+          priceMin,
+          ratingMax,
+          ratingMin,
+        } = action.payload;
+        state.trainingFilter.currentPage = currentPage;
+        state.trainingFilter.totalPages = totalPages;
+        state.trainingFilter.caloriesMax = caloriesMax;
+        state.trainingFilter.caloriesMin = caloriesMin;
+        state.trainingFilter.priceMax = priceMax;
+        state.trainingFilter.priceMin = priceMin;
+        state.trainingFilter.ratingMax = ratingMax;
+        state.trainingFilter.ratingMin = ratingMin;
 
-      state.trainingFilter.priceFrom = Math.max(
-        priceMin,
-        state.trainingFilter.priceFrom,
-      );
-      state.trainingFilter.priceTo = Math.min(
-        priceMax,
-        state.trainingFilter.priceTo,
-      );
-    });
+        state.trainingFilter.priceFrom = Math.max(
+          priceMin,
+          state.trainingFilter.priceFrom,
+        );
+        state.trainingFilter.priceTo = Math.min(
+          priceMax,
+          state.trainingFilter.priceTo,
+        );
+      })
+
+      .addCase(fetchTrainingFouYou.rejected, (state, action) => {
+        if (action.payload === 'Questionnaire not found') {
+          state.isQuestionnaireOpen = true;
+        }
+      });
   },
 });
 

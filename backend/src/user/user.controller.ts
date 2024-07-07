@@ -10,8 +10,11 @@ import {
   Patch,
   Post,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -44,6 +47,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('')
+  @UseInterceptors(FileInterceptor('avatarFile'))
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
     status: 201,
@@ -51,9 +55,14 @@ export class UserController {
     type: UserDto,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  public async createUser(@Body() dto: CreateUserDto): Promise<UserDto> {
-    this.logger.log(`Creating new user with email: '${dto.email}'`);
-    const createdUser = await this.userService.createUser(dto);
+  public async createUser(
+    @Body() dto: CreateUserDto,
+    @UploadedFile() avatarFile?: Express.Multer.File,
+  ): Promise<UserDto> {
+    this.logger.log(
+      `Creating new user with email: '${dto.email}', Avatar file: '${avatarFile}'`,
+    );
+    const createdUser = await this.userService.createUser(dto, avatarFile);
 
     return fillDto(UserDto, createdUser.toPOJO());
   }
@@ -96,6 +105,7 @@ export class UserController {
 
   @Patch('')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('avatarFile'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({
@@ -107,9 +117,16 @@ export class UserController {
   public async updateUser(
     @GetUserId() userId: string,
     @Body() dto: UpdateUserDto,
+    @UploadedFile() avatarFile?: Express.Multer.File,
   ): Promise<UserDto> {
-    this.logger.log(`Updating user with ID '${userId}'`);
-    const updatedUser = await this.userService.updateUserById(userId, dto);
+    this.logger.log(
+      `Updating user with ID '${userId}', Avatar file: '${avatarFile}'`,
+    );
+    const updatedUser = await this.userService.updateUserById(
+      userId,
+      dto,
+      avatarFile,
+    );
 
     return fillDto(UserDto, updatedUser.toPOJO());
   }

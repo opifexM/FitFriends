@@ -4,7 +4,7 @@ export const TRAINING_MESSAGES = {
 } as const;
 
 export const TRAINING_DEFAULT = {
-  BACKGROUND_ID: '123e4567-e89b-12d3-a456-426614174001',
-  VIDEO_ID: '123e4567-e89b-12d3-a456-426614174001',
+  BACKGROUND_ID: 'default_background.jpg',
+  VIDEO_ID: 'default-video.mp4',
   DISCOUNT_PERCENT: 10,
 } as const;

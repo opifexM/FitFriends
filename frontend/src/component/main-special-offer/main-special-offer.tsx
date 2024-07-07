@@ -2,10 +2,10 @@ import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TRAINING_MAIN } from 'shared/type/training/traning.constant.ts';
 import SwiperCore from 'swiper';
-import { Pagination, Autoplay } from 'swiper/modules';
+import { Autoplay, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper/types';
-import { AppRoute } from '../../const.ts';
+import { AppRoute, UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppSelector } from '../../hook';
 import { getTrainings } from '../../store/api-communication/api-communication.selectors.ts';
 import 'swiper/swiper-bundle.css';
@@ -55,7 +55,6 @@ export function MainSpecialOffer() {
     );
   }
 
-  //todo image
   return (
     <section className="special-offers">
       <div className="container">
@@ -79,8 +78,8 @@ export function MainSpecialOffer() {
                 <aside className="promo-slider">
                   <div className="promo-slider__image">
                     <img
-                      src="img/content/promo-1.png"
-                      srcSet="img/content/promo-1@2x.png 2x"
+                      src={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
+                      srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId} 2x`}
                       width="1040"
                       height="469"
                       alt="promo"

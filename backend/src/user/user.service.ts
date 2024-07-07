@@ -10,7 +10,9 @@ import { Token } from 'shared/type/token.interface';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
+import { USER } from 'shared/type/user/user.constant';
 import { BcryptCrypto } from '../crypto/bcrypt.crypto';
+import { FileService } from '../file-module/file.service';
 import { TokenService } from '../token-module/token.service';
 import { UserEntity } from './entity/user.entity';
 import { UserFactory } from './entity/user.factory';
@@ -25,9 +27,13 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly bcryptCrypto: BcryptCrypto,
     private readonly tokenService: TokenService,
+    private readonly fileService: FileService,
   ) {}
 
-  public async createUser(dto: CreateUserDto): Promise<UserEntity> {
+  public async createUser(
+    dto: CreateUserDto,
+    avatarFile: Express.Multer.File,
+  ): Promise<UserEntity> {
     const {
       email,
       name,
@@ -37,7 +43,6 @@ export class UserService {
       role,
       location,
       dateOfBirth,
-      avatarId,
       description,
     } = dto;
     this.logger.log(`Attempting to create user with email: ${email}`);
@@ -47,6 +52,13 @@ export class UserService {
       this.logger.warn(`User with email '${email}' already exists`);
       throw new ConflictException(USER_MESSAGES.EXISTS);
     }
+    const avatarId = avatarFile
+      ? await this.fileService.uploadFile(
+          avatarFile,
+          [...USER.AVATAR.FORMATS],
+          USER.AVATAR.MAX_SIZE_KB,
+        )
+      : USER_DEFAULT.AVATAR_ID;
 
     const hashPassword = await this.bcryptCrypto.hashPassword(password);
     const userData = {
@@ -57,9 +69,9 @@ export class UserService {
       password: hashPassword,
       gender: gender,
       role: role,
-      profilePictureId: profilePictureId ?? USER_DEFAULT.PROFILE_PICTURE_ID,
-      avatarId: avatarId ?? USER_DEFAULT.AVATAR_ID,
       description: description ?? USER_DEFAULT.DESCRIPTION,
+      profilePictureId: profilePictureId ?? USER_DEFAULT.PROFILE_PICTURE_ID,
+      avatarId: avatarId,
     };
 
     const userEntity = UserFactory.createEntity(userData);
@@ -89,9 +101,17 @@ export class UserService {
   public async updateUserById(
     userId: string,
     dto: UpdateUserDto,
+    avatarFile: Express.Multer.File,
   ): Promise<UserEntity> {
     this.logger.log(`Updating user with ID: '${userId}'`);
     const updatedUser = await this.findUserById(userId);
+    const avatarId = avatarFile
+      ? await this.fileService.uploadFile(
+          avatarFile,
+          [...USER.AVATAR.FORMATS],
+          USER.AVATAR.MAX_SIZE_KB,
+        )
+      : undefined;
 
     if (dto.name !== undefined) updatedUser.name = dto.name;
     if (dto.password !== undefined)
@@ -103,7 +123,7 @@ export class UserService {
     if (dto.role !== undefined) updatedUser.role = dto.role;
     if (dto.profilePictureId !== undefined)
       updatedUser.profilePictureId = dto.profilePictureId;
-    if (dto.avatarId !== undefined) updatedUser.avatarId = dto.avatarId;
+    if (avatarId !== undefined) updatedUser.avatarId = avatarId;
     if (dto.description !== undefined)
       updatedUser.description = dto.description;
 
