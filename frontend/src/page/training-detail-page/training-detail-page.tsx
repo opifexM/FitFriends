@@ -13,11 +13,13 @@ import {
   fetchLatestReview,
   fetchReviewByTraining,
   fetchTrainingDetail,
+  fetchUserDetail,
 } from '../../store/api-action/data-action.ts';
 import {
   getBalances,
   getCurrentTraining,
   getReviews,
+  getUserDetail,
 } from '../../store/api-communication/api-communication.selectors.ts';
 import { setMenuStatus } from '../../store/ui-settings/ui-settings.slice.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
@@ -28,6 +30,7 @@ export function TrainingDetailPage() {
   const currentTraining = useAppSelector(getCurrentTraining);
   const reviews = useAppSelector(getReviews);
   const balances = useAppSelector(getBalances);
+  const userDetail = useAppSelector(getUserDetail);
 
   useEffect(() => {
     if (trainingId) {
@@ -35,6 +38,7 @@ export function TrainingDetailPage() {
       dispatch(fetchBalances());
       dispatch(fetchReviewByTraining({ trainingId: trainingId }));
       dispatch(fetchLatestReview());
+      dispatch(fetchUserDetail());
     }
   }, [dispatch, trainingId]);
 
@@ -42,7 +46,7 @@ export function TrainingDetailPage() {
     dispatch(setMenuStatus(MenuType.NONE));
   }, [dispatch]);
 
-  if (!trainingId || !currentTraining) {
+  if (!trainingId || !currentTraining || !userDetail) {
     return null;
   }
 
@@ -61,7 +65,7 @@ export function TrainingDetailPage() {
           <div className="container">
             <div className="inner-page__wrapper">
               <h1 className="visually-hidden">Карточка тренировки</h1>
-              <ReviewList reviews={reviews} />
+              <ReviewList reviews={reviews} userDetail={userDetail} />
               <div className="training-card">
                 <TrainingDetail
                   training={currentTraining}

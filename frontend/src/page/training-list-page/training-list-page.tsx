@@ -6,10 +6,7 @@ import { TrainingList } from '../../component/training-list/training-list.tsx';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { fetchTraining } from '../../store/api-action/data-action.ts';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
-import {
-  resetTrainingFilterRange,
-  setMenuStatus,
-} from '../../store/ui-settings/ui-settings.slice.ts';
+import { setMenuStatus } from '../../store/ui-settings/ui-settings.slice.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function TrainingListPage() {
@@ -22,7 +19,6 @@ export function TrainingListPage() {
 
   useEffect(() => {
     dispatch(setMenuStatus(MenuType.NONE));
-    dispatch(resetTrainingFilterRange());
   }, [dispatch]);
 
   return (

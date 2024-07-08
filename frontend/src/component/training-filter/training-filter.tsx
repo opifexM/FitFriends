@@ -1,7 +1,9 @@
 import 'nouislider/dist/nouislider.css';
 import { ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum.ts';
+import { AppRoute } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
 import {
@@ -46,10 +48,19 @@ export function TrainingFilter() {
   const handleFilterChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     const numberValue = Number(value);
-    if (name === 'priceFrom') {
-      dispatch(setTrainingFilterPriceFrom(numberValue));
-    } else if (name === 'priceTo') {
-      dispatch(setTrainingFilterPriceTo(numberValue));
+    switch (name) {
+      case 'priceFrom':
+        dispatch(setTrainingFilterPriceFrom(numberValue));
+        break;
+      case 'priceTo':
+        dispatch(setTrainingFilterPriceTo(numberValue));
+        break;
+      case 'caloriesFrom':
+        dispatch(setTrainingFilterCaloriesFrom(numberValue));
+        break;
+      case 'caloriesTo':
+        dispatch(setTrainingFilterCaloriesTo(numberValue));
+        break;
     }
   };
 
@@ -57,7 +68,8 @@ export function TrainingFilter() {
     <div className="gym-catalog-form">
       <h2 className="visually-hidden">Мои тренировки Фильтр</h2>
       <div className="gym-catalog-form__wrapper">
-        <button
+        <Link
+          to={AppRoute.Main}
           className="btn-flat btn-flat--underlined gym-catalog-form__btnback"
           type="button"
         >
@@ -65,7 +77,7 @@ export function TrainingFilter() {
             <use xlinkHref="#arrow-left"></use>
           </svg>
           <span>Назад</span>
-        </button>
+        </Link>
         <h3 className="gym-catalog-form__title">Фильтры</h3>
 
         <form className="gym-catalog-form__form">

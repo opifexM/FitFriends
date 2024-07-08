@@ -116,9 +116,10 @@ export function MainSpecialOffer() {
                     </div>
                     <div className="promo-slider__price-container">
                       <p className="promo-slider__price">
-                        {training.price -
-                          (training.price * training.discountPercent) /
-                            100}{' '}
+                        {Math.trunc(
+                          training.price -
+                            (training.price * training.discountPercent) / 100,
+                        )}{' '}
                         ₽
                       </p>
                       <p className="promo-slider__sup">за занятие</p>

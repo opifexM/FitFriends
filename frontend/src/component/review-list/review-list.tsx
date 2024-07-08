@@ -1,14 +1,20 @@
 import { Link } from 'react-router-dom';
+import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
+import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import { AppRoute, UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import { setIsReviewCreatePopupOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 
 interface ReviewBlockProps {
   reviews: ReviewDto[];
+  userDetail: UserDto;
 }
 
-export function ReviewList({ reviews }: Readonly<ReviewBlockProps>) {
+export function ReviewList({
+  reviews,
+  userDetail,
+}: Readonly<ReviewBlockProps>) {
   const dispatch = useAppDispatch();
 
   function handleReviewCreate() {
@@ -77,6 +83,7 @@ export function ReviewList({ reviews }: Readonly<ReviewBlockProps>) {
         className="btn btn--medium reviews-side-bar__button"
         type="button"
         onClick={handleReviewCreate}
+        disabled={userDetail.role === RoleType.COACH}
       >
         Оставить отзыв
       </button>

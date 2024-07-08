@@ -61,6 +61,7 @@ export class TrainingService {
       this.logger.warn(`User '${foundCoachUser.name}' is not coach`);
       throw new NotFoundException(USER_MESSAGES.NOT_COACH);
     }
+
     const videoId = videoFile
       ? await this.fileService.uploadFile(
           videoFile,

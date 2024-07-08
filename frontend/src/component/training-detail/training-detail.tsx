@@ -34,7 +34,9 @@ export function TrainingDetail({
   }
 
   function getPrice() {
-    return isSpecialOffer ? price - (price * discountPercent) / 100 : price;
+    return isSpecialOffer
+      ? Math.trunc(price - (price * discountPercent) / 100)
+      : price;
   }
 
   return (

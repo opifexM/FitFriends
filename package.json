@@ -15,6 +15,7 @@
     "start:frontend": "npm run start --workspace frontend",
     "build:frontend": "npm run build --workspace frontend",
 
+    "cli:backend-generate": "ts-node --project backend/tsconfig.json backend/src/main-cli.ts --generate 'mongodb://admin:123456@localhost:27017/fit-friends?authSource=admin'",
     "server:docker-up": "docker compose --file ./backend/docker-compose.dev.yml --env-file ./backend/server.env --project-name \"fit-friends\" up -d",
     "server:docker-down": "docker compose --file ./backend/docker-compose.dev.yml --env-file ./backend/server.env --project-name \"fit-friends\" down"
   },

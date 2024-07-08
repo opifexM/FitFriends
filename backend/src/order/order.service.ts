@@ -48,8 +48,10 @@ export class OrderService {
 
     const expectedTotalPrice = foundTraining.isSpecialOffer
       ? count *
-        (foundTraining.price -
-          (foundTraining.price * foundTraining.discountPercent) / 100)
+        Math.trunc(
+          foundTraining.price -
+            (foundTraining.price * foundTraining.discountPercent) / 100,
+        )
       : count * foundTraining.price;
 
     if (totalPrice !== expectedTotalPrice) {

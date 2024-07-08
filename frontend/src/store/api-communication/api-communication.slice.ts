@@ -208,21 +208,22 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
 
-      .addCase(fetchTraining.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(fetchTraining.rejected, (state) => {
         state.trainings = [];
-        state.isLoading = false;
       })
       .addCase(fetchTraining.fulfilled, (state, action) => {
         const { currentPage, entities } = action.payload;
         if (currentPage === TRAINING_LIST.DEFAULT_FILTER_PAGE) {
           state.trainings = entities;
         } else {
-          state.trainings = [...state.trainings, ...entities];
+          const existingTrainingIds = new Set(
+            state.trainings.map((training) => training.id),
+          );
+          const newEntities = entities.filter(
+            (entity) => !existingTrainingIds.has(entity.id),
+          );
+          state.trainings = [...state.trainings, ...newEntities];
         }
-        state.isLoading = false;
       })
 
       .addCase(fetchTrainingFouYou.pending, (state) => {
@@ -317,7 +318,13 @@ export const apiCommunicationSlice = createSlice({
         if (currentPage === BALANCE_PURCHASE_LIST.DEFAULT_FILTER_PAGE) {
           state.purchases = entities;
         } else {
-          state.purchases = [...state.purchases, ...entities];
+          const existingPurchaseIds = new Set(
+            state.purchases.map((purchase) => purchase.id),
+          );
+          const newEntities = entities.filter(
+            (entity) => !existingPurchaseIds.has(entity.id),
+          );
+          state.purchases = [...state.purchases, ...newEntities];
         }
         state.isLoading = false;
       })

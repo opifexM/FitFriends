@@ -4,6 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { RoleType } from 'shared/type/enum/role-type.enum';
 import { PaginationResult } from 'shared/type/pagination.interface';
 import { CreateReviewDto } from 'shared/type/review/dto/create-review.dto';
 import { UpdateReviewDto } from 'shared/type/review/dto/update-review.dto';
@@ -38,6 +39,10 @@ export class ReviewService {
     if (!foundUser) {
       this.logger.warn(`User with id '${userId}' not found`);
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role === RoleType.COACH) {
+      this.logger.warn('The coach cannot create a review');
+      throw new NotFoundException(REVIEW_MESSAGES.NO_ACCESS_FOR_COACH);
     }
 
     const foundReview = await this.trainingService.findTrainingById(training);

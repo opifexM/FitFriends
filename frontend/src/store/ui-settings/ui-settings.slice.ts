@@ -89,6 +89,9 @@ export const uiSettingsSlice = createSlice({
     setIsPurchasePopupOpen: (state, action: PayloadAction<boolean>) => {
       state.isPurchasePopupOpen = action.payload;
     },
+    setIsQuestionnaireOpen: (state, action: PayloadAction<boolean>) => {
+      state.isQuestionnaireOpen = action.payload;
+    },
     setMenuStatus: (state, action: PayloadAction<MenuType>) => {
       state.menuStatus = action.payload;
     },
@@ -97,76 +100,48 @@ export const uiSettingsSlice = createSlice({
     },
     setTrainingFilterWorkout: (state, action: PayloadAction<WorkoutType[]>) => {
       state.trainingFilter.workout = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterTrainingSortType: (
       state,
       action: PayloadAction<TrainingSortType>,
     ) => {
       state.trainingFilter.trainingSortType = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterPriceFrom: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceFrom = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterPriceTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceTo = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterCaloriesFrom: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesFrom = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterCaloriesTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesTo = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterRatingFrom: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingFrom = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterRatingTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingTo = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterPriceMin: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceMin = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterPriceMax: (state, action: PayloadAction<number>) => {
       state.trainingFilter.priceMax = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterCaloriesMin: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesMin = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterCaloriesMax: (state, action: PayloadAction<number>) => {
       state.trainingFilter.caloriesMax = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterRatingMin: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingMin = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterRatingMax: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingMax = action.payload;
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
     },
     setTrainingFilterTotalPages: (state, action: PayloadAction<number>) => {
       state.trainingFilter.totalPages = action.payload;
@@ -285,4 +260,5 @@ export const {
   resetPurchaseFilterCurrentPage,
   resetPurchaseFilter,
   setMenuStatus,
+  setIsQuestionnaireOpen,
 } = uiSettingsSlice.actions;

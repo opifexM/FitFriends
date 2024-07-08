@@ -28,7 +28,6 @@ export const checkAuth = createAsyncThunk<
   }
 });
 
-//todo refresh token
 export const refreshAuth = createAsyncThunk<Token, undefined, ThunkApiConfig>(
   'user/refreshAuth',
   async (_arg, { extra: api, rejectWithValue }) => {

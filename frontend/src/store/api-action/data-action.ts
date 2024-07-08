@@ -225,9 +225,6 @@ export const fetchLatestReview = createAsyncThunk<
 
     return data;
   } catch (error) {
-    toast.warning(handleApiError(error), {
-      position: 'top-right',
-    });
     return rejectWithValue(handleApiError(error));
   }
 });

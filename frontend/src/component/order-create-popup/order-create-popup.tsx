@@ -32,8 +32,10 @@ export function OrderCreatePopup() {
 
   function getPrice(currentTraining: TrainingDto): number {
     return currentTraining.isSpecialOffer
-      ? currentTraining.price -
-          (currentTraining.price * currentTraining.discountPercent) / 100
+      ? Math.trunc(
+          currentTraining.price -
+            (currentTraining.price * currentTraining.discountPercent) / 100,
+        )
       : currentTraining.price;
   }
 

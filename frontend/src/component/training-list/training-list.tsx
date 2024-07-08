@@ -39,6 +39,10 @@ export function TrainingList() {
     <TrainingCard key={training.id} training={training} />
   ));
 
+  const increasePage = () => {
+    dispatch(increaseTrainingFilterCurrentPage());
+  };
+
   return (
     <div className="training-catalog">
       <ul className="training-catalog__list">
@@ -48,7 +52,7 @@ export function TrainingList() {
         <button
           className="btn show-more__button show-more__button--more"
           type="button"
-          onClick={() => dispatch(increaseTrainingFilterCurrentPage())}
+          onClick={increasePage}
           style={{ display: isLastPage ? 'none' : 'inline-flex' }}
           disabled={isLastPage}
         >

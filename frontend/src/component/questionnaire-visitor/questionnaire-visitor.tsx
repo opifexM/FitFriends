@@ -1,16 +1,19 @@
 import classNames from 'classnames';
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum.ts';
 import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant.ts';
+import { AppRoute } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import {
   createQuestionnaire,
   updateQuestionnaire,
 } from '../../store/api-action/data-action.ts';
 import { getLastQuestionnaire } from '../../store/api-communication/api-communication.selectors.ts';
+import { setIsQuestionnaireOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 import { ArrayButton } from '../array-button/array-button.tsx';
 import { questionnaireVisitorValidationSchema } from './questionnaire-visitor-validation-schema.ts';
 
@@ -24,6 +27,7 @@ interface FormValues {
 
 export function QuestionnaireVisitor() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const questionnaire = useAppSelector(getLastQuestionnaire);
 
   const initialValues: FormValues = {
@@ -58,6 +62,8 @@ export function QuestionnaireVisitor() {
           toast.success('Questionnaire updated successful', {
             position: 'top-right',
           });
+          dispatch(setIsQuestionnaireOpen(false));
+          navigate(AppRoute.Main);
         })
         .catch(() => {
           setFieldError(
@@ -80,6 +86,8 @@ export function QuestionnaireVisitor() {
           toast.success('Questionnaire created successful', {
             position: 'top-right',
           });
+          dispatch(setIsQuestionnaireOpen(false));
+          navigate(AppRoute.Main);
         })
         .catch(() => {
           setFieldError(
