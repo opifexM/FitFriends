@@ -17,9 +17,17 @@ export const getTrainings = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].trainings;
 
+export const getCoachTrainings = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].coachTrainings;
+
 export const getTrainingsForYou = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].trainingsForYou;
+
+export const getSpecialPriceTrainings = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].specialPriceTrainings;
 
 export const getCurrentTraining = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
@@ -37,9 +45,17 @@ export const getPurchases = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].purchases;
 
+export const getMyOrders = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].myOrders;
+
 export const getUserDetail = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].userDetail;
+
+export const getPublicUserDetail = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].publicUserDetail;
 
 export const getBalances = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,

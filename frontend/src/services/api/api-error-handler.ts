@@ -9,7 +9,7 @@ type ApiErrorResponse = {
   details?: ApiErrorDetail[];
 };
 
-function handleApiError(error: unknown): string {
+export function handleApiError(error: unknown): string {
   if (error instanceof AxiosError && error.response) {
     const responseData = error.response.data as ApiErrorResponse;
     const { message, details } = responseData;
@@ -26,7 +26,10 @@ function handleApiError(error: unknown): string {
 
     return detailedMessages;
   }
+
+  if (error instanceof AxiosError) {
+    return error.message;
+  }
+
   return 'An unexpected error occurred while communicating with the API.';
 }
-
-export { handleApiError };

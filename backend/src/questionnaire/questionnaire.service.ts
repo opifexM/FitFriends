@@ -1,11 +1,19 @@
 import {
+  BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateQuestionnaireDto } from 'shared/type/questionnaire/dto/create-questionnaire.dto';
-import { UpdateQuestionnaireDto } from 'shared/type/questionnaire/dto/update-questionnaire.dto';
+import { RoleType } from 'shared/type/enum/role-type.enum';
+import { CreateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/create-coach-questionnaire.dto';
+import { CreateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/create-visitor-questionnaire.dto';
+import { UpdateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/update-coach-questionnaire.dto';
+import { UpdateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/update-visitor-questionnaire.dto';
+import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
+import { FileService } from '../file-module/file.service';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
 import { QuestionnaireEntity } from './entity/questionnaire.entity';
@@ -19,12 +27,14 @@ export class QuestionnaireService {
 
   constructor(
     private readonly questionnaireRepository: QuestionnaireRepository,
+    private readonly fileService: FileService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
-  public async createQuestionnaire(
+  public async createVisitorQuestionnaire(
     userId: string,
-    dto: CreateQuestionnaireDto,
+    dto: CreateVisitorQuestionnaireDto,
   ): Promise<QuestionnaireEntity> {
     const {
       skillLevel,
@@ -32,14 +42,19 @@ export class QuestionnaireService {
       workoutDuration,
       caloriesToLose,
       dailyCalorieBurn,
-      isReadyForTraining,
     } = dto;
-    this.logger.log('Attempting to create questionnaire');
+    this.logger.log('Attempting to create visitor questionnaire');
 
     const foundUser = await this.userService.findUserById(userId);
     if (!foundUser) {
       this.logger.warn(`User with id '${userId}' not found`);
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.VISITOR) {
+      this.logger.warn(
+        `User '${userId}' is not visitor. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_VISITOR);
     }
 
     const questionnaireData = {
@@ -49,15 +64,67 @@ export class QuestionnaireService {
       workoutDuration: workoutDuration,
       caloriesToLose: caloriesToLose,
       dailyCalorieBurn: dailyCalorieBurn,
-      isReadyForTraining: isReadyForTraining ?? false,
+      isReadyForTraining: true,
     };
 
     const questionnaireEntity =
       QuestionnaireFactory.createEntity(questionnaireData);
     const createdQuestionnaire =
       await this.questionnaireRepository.save(questionnaireEntity);
+
     this.logger.log(
-      `Questionnaire created with ID: '${createdQuestionnaire.id}'`,
+      `Visitor questionnaire created with ID: '${createdQuestionnaire.id}'`,
+    );
+
+    return createdQuestionnaire;
+  }
+
+  public async createCoachQuestionnaire(
+    userId: string,
+    dto: CreateCoachQuestionnaireDto,
+    certificateFiles: Express.Multer.File[],
+  ): Promise<QuestionnaireEntity> {
+    const { skillLevel, workout, isReadyForCoaching, experience } = dto;
+    this.logger.log('Attempting to create coach questionnaire');
+
+    const foundUser = await this.userService.findUserById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User with id '${userId}' not found`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.COACH) {
+      this.logger.warn(
+        `User '${userId}' is not coach. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_COACH);
+    }
+
+    const certificateIds = await Promise.all(
+      certificateFiles.map(async (file) => {
+        return await this.fileService.uploadFile(
+          file,
+          [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
+          QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
+        );
+      }),
+    );
+
+    const questionnaireData = {
+      user: foundUser.id,
+      skillLevel: skillLevel,
+      workout: workout,
+      isReadyForCoaching: isReadyForCoaching,
+      certificateIds: certificateIds,
+      experience: experience,
+    };
+
+    const questionnaireEntity =
+      QuestionnaireFactory.createEntity(questionnaireData);
+    const createdQuestionnaire =
+      await this.questionnaireRepository.save(questionnaireEntity);
+
+    this.logger.log(
+      `Coach questionnaire created with ID: '${createdQuestionnaire.id}'`,
     );
 
     return createdQuestionnaire;
@@ -79,6 +146,15 @@ export class QuestionnaireService {
     return foundQuestionnaire;
   }
 
+  public async findLatestQuestionnairePublicProfileByUserId(
+    userId: string,
+  ): Promise<QuestionnaireEntity> {
+    this.logger.log(
+      `Looking for last questionnaire for public profile with user ID: '${userId}'`,
+    );
+    return await this.questionnaireRepository.findByUserId(userId);
+  }
+
   public async findQuestionnaireById(
     questionnaireId: string,
   ): Promise<QuestionnaireEntity> {
@@ -93,12 +169,27 @@ export class QuestionnaireService {
     return foundQuestionnaire;
   }
 
-  public async updateQuestionnaireById(
+  public async updateVisitorQuestionnaireById(
     userId: string,
     questionnaireId: string,
-    dto: UpdateQuestionnaireDto,
+    dto: UpdateVisitorQuestionnaireDto,
   ): Promise<QuestionnaireEntity> {
-    this.logger.log(`Updating questionnaire with ID: '${questionnaireId}'`);
+    this.logger.log(
+      `Updating visitor questionnaire with ID: '${questionnaireId}'`,
+    );
+
+    const foundUser = await this.userService.findUserById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User with id '${userId}' not found`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.VISITOR) {
+      this.logger.warn(
+        `User '${userId}' is not visitor. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_VISITOR);
+    }
+
     const updatedQuestionnaire =
       await this.findQuestionnaireById(questionnaireId);
 
@@ -120,6 +211,62 @@ export class QuestionnaireService {
       updatedQuestionnaire.dailyCalorieBurn = dto.dailyCalorieBurn;
     if (dto.isReadyForTraining !== undefined)
       updatedQuestionnaire.isReadyForTraining = dto.isReadyForTraining;
+
+    return this.questionnaireRepository.update(
+      questionnaireId,
+      updatedQuestionnaire,
+    );
+  }
+
+  public async updateCoachQuestionnaireById(
+    userId: string,
+    questionnaireId: string,
+    dto: UpdateCoachQuestionnaireDto,
+    certificateFile: Express.Multer.File,
+  ): Promise<QuestionnaireEntity> {
+    this.logger.log(
+      `Updating coach questionnaire with ID: '${questionnaireId}'`,
+    );
+
+    const foundUser = await this.userService.findUserById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User with id '${userId}' not found`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.COACH) {
+      this.logger.warn(
+        `User '${userId}' is not coach. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_COACH);
+    }
+
+    const updatedQuestionnaire =
+      await this.findQuestionnaireById(questionnaireId);
+
+    if (userId !== updatedQuestionnaire.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to questionnaire access owned by User ID '${updatedQuestionnaire.user.toString()}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
+    }
+
+    const certificateId = await this.fileService.uploadFile(
+      certificateFile,
+      [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
+      QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
+    );
+
+    if (dto.skillLevel !== undefined)
+      updatedQuestionnaire.skillLevel = dto.skillLevel;
+    if (dto.workout !== undefined) updatedQuestionnaire.workout = dto.workout;
+    if (dto.workoutDuration !== undefined)
+      updatedQuestionnaire.workoutDuration = dto.workoutDuration;
+    if (dto.isReadyForCoaching !== undefined)
+      updatedQuestionnaire.isReadyForCoaching = dto.isReadyForCoaching;
+    if (dto.experience !== undefined)
+      updatedQuestionnaire.experience = dto.experience;
+    // if (certificateId !== undefined)
+    //   updatedQuestionnaire.certificateIds = certificateIds;
 
     return this.questionnaireRepository.update(
       questionnaireId,

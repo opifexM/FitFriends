@@ -3,7 +3,7 @@ import { getLastQuestionnaire } from '../../store/api-communication/api-communic
 
 const WEEK_DAYS_COUNT = 7;
 
-export function PersonalAccountSchedule() {
+export function PersonalAccountVisitorSchedule() {
   const questionnaire = useAppSelector(getLastQuestionnaire);
 
   if (!questionnaire) {

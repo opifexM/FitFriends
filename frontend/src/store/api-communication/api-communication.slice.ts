@@ -1,10 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
+import { MyOrderDto } from 'shared/type/order/dto/my-order-pagination.dto.ts';
+import { ORDER_LIST } from 'shared/type/order/order.constant.ts';
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
 import { TRAINING_LIST } from 'shared/type/training/traning.constant.ts';
+import { PublicUserDto } from 'shared/type/user/dto/public-user.dto.ts';
 import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import {
   AUTH_TOKEN,
@@ -15,28 +18,35 @@ import {
 import { dropToken, saveToken } from '../../services/token.ts';
 import {
   activateBalancePurchase,
+  createCoachQuestionnaire,
   createOrder,
-  createQuestionnaire,
   createReview,
   createTraining,
+  createVisitorQuestionnaire,
   deactivateBalancePurchase,
   fetchBalances,
+  fetchCoachTraining,
   fetchLatestQuestionnaire,
   fetchLatestReview,
+  fetchMyOrder,
+  fetchPublicUserDetail,
   fetchPurchase,
   fetchReviewByTraining,
   fetchTraining,
   fetchTrainingDetail,
   fetchTrainingFouYou,
+  fetchTrainingSpecialPrice,
   fetchUserDetail,
-  updateQuestionnaire,
+  updateCoachQuestionnaire,
   updateReview,
+  updateTraining,
+  updateVisitorQuestionnaire,
 } from '../api-action/data-action.ts';
+import { refreshAuth } from '../api-action/refresh-auth-action.ts';
 import {
   checkAuth,
   fetchUser,
   loginAuth,
-  refreshAuth,
   registerAuth,
   updateUser,
 } from '../api-action/user-auth-action.ts';
@@ -46,13 +56,17 @@ interface ApiCommunicationState {
   authorizationStatus: AuthorizationStatusType;
   lastQuestionnaire: QuestionnaireDto | null;
   trainings: TrainingDto[];
+  coachTrainings: TrainingDto[];
   currentTraining: TrainingDto | null;
   reviews: ReviewDto[];
   lastReview: ReviewDto | null;
   purchases: TrainingDto[];
+  myOrders: MyOrderDto[];
   balances: BalanceDto[];
   userDetail: UserDto | null;
+  publicUserDetail: PublicUserDto | null;
   trainingsForYou: TrainingDto[];
+  specialPriceTrainings: TrainingDto[];
 }
 
 const initialState: ApiCommunicationState = {
@@ -60,12 +74,16 @@ const initialState: ApiCommunicationState = {
   authorizationStatus: AuthorizationStatus.Unknown,
   lastQuestionnaire: null,
   trainings: [],
+  coachTrainings: [],
   currentTraining: null,
   reviews: [],
   lastReview: null,
   purchases: [],
+  myOrders: [],
   userDetail: null,
+  publicUserDetail: null,
   trainingsForYou: [],
+  specialPriceTrainings: [],
   balances: [],
 };
 
@@ -176,24 +194,46 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
 
-      .addCase(createQuestionnaire.pending, (state) => {
+      .addCase(createVisitorQuestionnaire.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createQuestionnaire.rejected, (state) => {
+      .addCase(createVisitorQuestionnaire.rejected, (state) => {
         state.isLoading = false;
       })
-      .addCase(createQuestionnaire.fulfilled, (state, action) => {
+      .addCase(createVisitorQuestionnaire.fulfilled, (state, action) => {
         state.lastQuestionnaire = action.payload;
         state.isLoading = false;
       })
 
-      .addCase(updateQuestionnaire.pending, (state) => {
+      .addCase(createCoachQuestionnaire.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(updateQuestionnaire.rejected, (state) => {
+      .addCase(createCoachQuestionnaire.rejected, (state) => {
         state.isLoading = false;
       })
-      .addCase(updateQuestionnaire.fulfilled, (state, action) => {
+      .addCase(createCoachQuestionnaire.fulfilled, (state, action) => {
+        state.lastQuestionnaire = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(updateVisitorQuestionnaire.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateVisitorQuestionnaire.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateVisitorQuestionnaire.fulfilled, (state, action) => {
+        state.lastQuestionnaire = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(updateCoachQuestionnaire.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateCoachQuestionnaire.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateCoachQuestionnaire.fulfilled, (state, action) => {
         state.lastQuestionnaire = action.payload;
         state.isLoading = false;
       })
@@ -226,6 +266,18 @@ export const apiCommunicationSlice = createSlice({
         }
       })
 
+      .addCase(fetchCoachTraining.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchCoachTraining.rejected, (state) => {
+        state.coachTrainings = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchCoachTraining.fulfilled, (state, action) => {
+        state.coachTrainings = action.payload.entities;
+        state.isLoading = false;
+      })
+
       .addCase(fetchTrainingFouYou.pending, (state) => {
         state.isLoading = true;
       })
@@ -238,6 +290,18 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
 
+      .addCase(fetchTrainingSpecialPrice.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchTrainingSpecialPrice.rejected, (state) => {
+        state.specialPriceTrainings = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchTrainingSpecialPrice.fulfilled, (state, action) => {
+        state.specialPriceTrainings = action.payload.entities;
+        state.isLoading = false;
+      })
+
       .addCase(fetchTrainingDetail.pending, (state) => {
         state.isLoading = true;
       })
@@ -246,6 +310,18 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(fetchTrainingDetail.fulfilled, (state, action) => {
+        state.currentTraining = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(updateTraining.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateTraining.rejected, (state) => {
+        state.currentTraining = null;
+        state.isLoading = false;
+      })
+      .addCase(updateTraining.fulfilled, (state, action) => {
         state.currentTraining = action.payload;
         state.isLoading = false;
       })
@@ -329,6 +405,29 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
 
+      .addCase(fetchMyOrder.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchMyOrder.rejected, (state) => {
+        state.myOrders = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchMyOrder.fulfilled, (state, action) => {
+        const { currentPage, entities } = action.payload;
+        if (currentPage === ORDER_LIST.DEFAULT_FILTER_PAGE) {
+          state.myOrders = entities;
+        } else {
+          const existingPurchaseIds = new Set(
+            state.myOrders.map((order) => order.training.id),
+          );
+          const newEntities = entities.filter(
+            (entity) => !existingPurchaseIds.has(entity.training.id),
+          );
+          state.myOrders = [...state.myOrders, ...newEntities];
+        }
+        state.isLoading = false;
+      })
+
       .addCase(fetchBalances.pending, (state) => {
         state.isLoading = true;
       })
@@ -370,6 +469,18 @@ export const apiCommunicationSlice = createSlice({
       })
       .addCase(fetchUserDetail.fulfilled, (state, action) => {
         state.userDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(fetchPublicUserDetail.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchPublicUserDetail.rejected, (state) => {
+        state.publicUserDetail = null;
+        state.isLoading = false;
+      })
+      .addCase(fetchPublicUserDetail.fulfilled, (state, action) => {
+        state.publicUserDetail = action.payload;
         state.isLoading = false;
       });
   },

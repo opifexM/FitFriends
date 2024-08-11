@@ -1,14 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { TokenPayload } from 'shared/type/token-payload.interface.ts';
-import { Token } from 'shared/type/token.interface.ts';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto.ts';
 import { LoggedDto } from 'shared/type/user/dto/logged.dto.ts';
 import { LoginDto } from 'shared/type/user/dto/login.dto.ts';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto.ts';
 import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import { APIRoute } from '../../const.ts';
-import { handleApiError } from '../../services/api-error-handler.ts';
+import { handleApiError } from '../../services/api/api-error-handler.ts';
 import { ThunkApiConfig } from '../state.ts';
 
 export const checkAuth = createAsyncThunk<
@@ -21,28 +20,9 @@ export const checkAuth = createAsyncThunk<
 
     return data;
   } catch (error) {
-    toast.warning(handleApiError(error), {
-      position: 'top-right',
-    });
     return rejectWithValue(handleApiError(error));
   }
 });
-
-export const refreshAuth = createAsyncThunk<Token, undefined, ThunkApiConfig>(
-  'user/refreshAuth',
-  async (_arg, { extra: api, rejectWithValue }) => {
-    try {
-      const { data } = await api.post<Token>(APIRoute.RefreshAuth);
-
-      return data;
-    } catch (error) {
-      toast.warning(handleApiError(error), {
-        position: 'top-right',
-      });
-      return rejectWithValue(handleApiError(error));
-    }
-  },
-);
 
 export const loginAuth = createAsyncThunk<LoggedDto, LoginDto, ThunkApiConfig>(
   'user/loginAuth',

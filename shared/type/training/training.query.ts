@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsOptional,
   IsPositive,
+  IsString,
   Min,
 } from 'class-validator';
 import { WorkoutType } from '../enum/workout-type.enum';
@@ -111,4 +112,12 @@ export class TrainingQuery {
     example: TrainingSortType.BY_HIGH_PRICE,
   })
   public trainingSortType?: TrainingSortType;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: '123e4567-e89b-12d3-a456-426614174001',
+    description: 'Coach ID for training filtration',
+  })
+  public coachId?: string;
 }

@@ -5,11 +5,11 @@ export const USER = {
   },
   AVATAR: {
     MAX_SIZE_KB: 1024,
-    FORMATS: ['jpg', 'png'],
+    FORMATS: ['.jpg', '.png'],
   },
   PROFILE_PICTURE: {
     MAX_SIZE_KB: 1024,
-    FORMATS: ['jpg', 'png'],
+    FORMATS: ['.jpg', '.png'],
   },
   PASSWORD: {
     MIN: 6,

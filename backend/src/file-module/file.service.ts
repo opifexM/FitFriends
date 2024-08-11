@@ -24,7 +24,10 @@ export class FileService {
     allowedFormats: string[],
     maxSizeKb: number,
   ): Promise<string> {
-    const fileExtension = extname(file.originalname).replace('.', '');
+    if (!file) {
+      return;
+    }
+    const fileExtension = extname(file.originalname).toLowerCase();
     if (!fileExtension) {
       this.logger.warn(`Unknown file type received: ${file.mimetype}`);
       throw new BadRequestException(FILE_MESSAGES.UNKNOWN_TYPE);

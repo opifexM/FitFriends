@@ -33,12 +33,27 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
     return TrainingFactory.createEntity(plainObject);
   }
 
-  public async findById(id: string): Promise<TrainingEntity | null> {
+  public async findWithCoachById(id: string): Promise<TrainingEntity | null> {
     this.logger.log(`Finding training by ID: '${id}'`);
     const foundDocument = await this.model.findById(new ObjectId(id)).populate({
       path: 'coach',
       select: 'name avatarId profilePictureId',
     });
+
+    return this.createEntityFromDocument(foundDocument);
+  }
+
+  public async findAllByCoachId(id: string): Promise<TrainingEntity[]> {
+    this.logger.log(`Finding all training by coach ID: '${id}'`);
+    const trainings = await this.model.find({ coach: id });
+    this.logger.log(`Retrieved [${trainings.length}] trainings`);
+
+    return trainings.map((training) => this.createEntityFromDocument(training));
+  }
+
+  public async findById(id: string): Promise<TrainingEntity | null> {
+    this.logger.log(`Finding training by ID: '${id}'`);
+    const foundDocument = await this.model.findById(new ObjectId(id));
 
     return this.createEntityFromDocument(foundDocument);
   }
@@ -54,6 +69,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
     ratingFrom,
     ratingTo,
     limit,
+    coachId,
   }: TrainingQuery): Promise<TrainingPaginationInterface<TrainingEntity>> {
     const sortCriteria: { [key: string]: SortDirection } = {};
     if (trainingSortType === TrainingSortType.BY_HIGH_PRICE) {
@@ -61,7 +77,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
     } else if (trainingSortType === TrainingSortType.BY_LOW_PRICE) {
       sortCriteria['price'] = SortDirection.DESC;
     } else if (trainingSortType === TrainingSortType.BY_DATE) {
-      sortCriteria['createdAt'] = SortDirection.ASC;
+      sortCriteria['createdAt'] = SortDirection.DESC;
     }
 
     const filterCriteria: { [key: string]: any } = {};
@@ -108,6 +124,9 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
         ...filterCriteria['rating'],
         $lte: ratingTo,
       };
+    }
+    if (coachId) {
+      filterCriteria['coach'] = coachId;
     }
 
     const skip = (currentPage - 1) * limit;
@@ -247,6 +266,28 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       totalItems: uniqueTrainings.length,
       totalPages: 1,
       entities: uniqueTrainings,
+    };
+  }
+
+  public async findAllBySpecial(): Promise<PaginationResult<TrainingEntity>> {
+    this.logger.log(`Retrieving 'special price' trainings'`);
+
+    const filterCriteria = {
+      isSpecialOffer: true,
+    };
+
+    const trainings = await this.model.find(filterCriteria);
+
+    this.logger.log(`Retrieved [${trainings.length}] trainings`);
+
+    return {
+      entities: trainings.map((training) =>
+        this.createEntityFromDocument(training),
+      ),
+      currentPage: 1,
+      itemsPerPage: trainings.length,
+      totalItems: trainings.length,
+      totalPages: 1,
     };
   }
 }

@@ -1,12 +1,15 @@
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
+import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { AppRoute } from '../../const.ts';
 import { useAppSelector } from '../../hook';
+import { getUserDetail } from '../../store/api-communication/api-communication.selectors.ts';
 import { getMenuStatus } from '../../store/ui-settings/ui-settings.selectors.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
 
 export function Header() {
   const menuStatus = useAppSelector(getMenuStatus);
+  const userDetail = useAppSelector(getUserDetail);
 
   return (
     <header className="header">
@@ -27,7 +30,11 @@ export function Header() {
                 className={classNames('main-nav__link', {
                   'is-active': menuStatus === MenuType.MAIN,
                 })}
-                to={AppRoute.Main}
+                to={
+                  userDetail && userDetail.role === RoleType.COACH
+                    ? AppRoute.PersonalAccount
+                    : AppRoute.Main
+                }
                 aria-label="На главную"
               >
                 <svg width="18" height="18" aria-hidden="true">

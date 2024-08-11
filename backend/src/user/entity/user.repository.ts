@@ -27,7 +27,9 @@ export class UserRepository extends BaseRepository<UserEntity> {
 
   public async findByEmail(email: string): Promise<UserEntity | null> {
     this.logger.log(`Searching for user by email: ${email}`);
-    const foundDocument = await this.model.findOne({ email: email });
+    const foundDocument = await this.model
+      .findOne({ email: email })
+      .select('password email');
 
     return this.createEntityFromDocument(foundDocument);
   }

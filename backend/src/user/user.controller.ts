@@ -28,6 +28,7 @@ import { Token } from 'shared/type/token.interface';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoggedDto } from 'shared/type/user/dto/logged.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
+import { PublicUserDto } from 'shared/type/user/dto/public-user.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { UserDto } from 'shared/type/user/dto/user.dto';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
@@ -65,6 +66,26 @@ export class UserController {
     const createdUser = await this.userService.createUser(dto, avatarFile);
 
     return fillDto(UserDto, createdUser.toPOJO());
+  }
+
+  @Get('public/:userId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get public user profile by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The public user profile has been successfully retrieved.',
+    type: UserDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found.' })
+  public async getUserPublicProfileById(
+    @Param('userId', MongoIdValidationPipe) userId: string,
+  ): Promise<PublicUserDto> {
+    this.logger.log(`Retrieving public user profile with ID: '${userId}'`);
+    const publicUserData =
+      await this.userService.findPublicUserProfileById(userId);
+
+    return fillDto(PublicUserDto, publicUserData);
   }
 
   @Get(':userId')

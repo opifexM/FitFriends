@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { GenderType } from 'shared/type/enum/gender-type.enum.ts';
 import { LocationType } from 'shared/type/enum/location-type.enum.ts';
 import { RoleType } from 'shared/type/enum/role-type.enum.ts';
+import { USER } from 'shared/type/user/user.constant.ts';
 import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import { registerAuth } from '../../store/api-action/user-auth-action.ts';
@@ -92,7 +93,7 @@ export function Registration() {
                         className="visually-hidden"
                         type="file"
                         name="file"
-                        accept=".png, .jpeg"
+                        accept={USER.AVATAR.FORMATS.join(',')}
                         onChange={(event) => {
                           setFieldValue(
                             'file',

@@ -1,20 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsEnum,
-  IsNumber,
   IsOptional,
-  Max,
-  Min,
+  IsString,
+  Length,
 } from 'class-validator';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum';
 import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
 
-export class UpdateQuestionnaireDto {
+export class UpdateCoachQuestionnaireDto {
   @IsOptional()
   @IsEnum(SkillLevelType)
   @ApiProperty({
@@ -47,34 +47,30 @@ export class UpdateQuestionnaireDto {
   public workoutDuration?: WorkoutDurationType;
 
   @IsOptional()
-  @IsNumber()
-  @Min(QUESTIONNAIRE.CALORIES_TO_LOSE.MIN)
-  @Max(QUESTIONNAIRE.CALORIES_TO_LOSE.MAX)
   @ApiProperty({
-    example: 500,
-    description: 'The number of calories to lose',
-    minimum: QUESTIONNAIRE.CALORIES_TO_LOSE.MIN,
-    maximum: QUESTIONNAIRE.CALORIES_TO_LOSE.MAX,
+    type: 'string',
+    format: 'binary',
+    description: 'Certificate file for the coach',
   })
-  public caloriesToLose?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(QUESTIONNAIRE.DAILY_CALORIE_BURN.MIN)
-  @Max(QUESTIONNAIRE.DAILY_CALORIE_BURN.MAX)
-  @ApiProperty({
-    example: 2000,
-    description: 'The daily calorie burn',
-    minimum: QUESTIONNAIRE.DAILY_CALORIE_BURN.MIN,
-    maximum: QUESTIONNAIRE.DAILY_CALORIE_BURN.MAX,
-  })
-  public dailyCalorieBurn?: number;
+  public certificateFiles?: any[];
 
   @IsOptional()
   @IsBoolean()
+  @Transform(({ value }) => value === 'true' || value === true)
   @ApiProperty({
     example: true,
-    description: 'Is the user ready for training',
+    description: 'Is the coach ready for coaching',
   })
-  public isReadyForTraining?: boolean;
+  public isReadyForCoaching?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @Length(QUESTIONNAIRE.EXPERIENCE.MIN, QUESTIONNAIRE.EXPERIENCE.MAX)
+  @ApiProperty({
+    example: 'Worked as a coach for 5 years',
+    description: 'Experience description for the coach',
+    minLength: QUESTIONNAIRE.EXPERIENCE.MIN,
+    maxLength: QUESTIONNAIRE.EXPERIENCE.MAX,
+  })
+  public experience?: string;
 }

@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { FileModule } from '../file-module/file.module';
 import { UserModule } from '../user/user.module';
 import { QuestionnaireRepository } from './entity/questionnaire.repository';
 import {
@@ -14,7 +15,8 @@ import { QuestionnaireService } from './questionnaire.service';
     MongooseModule.forFeature([
       { name: QuestionnaireModel.name, schema: QuestionnaireSchema },
     ]),
-    UserModule,
+    forwardRef(() => UserModule),
+    FileModule,
   ],
   controllers: [QuestionnaireController],
   providers: [QuestionnaireService, QuestionnaireRepository],

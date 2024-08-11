@@ -1,3 +1,4 @@
+import { instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Entity } from 'shared/base/entity';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum';
@@ -15,6 +16,9 @@ export class QuestionnaireEntity extends Entity implements Questionnaire {
   public user: Types.ObjectId;
   public workout: WorkoutType[];
   public workoutDuration: WorkoutDurationType;
+  public experience: string;
+  public certificateIds: string[];
+  public isReadyForCoaching: boolean;
 
   constructor(questionnaire?: Questionnaire) {
     super();
@@ -26,30 +30,14 @@ export class QuestionnaireEntity extends Entity implements Questionnaire {
       return;
     }
 
-    this.id = questionnaire.id ?? '';
-    this.caloriesToLose = questionnaire.caloriesToLose;
-    this.createdAt = questionnaire.createdAt;
-    this.dailyCalorieBurn = questionnaire.dailyCalorieBurn;
-    this.isReadyForTraining = questionnaire.isReadyForTraining;
-    this.skillLevel = questionnaire.skillLevel;
-    this.updatedAt = questionnaire.updatedAt;
-    this.user = questionnaire.user;
-    this.workout = questionnaire.workout;
-    this.workoutDuration = questionnaire.workoutDuration;
+    Object.assign(this, questionnaire);
   }
 
   public toPOJO() {
+    const { _id, ...rest } = instanceToPlain(this);
     return {
+      ...rest,
       id: this.id,
-      caloriesToLose: this.caloriesToLose,
-      createdAt: this.createdAt,
-      dailyCalorieBurn: this.dailyCalorieBurn,
-      isReadyForTraining: this.isReadyForTraining,
-      skillLevel: this.skillLevel,
-      updatedAt: this.updatedAt,
-      user: this.user,
-      workout: this.workout,
-      workoutDuration: this.workoutDuration,
     };
   }
 }

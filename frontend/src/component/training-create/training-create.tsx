@@ -1,10 +1,12 @@
 import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { GenderType } from 'shared/type/enum/gender-type.enum.ts';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum.ts';
 import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { TRAINING } from 'shared/type/training/traning.constant.ts';
+import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import { createTraining } from '../../store/api-action/data-action.ts';
 import { Dropdown } from '../dropdown/dropdown.tsx';
@@ -24,6 +26,7 @@ interface FormValues {
 
 export function TrainingCreate() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const initialValues: FormValues = {
     name: '',
@@ -59,6 +62,7 @@ export function TrainingCreate() {
         toast.success('Training created successful', {
           position: 'top-right',
         });
+        navigate(AppRoute.PersonalAccount);
       })
       .catch(() => {
         setFieldError(

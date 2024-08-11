@@ -38,7 +38,7 @@ export class UserModel extends Document {
   @Prop({ required: true, trim: true })
   public name: string;
 
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, select: false })
   public password: string;
 
   @Prop({ required: true, trim: true })

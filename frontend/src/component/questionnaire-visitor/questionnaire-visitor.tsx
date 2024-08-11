@@ -9,8 +9,8 @@ import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant.
 import { AppRoute } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import {
-  createQuestionnaire,
-  updateQuestionnaire,
+  createVisitorQuestionnaire,
+  updateVisitorQuestionnaire,
 } from '../../store/api-action/data-action.ts';
 import { getLastQuestionnaire } from '../../store/api-communication/api-communication.selectors.ts';
 import { setIsQuestionnaireOpen } from '../../store/ui-settings/ui-settings.slice.ts';
@@ -46,7 +46,7 @@ export function QuestionnaireVisitor() {
   ) => {
     if (questionnaire?.id) {
       dispatch(
-        updateQuestionnaire({
+        updateVisitorQuestionnaire({
           questionnaireId: questionnaire.id,
           questionnaireData: {
             workout: values.workout,
@@ -59,7 +59,7 @@ export function QuestionnaireVisitor() {
       )
         .unwrap()
         .then(() => {
-          toast.success('Questionnaire updated successful', {
+          toast.success('Visitor questionnaire updated successful', {
             position: 'top-right',
           });
           dispatch(setIsQuestionnaireOpen(false));
@@ -68,12 +68,12 @@ export function QuestionnaireVisitor() {
         .catch(() => {
           setFieldError(
             'submit',
-            'It was not possible to update questionnaire with the entered data',
+            'It was not possible to update visitor questionnaire with the entered data',
           );
         });
     } else {
       dispatch(
-        createQuestionnaire({
+        createVisitorQuestionnaire({
           skillLevel: values.skillLevel as SkillLevelType,
           workout: values.workout,
           workoutDuration: values.workoutDuration as WorkoutDurationType,
@@ -83,7 +83,7 @@ export function QuestionnaireVisitor() {
       )
         .unwrap()
         .then(() => {
-          toast.success('Questionnaire created successful', {
+          toast.success('Visitor questionnaire created successful', {
             position: 'top-right',
           });
           dispatch(setIsQuestionnaireOpen(false));
@@ -92,7 +92,7 @@ export function QuestionnaireVisitor() {
         .catch(() => {
           setFieldError(
             'submit',
-            'It was not possible to created questionnaire with the entered data',
+            'It was not possible to created visitor questionnaire with the entered data',
           );
         });
     }

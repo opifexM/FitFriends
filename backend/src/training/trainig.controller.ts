@@ -93,6 +93,32 @@ export class TrainingController {
     });
   }
 
+  @Get('/special')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get special price training list' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The special price training list has been successfully retrieved.',
+    type: TrainingPaginationDto,
+  })
+  @ApiResponse({ status: 404, description: 'Training not found.' })
+  public async getSpecialTraining(
+    @GetUserId() userId: string,
+  ): Promise<TrainingPaginationDto> {
+    this.logger.log(`Retrieving 'special price' list for user ID: ${userId}'`);
+    const trainingPaginationData =
+      await this.trainingService.findSpecialTraining();
+
+    return fillDto(TrainingPaginationDto, {
+      ...trainingPaginationData,
+      entities: trainingPaginationData.entities.map((product) =>
+        product.toPOJO(),
+      ),
+    });
+  }
+
   @Get(':trainingId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -111,7 +137,7 @@ export class TrainingController {
       `Retrieving training with ID: '${trainingId}', user ID: '${userId}'`,
     );
     const foundTraining =
-      await this.trainingService.findTrainingById(trainingId);
+      await this.trainingService.findTrainingWithCoachById(trainingId);
 
     return fillDto(TrainingDto, foundTraining.toPOJO());
   }
@@ -137,14 +163,15 @@ export class TrainingController {
 
     return fillDto(TrainingPaginationDto, {
       ...trainingPaginationData,
-      entities: trainingPaginationData.entities.map((product) =>
-        product.toPOJO(),
+      entities: trainingPaginationData.entities.map((training) =>
+        training.toPOJO(),
       ),
     });
   }
 
   @Patch(':trainingId')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('videoFile'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update training' })
   @ApiResponse({
@@ -157,12 +184,16 @@ export class TrainingController {
     @Param('trainingId', MongoIdValidationPipe) trainingId: string,
     @Body() dto: UpdateTrainingDto,
     @GetUserId() userId: string,
+    @UploadedFile() videoFile?: Express.Multer.File,
   ): Promise<TrainingDto> {
-    this.logger.log(`Updating training with ID '${trainingId}'`);
+    this.logger.log(
+      `Updating training with ID '${trainingId}', Video file: '${videoFile}'`,
+    );
     const updatedTraining = await this.trainingService.updateTrainingById(
       userId,
       trainingId,
       dto,
+      videoFile,
     );
 
     return fillDto(TrainingDto, updatedTraining.toPOJO());

@@ -11,22 +11,28 @@ export const AppRoute = {
   ListTraining: '/trainings',
   TrainingCard: '/training/:trainingId',
   BalancePurchase: '/my-purchase',
+  MyOrder: '/my-order',
   PersonalAccount: '/personal-account',
+  PublicAccount: '/public-account',
+  PublicAccountId: '/public-account/:userId',
 } as const;
 export type AppRouteType = (typeof AppRoute)[keyof typeof AppRoute];
 
 export const APIRoute = {
   CreateUser: 'users',
   GetUser: 'users',
+  GetPublicUserDetail: 'users/public/:userId',
   UpdateUser: 'users',
   DeleteUser: 'users',
   Login: 'users/login',
   CheckAuth: 'users/check',
   RefreshAuth: 'users/refresh',
-  CreateQuestionnaire: 'questionnaires',
+  CreateVisitorQuestionnaire: 'questionnaires/visitor',
+  CreateCoachQuestionnaire: 'questionnaires/coach',
   GetQuestionnaire: 'questionnaires/:questionnaireId',
   GetLatestQuestionnaire: 'questionnaires/latest',
-  UpdateQuestionnaire: 'questionnaires/:questionnaireId',
+  UpdateVisitorQuestionnaire: 'questionnaires/visitor/:questionnaireId',
+  UpdateCoachQuestionnaire: 'questionnaires/coach/:questionnaireId',
   DeleteQuestionnaire: 'questionnaires/:questionnaireId',
   CreateBalance: 'balances',
   GetBalances: 'balances',
@@ -38,6 +44,7 @@ export const APIRoute = {
   GetTraining: 'trainings/:trainingId',
   GetTrainingList: 'trainings',
   GetTrainingFouYouList: 'trainings/for-you',
+  GetTrainingSpecialPrice: 'trainings/special',
   UpdateTraining: 'trainings/:trainingId',
   DeleteTraining: 'trainings/:trainingId',
   CreateReview: 'reviews',
@@ -48,6 +55,7 @@ export const APIRoute = {
   DeleteReview: 'reviews/:reviewId',
   CreateOrder: 'orders',
   GetOrder: 'orders/:orderId',
+  GetMyOrder: 'orders/my-order',
 } as const;
 
 export const AuthorizationStatus = {
@@ -65,12 +73,13 @@ export const NameSpace = {
 
 export const BACKEND = {
   URL: 'http://localhost:3000/api',
-  REQUEST_TIMEOUT: 5000,
+  REQUEST_TIMEOUT: 20000,
 } as const;
 
 export const AUTH_TOKEN = {
   ACCESS_KEY: 'fit-friends-access-token',
   REFRESH_KEY: 'fit-friends-refresh-token',
+  REFRESH_BEFORE_MIN: 5,
 } as const;
 
 export const UPLOAD_DIRECTORY = 'file/';

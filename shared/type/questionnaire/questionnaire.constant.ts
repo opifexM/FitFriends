@@ -10,4 +10,12 @@ export const QUESTIONNAIRE = {
     MIN: 1000,
     MAX: 5000,
   },
+  EXPERIENCE: {
+    MIN: 10,
+    MAX: 140,
+  },
+  CERTIFICATE: {
+    FORMATS: ['.pdf'],
+    MAX_SIZE_KB: 5120,
+  },
 } as const;

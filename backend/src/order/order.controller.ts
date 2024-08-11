@@ -5,6 +5,7 @@ import {
   Logger,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -15,7 +16,9 @@ import {
 } from '@nestjs/swagger';
 import { fillDto } from 'shared/lib/common';
 import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto';
+import { MyOrderPaginationDto } from 'shared/type/order/dto/my-order-pagination.dto';
 import { OrderDto } from 'shared/type/order/dto/order.dto';
+import { MyOrderQuery } from 'shared/type/order/my-order.query';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
 import { GetUserId } from '../decorator/get-user.decorator';
 import { JwtAuthGuard } from '../user/authentication/guard/jwt-auth.guard';
@@ -46,6 +49,37 @@ export class OrderController {
     const createdOrder = await this.orderService.createOrder(userId, dto);
 
     return fillDto(OrderDto, createdOrder.toPOJO());
+  }
+
+  @Get('my-order')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get training order list' })
+  @ApiResponse({
+    status: 200,
+    description: 'The training order list has been successfully retrieved.',
+    type: MyOrderPaginationDto,
+  })
+  @ApiResponse({ status: 404, description: 'Training not found.' })
+  public async getAllTraining(
+    @Query() query: MyOrderQuery,
+    @GetUserId() userId: string,
+  ): Promise<MyOrderPaginationDto> {
+    this.logger.log(
+      `Retrieving training order list with query: ${JSON.stringify(query)}'`,
+    );
+    const orderPaginationData = await this.orderService.findMyOrder(
+      userId,
+      query,
+    );
+
+    return fillDto(MyOrderPaginationDto, {
+      ...orderPaginationData,
+      entities: orderPaginationData.entities.map((order) => ({
+        ...order,
+        training: order.training.toPOJO(),
+      })),
+    });
   }
 
   @Get(':orderId')

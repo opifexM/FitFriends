@@ -1,7 +1,7 @@
 @host = http://localhost:3000
 @orderId = 66807d51e5737344c3e593c8
 @trainingId = 6677075e2fc4442aaadc3c55
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmE5NzFjZTkwYmU0NzBkYjhhNjFjNTciLCJlbWFpbCI6InRlc3RAYS5ydSIsImlhdCI6MTcyMzA2MDQ0NSwiZXhwIjoxNzI1NjUyNDQ1fQ.TOqF4WiBIcWeLy9tW94AtWGn9PLNVV9gyiYA0xDcz_kIeHaAZJPR55WSXFIr1hYXdmhuLOjsNTZitUWXxZpQcA
 
 ### Create a new order
 POST {{host}}/api/orders HTTP/1.1
@@ -35,4 +35,9 @@ Content-Type: application/json
 
 ### Delete order by ID
 DELETE {{host}}/api/orders/{{orderId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get my-order for coach
+GET {{host}}/api/orders/my-order HTTP/1.1
 Authorization: Bearer {{token}}

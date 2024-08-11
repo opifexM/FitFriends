@@ -6,7 +6,6 @@ import { OrderCreatePopup } from '../../component/order-create-popup/order-creat
 import { ReviewCreatePopup } from '../../component/review-create-popup/review-create-popup.tsx';
 import { ReviewList } from '../../component/review-list/review-list.tsx';
 import { TrainingDetail } from '../../component/training-detail/training-detail.tsx';
-import { VideoBlock } from '../../component/video-block/video-block.tsx';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import {
   fetchBalances,
@@ -70,10 +69,7 @@ export function TrainingDetailPage() {
                 <TrainingDetail
                   training={currentTraining}
                   currentBalance={currentBalance}
-                />
-                <VideoBlock
-                  training={currentTraining}
-                  currentBalance={currentBalance}
+                  userDetail={userDetail}
                 />
               </div>
             </div>

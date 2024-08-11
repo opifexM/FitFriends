@@ -1,6 +1,8 @@
 import {
   ConflictException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -13,6 +15,8 @@ import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { USER } from 'shared/type/user/user.constant';
 import { BcryptCrypto } from '../crypto/bcrypt.crypto';
 import { FileService } from '../file-module/file.service';
+import { QuestionnaireEntity } from '../questionnaire/entity/questionnaire.entity';
+import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 import { TokenService } from '../token-module/token.service';
 import { UserEntity } from './entity/user.entity';
 import { UserFactory } from './entity/user.factory';
@@ -28,6 +32,8 @@ export class UserService {
     private readonly bcryptCrypto: BcryptCrypto,
     private readonly tokenService: TokenService,
     private readonly fileService: FileService,
+    @Inject(forwardRef(() => QuestionnaireService))
+    private readonly questionnaireService: QuestionnaireService,
   ) {}
 
   public async createUser(
@@ -98,6 +104,28 @@ export class UserService {
     return foundUser;
   }
 
+  public async findPublicUserProfileById(
+    userId: string,
+  ): Promise<Partial<UserEntity & QuestionnaireEntity>> {
+    this.logger.log(`Looking for public user profile with ID: '${userId}'`);
+    const foundUser = await this.userRepository.findById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User not found with ID: '${userId}'`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+
+    const questionnaire =
+      await this.questionnaireService.findLatestQuestionnairePublicProfileByUserId(
+        userId,
+      );
+
+    if (questionnaire) {
+      return { ...foundUser.toPOJO(), ...questionnaire.toPOJO() };
+    }
+
+    return foundUser.toPOJO();
+  }
+
   public async updateUserById(
     userId: string,
     dto: UpdateUserDto,
@@ -105,7 +133,8 @@ export class UserService {
   ): Promise<UserEntity> {
     this.logger.log(`Updating user with ID: '${userId}'`);
     const updatedUser = await this.findUserById(userId);
-    const avatarId = avatarFile
+
+    updatedUser.avatarId = avatarFile
       ? await this.fileService.uploadFile(
           avatarFile,
           [...USER.AVATAR.FORMATS],
@@ -123,7 +152,6 @@ export class UserService {
     if (dto.role !== undefined) updatedUser.role = dto.role;
     if (dto.profilePictureId !== undefined)
       updatedUser.profilePictureId = dto.profilePictureId;
-    if (avatarId !== undefined) updatedUser.avatarId = avatarId;
     if (dto.description !== undefined)
       updatedUser.description = dto.description;
 
@@ -168,7 +196,7 @@ export class UserService {
         USER_MESSAGES.AUTHENTICATION_PASSWORD_WRONG,
       );
     }
-    this.logger.log(`User verified: ${existUser.email}`);
+    this.logger.log(`User verified: '${existUser.email}'`);
 
     return existUser;
   }

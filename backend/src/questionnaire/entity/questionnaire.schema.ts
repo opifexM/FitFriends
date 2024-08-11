@@ -27,17 +27,26 @@ export class QuestionnaireModel extends Document {
   @Prop({ required: true, enum: WorkoutType, type: [String] })
   public workout: WorkoutType[];
 
-  @Prop({ required: true, enum: WorkoutDurationType })
+  @Prop({ enum: WorkoutDurationType })
   public workoutDuration: WorkoutDurationType;
 
-  @Prop({ required: true })
+  @Prop()
   public caloriesToLose: number;
 
-  @Prop({ required: true })
+  @Prop()
   public dailyCalorieBurn: number;
 
-  @Prop({ required: true })
+  @Prop()
   public isReadyForTraining: boolean;
+
+  @Prop()
+  public isReadyForCoaching: boolean;
+
+  @Prop({ trim: true })
+  public experience: string;
+
+  @Prop({ type: [String] })
+  public certificateIds: string[];
 }
 
 export const QuestionnaireSchema =

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { AppRoute } from '../../const.ts';
 
-export function PersonalAccountList() {
+export function PersonalAccountVisitorList() {
   return (
     <div className="personal-account-user__additional-info">
       <Link
@@ -42,7 +42,7 @@ export function PersonalAccountList() {
             />
           </picture>
         </div>
-        <div className="thumbnail-spec-gym__header" align="center">
+        <div className="thumbnail-spec-gym__header">
           <h3 className="thumbnail-spec-gym__title">
             Скоро тут появится что-то полезное
           </h3>

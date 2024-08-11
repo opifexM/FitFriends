@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper/types';
 import { AppRoute, UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppSelector } from '../../hook';
-import { getTrainings } from '../../store/api-communication/api-communication.selectors.ts';
+import { getSpecialPriceTrainings } from '../../store/api-communication/api-communication.selectors.ts';
 import 'swiper/swiper-bundle.css';
 
 SwiperCore.use([Pagination, Autoplay]);
@@ -17,15 +17,16 @@ const SLIDE_SPACING = 50;
 const NUMBER_OF_SLIDES = 1;
 
 export function MainSpecialOffer() {
-  const trainings = useAppSelector(getTrainings);
+  const specialPriceTrainings = useAppSelector(getSpecialPriceTrainings);
   const swiperRef = useRef<SwiperClass | null>(null);
   const navigate = useNavigate();
 
-  const specialOfferTrainings = trainings
-    .filter((training) => training.isSpecialOffer)
-    .slice(0, TRAINING_MAIN.SPECIAL_LIMIT);
+  const specialOfferTrainingWithLimit = specialPriceTrainings.slice(
+    0,
+    TRAINING_MAIN.SPECIAL_LIMIT,
+  );
 
-  if (!specialOfferTrainings.length) {
+  if (!specialOfferTrainingWithLimit.length) {
     return (
       <div className="thumbnail-spec-gym">
         <div className="thumbnail-spec-gym__image">
@@ -70,7 +71,7 @@ export function MainSpecialOffer() {
               disableOnInteraction: false,
             }}
           >
-            {specialOfferTrainings.map((training, index) => (
+            {specialOfferTrainingWithLimit.map((training, index) => (
               <SwiperSlide
                 key={training.id}
                 onClick={() => navigate(`${AppRoute.Training}/${training.id}`)}
@@ -98,21 +99,23 @@ export function MainSpecialOffer() {
                   </span>
                   <div className="promo-slider__bottom-container">
                     <div className="promo-slider__slider-dots">
-                      {specialOfferTrainings.map((trainingDot, dotIndex) => (
-                        <button
-                          key={trainingDot.id}
-                          className={`promo-slider__slider-dot ${
-                            index === dotIndex
-                              ? 'promo-slider__slider-dot--active'
-                              : ''
-                          }`}
-                          aria-label={`слайд ${dotIndex + 1}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            swiperRef.current?.slideTo(dotIndex);
-                          }}
-                        ></button>
-                      ))}
+                      {specialOfferTrainingWithLimit.map(
+                        (trainingDot, dotIndex) => (
+                          <button
+                            key={trainingDot.id}
+                            className={`promo-slider__slider-dot ${
+                              index === dotIndex
+                                ? 'promo-slider__slider-dot--active'
+                                : ''
+                            }`}
+                            aria-label={`слайд ${dotIndex + 1}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              swiperRef.current?.slideTo(dotIndex);
+                            }}
+                          ></button>
+                        ),
+                      )}
                     </div>
                     <div className="promo-slider__price-container">
                       <p className="promo-slider__price">

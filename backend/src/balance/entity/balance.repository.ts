@@ -63,7 +63,7 @@ export class BalanceRepository extends BaseRepository<BalanceEntity> {
       .populate('training');
     this.logger.log(`Retrieved [${foundDocument.length}] purchase trainings`);
 
-    return foundDocument.map((balance) => balance.training.id);
+    return foundDocument.map((balance) => balance.training?.id);
   }
 
   public async findAllByUserId(

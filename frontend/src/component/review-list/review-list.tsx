@@ -47,33 +47,35 @@ export function ReviewList({
         {reviews.map(({ rating, text, user, id }) => (
           <li key={id} className="reviews-side-bar__item">
             <div className="review">
-              <div className="review__user-info">
-                <div className="review__user-photo">
-                  <picture>
-                    <source
-                      type="image/webp"
-                      srcSet={`${UPLOAD_DIRECTORY}${user.avatarId}`}
-                    />
-                    <img
-                      src={`${UPLOAD_DIRECTORY}${user.avatarId}`}
-                      srcSet={`${UPLOAD_DIRECTORY}${user.avatarId} 2x`}
-                      width="64"
-                      height="64"
-                      alt="Изображение пользователя"
-                    />
-                  </picture>
+              <Link to={`${AppRoute.PublicAccount}/${user.id}`}>
+                <div className="review__user-info">
+                  <div className="review__user-photo">
+                    <picture>
+                      <source
+                        type="image/webp"
+                        srcSet={`${UPLOAD_DIRECTORY}${user.avatarId}`}
+                      />
+                      <img
+                        src={`${UPLOAD_DIRECTORY}${user.avatarId}`}
+                        srcSet={`${UPLOAD_DIRECTORY}${user.avatarId} 2x`}
+                        width="64"
+                        height="64"
+                        alt="Изображение пользователя"
+                      />
+                    </picture>
+                  </div>
+                  <span className="review__user-name">{user.name}</span>
+                  <div className="review__rating">
+                    <svg width="16" height="16" aria-hidden="true">
+                      <use
+                        xlinkHref="#icon-star"
+                        style={{ fill: '#c5ec2a' }}
+                      ></use>
+                    </svg>
+                    <span>{rating}</span>
+                  </div>
                 </div>
-                <span className="review__user-name">{user.name}</span>
-                <div className="review__rating">
-                  <svg width="16" height="16" aria-hidden="true">
-                    <use
-                      xlinkHref="#icon-star"
-                      style={{ fill: '#c5ec2a' }}
-                    ></use>
-                  </svg>
-                  <span>{rating}</span>
-                </div>
-              </div>
+              </Link>
               <p className="review__comment">{text} </p>
             </div>
           </li>

@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 import { PaymentStatusType } from 'shared/type/enum/payment-status-type.enum';
 import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto';
+import { MyOrderQuery } from 'shared/type/order/my-order.query';
+import { ORDER_LIST } from 'shared/type/order/order.constant';
 import { BalanceService } from '../balance/balance.service';
+import { TrainingEntity } from '../training/entity/training.entity';
 import { TRAINING_MESSAGES } from '../training/training.constant';
 import { TrainingService } from '../training/training.service';
 import { USER_MESSAGES } from '../user/user.constant';
@@ -14,6 +17,7 @@ import { UserService } from '../user/user.service';
 import { OrderEntity } from './entity/order.entity';
 import { OrderFactory } from './entity/order.factory';
 import { OrderRepository } from './entity/order.repository';
+import { MyOrderPagination } from './my-order-pagination.interface';
 import { ORDER_MESSAGES } from './order.constant';
 
 @Injectable()
@@ -40,7 +44,8 @@ export class OrderService {
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
     }
 
-    const foundTraining = await this.trainingService.findTrainingById(service);
+    const foundTraining =
+      await this.trainingService.findTrainingWithCoachById(service);
     if (!foundTraining) {
       this.logger.warn(`Training with id '${service}' not found`);
       throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
@@ -109,5 +114,31 @@ export class OrderService {
 
   public async exists(orderId: string): Promise<boolean> {
     return this.orderRepository.exists(orderId);
+  }
+
+  public async findMyOrder(
+    userId: string,
+    orderQuery?: MyOrderQuery,
+  ): Promise<MyOrderPagination<TrainingEntity>> {
+    this.logger.log(`Finding training orders for training ID '${userId}'`);
+    const trainingList =
+      await this.trainingService.findAllTrainingByCoachId(userId);
+
+    const limit = Math.min(
+      orderQuery?.limit ?? Number.MAX_VALUE,
+      ORDER_LIST.LIMIT,
+    );
+    const currentPage =
+      orderQuery?.currentPage ?? ORDER_LIST.DEFAULT_FILTER_PAGE;
+    const sortDirection =
+      orderQuery?.sortDirection ?? ORDER_LIST.DEFAULT_SORT_DIRECTION;
+    const sortType = orderQuery?.sortType ?? ORDER_LIST.DEFAULT_SORT_TYPE;
+
+    return this.orderRepository.findMyOrderByQuery(trainingList, {
+      limit,
+      currentPage,
+      sortType,
+      sortDirection,
+    });
   }
 }

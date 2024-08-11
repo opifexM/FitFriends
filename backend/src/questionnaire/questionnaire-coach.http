@@ -1,0 +1,41 @@
+@host = http://localhost:3000
+@questionnaireId = 66ad25d61bf6533a505a7428
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmFkMWJhNzk5YzlkMzYyYmE2MDNjODUiLCJlbWFpbCI6InVzZXIxMzQ1QG5vdGZvdW5kLmxvY2FsIiwiaWF0IjoxNzIyNjIyNzIxLCJleHAiOjE3MjI2MjM2MjF9.AsdYHYMvEPRnTMwTOXdRssk1pWm9ljIAOizZJud92y8tCAB5mQOBSYNwIsqvwqiWg0YrB3tmscCwYUh-zAj4vw
+
+### Create a new questionnaire
+POST {{host}}/api/questionnaires/coach HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "skillLevel": "любитель",
+  "workout": ["стрейчинг", "аэробика"],
+  "workoutDuration": "30-50 минут",
+  "isReadyForCoaching": true,
+  "experience": "Worked as a coach for 5 years"
+}
+
+
+### Get questionnaire by ID
+GET {{host}}/api/questionnaires/{{questionnaireId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get last questionnaire by user ID
+GET {{host}}/api/questionnaires/latest HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Update questionnaire
+PATCH {{host}}/api/questionnaires/coach/{{questionnaireId}} HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "experience": "Worked as a coach for 10 years"
+}
+
+
+### Delete questionnaire by ID
+DELETE {{host}}/api/questionnaires/{{questionnaireId}} HTTP/1.1
+Authorization: Bearer {{token}}

@@ -2,11 +2,15 @@ import { ErrorMessage, Field, Form, Formik, FormikHelpers } from 'formik';
 import { toast } from 'react-toastify';
 import { GenderType } from 'shared/type/enum/gender-type.enum.ts';
 import { LocationType } from 'shared/type/enum/location-type.enum.ts';
+import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { UPLOAD_DIRECTORY } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
-import { updateQuestionnaire } from '../../store/api-action/data-action.ts';
+import {
+  updateCoachQuestionnaire,
+  updateVisitorQuestionnaire,
+} from '../../store/api-action/data-action.ts';
 import { updateUser } from '../../store/api-action/user-auth-action.ts';
 import {
   getLastQuestionnaire,
@@ -20,7 +24,7 @@ interface FormValues {
   avatarId: string;
   name: string;
   description: string;
-  isReadyForTraining: boolean;
+  isReady: boolean;
   workout: WorkoutType[];
   location: LocationType;
   gender: GenderType;
@@ -38,11 +42,19 @@ export function PersonalAccountDetail() {
     return null;
   }
 
+  const isReadyValue =
+    (userDetail.role === RoleType.VISITOR &&
+      questionnaire.isReadyForTraining) ||
+    (userDetail.role === RoleType.COACH && questionnaire.isReadyForCoaching);
+  const isReadyText =
+    (userDetail.role === RoleType.VISITOR && 'Готов к тренировке') ||
+    (userDetail.role === RoleType.COACH && 'Готов тренировать');
+
   const initialValues: FormValues = {
     avatarId: userDetail.avatarId,
     name: userDetail.name,
     description: userDetail.description,
-    isReadyForTraining: questionnaire.isReadyForTraining,
+    isReady: isReadyValue,
     workout: questionnaire.workout,
     location: userDetail.location,
     gender: userDetail.gender,
@@ -53,43 +65,79 @@ export function PersonalAccountDetail() {
 
   const handleSubmit = async (
     values: FormValues,
-    { setSubmitting, setFieldError }: FormikHelpers<FormValues>,
+    { setSubmitting, setFieldError, setFieldValue }: FormikHelpers<FormValues>,
   ) => {
-    Promise.all([
-      dispatch(
-        updateQuestionnaire({
-          questionnaireId: questionnaire.id,
-          questionnaireData: {
-            isReadyForTraining: values.isReadyForTraining,
-            workout: values.workout,
-            skillLevel: values.skillLevel,
-            workoutDuration: questionnaire.workoutDuration,
-            caloriesToLose: questionnaire.caloriesToLose,
-            dailyCalorieBurn: questionnaire.dailyCalorieBurn,
-          },
-        }),
-      ),
-      dispatch(
-        updateUser({
-          name: values.name,
-          description: values.description,
-          location: values.location,
-          gender: values.gender,
-          avatarFile: values.file,
-        }),
-      ),
-    ])
-      .then(() => {
-        toast.success('User details updated successful', {
-          position: 'top-right',
+    if (userDetail.role === RoleType.VISITOR) {
+      Promise.all([
+        dispatch(
+          updateVisitorQuestionnaire({
+            questionnaireId: questionnaire.id,
+            questionnaireData: {
+              isReadyForTraining: values.isReady,
+              workout: values.workout,
+              skillLevel: values.skillLevel,
+            },
+          }),
+        ),
+        dispatch(
+          updateUser({
+            name: values.name,
+            description: values.description,
+            location: values.location,
+            gender: values.gender,
+            avatarFile: values.file,
+          }),
+        ),
+      ])
+        .then(() => {
+          toast.success('User details updated successful', {
+            position: 'top-right',
+          });
+          setFieldValue('isEditMode', false);
+        })
+        .catch(() => {
+          setFieldError(
+            'submit',
+            'It was not possible to update user details with the entered data',
+          );
         });
-      })
-      .catch(() => {
-        setFieldError(
-          'submit',
-          'It was not possible to update user details with the entered data',
-        );
-      });
+    }
+
+    if (userDetail.role === RoleType.COACH) {
+      Promise.all([
+        dispatch(
+          updateCoachQuestionnaire({
+            questionnaireId: questionnaire.id,
+            questionnaireData: {
+              isReadyForCoaching: values.isReady,
+              workout: values.workout,
+              skillLevel: values.skillLevel,
+            },
+          }),
+        ),
+        dispatch(
+          updateUser({
+            name: values.name,
+            description: values.description,
+            location: values.location,
+            gender: values.gender,
+            avatarFile: values.file,
+          }),
+        ),
+      ])
+        .then(() => {
+          toast.success('Coach details updated successful', {
+            position: 'top-right',
+          });
+          setFieldValue('isEditMode', false);
+        })
+        .catch(() => {
+          setFieldError(
+            'submit',
+            'It was not possible to update coach details with the entered data',
+          );
+        });
+    }
 
     if (values.file) {
       URL.revokeObjectURL(values.file.name);
@@ -225,7 +273,7 @@ export function PersonalAccountDetail() {
                   <label>
                     <Field
                       type="checkbox"
-                      name="isReadyForTraining"
+                      name="isReady"
                       disabled={!values.isEditMode}
                     />
                     <span className="custom-toggle__icon">
@@ -233,9 +281,7 @@ export function PersonalAccountDetail() {
                         <use xlinkHref="#arrow-check"></use>
                       </svg>
                     </span>
-                    <span className="custom-toggle__label">
-                      Готов к тренировке
-                    </span>
+                    <span className="custom-toggle__label">{isReadyText}</span>
                   </label>
                 </div>
               </div>

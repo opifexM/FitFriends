@@ -29,7 +29,7 @@ export class UserDto {
   @Expose()
   @ApiProperty({
     example: 'I love running and doing physical exercises',
-    description: 'The description for the user account.',
+    description: 'The description for the user account',
   })
   public description: string;
 

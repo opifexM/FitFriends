@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
 import noUiSlider, { target } from 'nouislider';
 import 'nouislider/dist/nouislider.css';
+import { useEffect, useRef, useState } from 'react';
 import './range-slider.css';
 
 interface RangeSliderProps {

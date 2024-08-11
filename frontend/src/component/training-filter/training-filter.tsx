@@ -1,10 +1,12 @@
 import 'nouislider/dist/nouislider.css';
 import { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum.ts';
 import { AppRoute } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
+import { getUserDetail } from '../../store/api-communication/api-communication.selectors.ts';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
 import {
   resetTrainingFilterRange,
@@ -22,6 +24,7 @@ import { RangeSlider } from '../range-slider/range-slider.tsx';
 export function TrainingFilter() {
   const dispatch = useAppDispatch();
   const trainingFilter = useAppSelector(getTrainingFilter);
+  const userDetail = useAppSelector(getUserDetail);
 
   if (!trainingFilter) {
     return null;
@@ -69,7 +72,11 @@ export function TrainingFilter() {
       <h2 className="visually-hidden">Мои тренировки Фильтр</h2>
       <div className="gym-catalog-form__wrapper">
         <Link
-          to={AppRoute.Main}
+          to={
+            userDetail && userDetail.role === RoleType.COACH
+              ? AppRoute.PersonalAccount
+              : AppRoute.Main
+          }
           className="btn-flat btn-flat--underlined gym-catalog-form__btnback"
           type="button"
         >

@@ -18,7 +18,7 @@ export function LoadingScreen() {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    zIndex: 100000,
   };
 
   const containerStyle: React.CSSProperties = {

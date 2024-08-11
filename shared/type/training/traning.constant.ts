@@ -6,12 +6,12 @@ export const TRAINING = {
     MAX: 15,
   },
   PICTURE: {
-    FORMATS: ['jpg', 'png'],
+    FORMATS: ['.jpg', '.png'],
     MAX_SIZE_KB: 10_000,
   },
   VIDEO: {
-    FORMATS: ['mov', 'avi', 'mp4'],
-    MAX_SIZE_KB: 1_000_000,
+    FORMATS: ['.mov', '.avi', '.mp4'],
+    MAX_SIZE_KB: 100_000,
   },
   DESCRIPTION: {
     MIN: 10,

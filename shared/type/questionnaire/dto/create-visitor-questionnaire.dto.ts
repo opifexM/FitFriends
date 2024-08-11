@@ -2,10 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
   IsArray,
-  IsBoolean,
   IsEnum,
   IsNumber,
-  IsOptional,
   Max,
   Min,
 } from 'class-validator';
@@ -14,7 +12,7 @@ import { WorkoutDurationType } from 'shared/type/enum/workout-duration-type.enum
 import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
 
-export class CreateQuestionnaireDto {
+export class CreateVisitorQuestionnaireDto {
   @IsEnum(SkillLevelType)
   @ApiProperty({
     example: SkillLevelType.BEGINNER,
@@ -64,12 +62,4 @@ export class CreateQuestionnaireDto {
     maximum: QUESTIONNAIRE.DAILY_CALORIE_BURN.MAX,
   })
   public dailyCalorieBurn: number;
-
-  @IsOptional()
-  @IsBoolean()
-  @ApiProperty({
-    example: true,
-    description: 'Is the user ready for training',
-  })
-  public isReadyForTraining?: boolean;
 }

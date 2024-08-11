@@ -45,7 +45,8 @@ export class ReviewService {
       throw new NotFoundException(REVIEW_MESSAGES.NO_ACCESS_FOR_COACH);
     }
 
-    const foundReview = await this.trainingService.findTrainingById(training);
+    const foundReview =
+      await this.trainingService.findTrainingWithCoachById(training);
     if (!foundReview) {
       this.logger.warn(`Training with id '${training}' not found`);
       throw new NotFoundException(REVIEW_MESSAGES.NOT_FOUND);

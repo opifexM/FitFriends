@@ -14,7 +14,7 @@ export const reviewCreateValidationSchema = Yup.object().shape({
     .required('Значение обязательно'),
 
   text: Yup.string()
-    .min(REVIEW.TEXT.MIN, `Значение должно быть не меньше ${REVIEW.TEXT.MIN}`)
-    .max(REVIEW.TEXT.MAX, `Значение должно быть не больше ${REVIEW.TEXT.MAX}`)
+    .min(REVIEW.TEXT.MIN, `Текст должен быть не меньше ${REVIEW.TEXT.MIN}`)
+    .max(REVIEW.TEXT.MAX, `Текст должен быть не больше ${REVIEW.TEXT.MAX}`)
     .required('Значение обязательно'),
 });

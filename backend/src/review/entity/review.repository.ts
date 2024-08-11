@@ -40,7 +40,7 @@ export class ReviewRepository extends BaseRepository<ReviewEntity> {
 
     const skip = (currentPage - 1) * limit;
     this.logger.log(
-      `Retrieving trainings sortCriteria: '${JSON.stringify(sortCriteria)}', skip: '${skip}', limit: '${limit}'`,
+      `Retrieving reviews sortCriteria: '${JSON.stringify(sortCriteria)}', skip: '${skip}', limit: '${limit}'`,
     );
 
     const reviews = await this.model

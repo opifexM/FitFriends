@@ -14,4 +14,7 @@ export interface Questionnaire {
   isReadyForTraining: boolean;
   createdAt: Date;
   updatedAt: Date;
+  experience: string;
+  certificateIds: string[];
+  isReadyForCoaching: boolean;
 }

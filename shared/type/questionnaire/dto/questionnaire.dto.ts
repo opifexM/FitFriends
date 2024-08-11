@@ -60,9 +60,30 @@ export class QuestionnaireDto {
   @Expose()
   @ApiProperty({
     example: true,
-    description: 'Is the user ready for training',
+    description: 'Is the visitor ready for training',
   })
   public isReadyForTraining: boolean;
+
+  @Expose()
+  @ApiProperty({
+    example: true,
+    description: 'Is the coach ready for coaching',
+  })
+  public isReadyForCoaching: boolean;
+
+  @Expose()
+  @ApiProperty({
+    example: '60d0fe4f5311236168a109ca',
+    description: 'The unique identifier of the certificate file',
+  })
+  public certificateIds: string[];
+
+  @Expose()
+  @ApiProperty({
+    example: 'Worked as a coach for 5 years',
+    description: 'Experience description for the coach',
+  })
+  public experience: string;
 
   @Expose()
   @ApiProperty({

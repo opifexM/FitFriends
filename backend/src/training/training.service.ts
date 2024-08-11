@@ -94,6 +94,28 @@ export class TrainingService {
     return createdTraining;
   }
 
+  public async findTrainingWithCoachById(
+    trainingId: string,
+  ): Promise<TrainingEntity> {
+    this.logger.log(`Looking for training with coach with ID: '${trainingId}'`);
+    const foundTraining =
+      await this.trainingRepository.findWithCoachById(trainingId);
+    if (!foundTraining) {
+      this.logger.warn(`Training not found with ID: '${trainingId}'`);
+      throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);
+    }
+
+    return foundTraining;
+  }
+
+  public async findAllTrainingByCoachId(
+    coachId: string,
+  ): Promise<TrainingEntity[]> {
+    this.logger.log(`Looking for all training by coachID: '${coachId}'`);
+
+    return await this.trainingRepository.findAllByCoachId(coachId);
+  }
+
   public async findTrainingById(trainingId: string): Promise<TrainingEntity> {
     this.logger.log(`Looking for training with ID: '${trainingId}'`);
     const foundTraining = await this.trainingRepository.findById(trainingId);
@@ -109,6 +131,7 @@ export class TrainingService {
     userId: string,
     trainingId: string,
     dto: UpdateTrainingDto,
+    videoFile?: Express.Multer.File,
   ): Promise<TrainingEntity> {
     this.logger.log(`Updating training with ID: '${trainingId}'`);
     const updatedTraining = await this.findTrainingById(trainingId);
@@ -118,10 +141,18 @@ export class TrainingService {
     }
     if (userId !== updatedTraining.coach.toString()) {
       this.logger.warn(
-        `User ID '${userId}' attempted to training access owned by Coach ID '${updatedTraining.coach.toString()}'`,
+        `User ID '${userId}' attempted to training access owned by Coach ID '${updatedTraining.coach}'`,
       );
       throw new ForbiddenException(TRAINING_MESSAGES.NO_ACCESS);
     }
+
+    updatedTraining.videoId = videoFile
+      ? await this.fileService.uploadFile(
+          videoFile,
+          [...TRAINING.VIDEO.FORMATS],
+          TRAINING.VIDEO.MAX_SIZE_KB,
+        )
+      : TRAINING_DEFAULT.VIDEO_ID;
 
     if (dto.name !== undefined) updatedTraining.name = dto.name;
     if (dto.backgroundId !== undefined)
@@ -137,7 +168,6 @@ export class TrainingService {
     if (dto.description !== undefined)
       updatedTraining.description = dto.description;
     if (dto.gender !== undefined) updatedTraining.gender = dto.gender;
-    if (dto.videoId !== undefined) updatedTraining.videoId = dto.videoId;
     if (dto.isSpecialOffer !== undefined)
       updatedTraining.isSpecialOffer = dto.isSpecialOffer;
     if (dto.discountPercent !== undefined)
@@ -194,6 +224,7 @@ export class TrainingService {
     const workout = trainingQuery?.workout;
     const trainingSortType =
       trainingQuery?.trainingSortType ?? TRAINING_LIST.DEFAULT_SORT_TYPE;
+    const coachId = trainingQuery?.coachId;
 
     return this.trainingRepository.findAllByQuery({
       limit,
@@ -206,6 +237,7 @@ export class TrainingService {
       ratingTo,
       workout,
       trainingSortType,
+      coachId,
     });
   }
 
@@ -240,6 +272,14 @@ export class TrainingService {
     return this.trainingRepository.findAllByWorkoutList(questionnaire.workout);
   }
 
+  public async findSpecialTraining(): Promise<
+    PaginationResult<TrainingEntity>
+  > {
+    this.logger.log(`Finding 'special price' trainings`);
+
+    return this.trainingRepository.findAllBySpecial();
+  }
+
   public async updateTrainingRatingById(
     trainingId: string,
     rating: number,
@@ -248,7 +288,7 @@ export class TrainingService {
       `System updating training '${trainingId}' rating with '${rating}'`,
     );
 
-    const updatedTraining = await this.findTrainingById(trainingId);
+    const updatedTraining = await this.findTrainingWithCoachById(trainingId);
     if (!updatedTraining) {
       this.logger.warn(`Training not found with ID: '${trainingId}'`);
       throw new NotFoundException(TRAINING_MESSAGES.NOT_FOUND);

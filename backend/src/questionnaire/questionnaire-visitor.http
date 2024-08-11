@@ -1,17 +1,16 @@
 @host = http://localhost:3000
 @questionnaireId = 66731044152660a882394c82
-@userId = 66730db5df58bd000c95a7e0
-@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE4NzI4MDUyLCJleHAiOjE3MjEzMjAwNTJ9.Yk6nnS2PYw7DLv2kJ_A1ngU4XIhGh9K8J9a2rMAAp5ZiQNEZWqxJpXsHptqM0JABN1A6ey0oQjEj4MymIwjuHw
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmFkMWJhNzk5YzlkMzYyYmE2MDNjODUiLCJlbWFpbCI6InVzZXIxMzQ1QG5vdGZvdW5kLmxvY2FsIiwiaWF0IjoxNzIyNjIyNzIxLCJleHAiOjE3MjI2MjM2MjF9.AsdYHYMvEPRnTMwTOXdRssk1pWm9ljIAOizZJud92y8tCAB5mQOBSYNwIsqvwqiWg0YrB3tmscCwYUh-zAj4vw
 
 ### Create a new questionnaire
-POST {{host}}/api/questionnaires HTTP/1.1
+POST {{host}}/api/questionnaires/visitor HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "skillLevel": "любитель",
   "workout": ["стрейчинг", "аэробика"],
-  "workoutDuration": "30-50 мин",
+  "workoutDuration": "30-50 минут",
   "caloriesToLose": 5000,
   "dailyCalorieBurn": 2000,
   "isReadyForTraining": true
@@ -29,12 +28,12 @@ Authorization: Bearer {{token}}
 
 
 ### Update questionnaire
-PATCH {{host}}/api/questionnaires/{{questionnaireId}} HTTP/1.1
+PATCH {{host}}/api/questionnaires/visitor/{{questionnaireId}} HTTP/1.1
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "workoutDuration": "50-80 мин",
+  "workoutDuration": "50-80 минут",
   "caloriesToLose": 3500
 }
 

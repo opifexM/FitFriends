@@ -1,0 +1,63 @@
+@host = http://opifex.me:3000
+@userId = 6669fa301a4a457b8092f593
+@accessToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwiaWF0IjoxNzE5NTMxNTEzLCJleHAiOjE3MjIxMjM1MTN9.yWYfoXoBCBO228IplGH2_FOEkZcLaYv5agWB41pluv5oH3rIdWnatSxRL7v1Dv4KkpVMfWWxJFRQVIdvmT5hRQ
+@refreshToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwidG9rZW5JZCI6IjRmNDAwMTM1LTljY2QtNGVkZi04ZjEwLTU2Y2ZlYmJiODE0NyIsImlhdCI6MTcxODU1NjMwOCwiZXhwIjoxNzIxMTQ4MzA4fQ.-UJowbd-IGAmPrPN-M4o3kK30rrRlC1GZaow28STekqCqRY99oWEAe4PjxTm--JwBhdWAFGNGgtSFjkMeDcPiw
+
+### Create a new user
+POST {{host}}/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user134@notfound.local",
+  "name": "KeksA",
+  "password": "123456",
+  "location": "Петроградская",
+  "gender": "мужской",
+  "role": "visitor",
+  "profilePictureId": "123e4567-e89b-12d3-a456-426614174000",
+  "dateOfBirth": "1990-01-01"
+}
+
+
+### Get current user
+GET {{host}}/api/users HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+### Get user by ID
+GET {{host}}/api/users/{{userId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Update user
+PATCH {{host}}/api/users HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "AAAAAA2"
+}
+
+
+### Delete user by ID
+DELETE {{host}}/api/users HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Login user by email and password
+POST {{host}}/api/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "user134@notfound.local",
+  "password": "123456"
+}
+
+
+### Check JWT token
+POST {{host}}/api/users/check HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Get new JWT pair from refreshToken
+POST {{host}}/api/users/refresh HTTP/1.1
+Authorization: Bearer {{refreshToken}}

@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
+import { OrderSortType } from 'shared/type/order/order-sort-type.enum.ts';
+import { ORDER_LIST } from 'shared/type/order/order.constant.ts';
+import { SortDirection } from 'shared/type/sort-direction.interface.ts';
 import { TrainingSortType } from 'shared/type/training/training-sort-type.enum.ts';
 import {
   TRAINING,
@@ -9,6 +12,8 @@ import {
 import { NameSpace } from '../../const.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
 import {
+  fetchMyOrder,
+  fetchPurchase,
   fetchTraining,
   fetchTrainingFouYou,
 } from '../api-action/data-action.ts';
@@ -31,6 +36,7 @@ interface TrainingFilter {
   totalPages: number;
   currentPage: number;
   isReset: boolean;
+  coachId: string;
 }
 
 interface PurchaseFilter {
@@ -39,9 +45,17 @@ interface PurchaseFilter {
   currentPage: number;
 }
 
+interface MyOrderFilter {
+  orderSortType: OrderSortType;
+  orderSortDirection: SortDirection;
+  totalPages: number;
+  currentPage: number;
+}
+
 interface UiSettingsSlice {
   trainingFilter: TrainingFilter;
   purchaseFilter: PurchaseFilter;
+  myOrderFilter: MyOrderFilter;
   isReviewCreatePopupOpen: boolean;
   isPurchasePopupOpen: boolean;
   isQuestionnaireOpen: boolean;
@@ -67,11 +81,18 @@ const initialState: UiSettingsSlice = {
     totalPages: 0,
     currentPage: TRAINING_LIST.DEFAULT_FILTER_PAGE,
     isReset: true,
+    coachId: '',
   },
   purchaseFilter: {
     totalPages: 0,
     currentPage: BALANCE_PURCHASE_LIST.DEFAULT_FILTER_PAGE,
     isActive: false,
+  },
+  myOrderFilter: {
+    totalPages: 0,
+    currentPage: ORDER_LIST.DEFAULT_FILTER_PAGE,
+    orderSortType: ORDER_LIST.DEFAULT_SORT_TYPE,
+    orderSortDirection: ORDER_LIST.DEFAULT_SORT_DIRECTION,
   },
   isReviewCreatePopupOpen: false,
   isPurchasePopupOpen: false,
@@ -125,36 +146,11 @@ export const uiSettingsSlice = createSlice({
     setTrainingFilterRatingTo: (state, action: PayloadAction<number>) => {
       state.trainingFilter.ratingTo = action.payload;
     },
-    setTrainingFilterPriceMin: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.priceMin = action.payload;
-    },
-    setTrainingFilterPriceMax: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.priceMax = action.payload;
-    },
-    setTrainingFilterCaloriesMin: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.caloriesMin = action.payload;
-    },
-    setTrainingFilterCaloriesMax: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.caloriesMax = action.payload;
-    },
-    setTrainingFilterRatingMin: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.ratingMin = action.payload;
-    },
-    setTrainingFilterRatingMax: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.ratingMax = action.payload;
-    },
-    setTrainingFilterTotalPages: (state, action: PayloadAction<number>) => {
-      state.trainingFilter.totalPages = action.payload;
+    setTrainingFilterCoachId: (state, action: PayloadAction<string>) => {
+      state.trainingFilter.coachId = action.payload;
     },
     increaseTrainingFilterCurrentPage: (state) => {
       state.trainingFilter.currentPage++;
-    },
-    resetTrainingFilterCurrentPage: (state) => {
-      state.trainingFilter.currentPage =
-        initialState.trainingFilter.currentPage;
-    },
-    resetPurchaseFilter: (state) => {
-      state.purchaseFilter = initialState.purchaseFilter;
     },
     setPurchaseFilterIsActive: (state, action: PayloadAction<boolean>) => {
       state.purchaseFilter.isActive = action.payload;
@@ -162,9 +158,17 @@ export const uiSettingsSlice = createSlice({
     increasePurchaseFilterCurrentPage: (state) => {
       state.purchaseFilter.currentPage++;
     },
-    resetPurchaseFilterCurrentPage: (state) => {
-      state.purchaseFilter.currentPage =
-        initialState.purchaseFilter.currentPage;
+    increaseMyOrderFilterCurrentPage: (state) => {
+      state.myOrderFilter.currentPage++;
+    },
+    setOrderSortTypeFilter: (state, action: PayloadAction<OrderSortType>) => {
+      state.myOrderFilter.orderSortType = action.payload;
+    },
+    setOrderSortDirectionFilter: (
+      state,
+      action: PayloadAction<SortDirection>,
+    ) => {
+      state.myOrderFilter.orderSortDirection = action.payload;
     },
   },
   extraReducers(builder) {
@@ -226,6 +230,18 @@ export const uiSettingsSlice = createSlice({
         }
       })
 
+      .addCase(fetchPurchase.fulfilled, (state, action) => {
+        const { currentPage, totalPages } = action.payload;
+        state.purchaseFilter.currentPage = currentPage;
+        state.purchaseFilter.totalPages = totalPages;
+      })
+
+      .addCase(fetchMyOrder.fulfilled, (state, action) => {
+        const { currentPage, totalPages } = action.payload;
+        state.myOrderFilter.currentPage = currentPage;
+        state.myOrderFilter.totalPages = totalPages;
+      })
+
       .addCase(fetchTrainingFouYou.rejected, (state, action) => {
         if (action.payload === 'Questionnaire not found') {
           state.isQuestionnaireOpen = true;
@@ -244,21 +260,15 @@ export const {
   setTrainingFilterRatingTo,
   setTrainingFilterWorkout,
   setTrainingFilterTrainingSortType,
-  setTrainingFilterCaloriesMin,
-  setTrainingFilterPriceMax,
-  setTrainingFilterCaloriesMax,
-  setTrainingFilterPriceMin,
-  setTrainingFilterRatingMax,
-  setTrainingFilterTotalPages,
-  setTrainingFilterRatingMin,
-  resetTrainingFilterCurrentPage,
   increaseTrainingFilterCurrentPage,
   setIsReviewCreatePopupOpen,
   setIsPurchasePopupOpen,
   increasePurchaseFilterCurrentPage,
   setPurchaseFilterIsActive,
-  resetPurchaseFilterCurrentPage,
-  resetPurchaseFilter,
   setMenuStatus,
   setIsQuestionnaireOpen,
+  setTrainingFilterCoachId,
+  increaseMyOrderFilterCurrentPage,
+  setOrderSortTypeFilter,
+  setOrderSortDirectionFilter,
 } = uiSettingsSlice.actions;
