@@ -12,6 +12,7 @@ import {
 import { NameSpace } from '../../const.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
 import {
+  fetchLatestQuestionnaire,
   fetchMyOrder,
   fetchPurchase,
   fetchTraining,
@@ -243,6 +244,12 @@ export const uiSettingsSlice = createSlice({
       })
 
       .addCase(fetchTrainingFouYou.rejected, (state, action) => {
+        if (action.payload === 'Questionnaire not found') {
+          state.isQuestionnaireOpen = true;
+        }
+      })
+
+      .addCase(fetchLatestQuestionnaire.rejected, (state, action) => {
         if (action.payload === 'Questionnaire not found') {
           state.isQuestionnaireOpen = true;
         }
