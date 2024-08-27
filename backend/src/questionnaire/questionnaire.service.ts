@@ -222,7 +222,7 @@ export class QuestionnaireService {
     userId: string,
     questionnaireId: string,
     dto: UpdateCoachQuestionnaireDto,
-    certificateFile: Express.Multer.File,
+    certificateFiles: Express.Multer.File[],
   ): Promise<QuestionnaireEntity> {
     this.logger.log(
       `Updating coach questionnaire with ID: '${questionnaireId}'`,
@@ -250,10 +250,14 @@ export class QuestionnaireService {
       throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
     }
 
-    const certificateId = await this.fileService.uploadFile(
-      certificateFile,
-      [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
-      QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
+    const certificateIds = await Promise.all(
+      certificateFiles.map(async (file) => {
+        return await this.fileService.uploadFile(
+          file,
+          [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
+          QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
+        );
+      }),
     );
 
     if (dto.skillLevel !== undefined)
@@ -265,8 +269,165 @@ export class QuestionnaireService {
       updatedQuestionnaire.isReadyForCoaching = dto.isReadyForCoaching;
     if (dto.experience !== undefined)
       updatedQuestionnaire.experience = dto.experience;
-    // if (certificateId !== undefined)
-    //   updatedQuestionnaire.certificateIds = certificateIds;
+    if (certificateIds.length)
+      updatedQuestionnaire.certificateIds = certificateIds;
+
+    return this.questionnaireRepository.update(
+      questionnaireId,
+      updatedQuestionnaire,
+    );
+  }
+
+  public async updateCoachFileQuestionnaireById(
+    userId: string,
+    questionnaireId: string,
+    fileId: string,
+    certificateFile: Express.Multer.File,
+  ): Promise<QuestionnaireEntity> {
+    this.logger.log(
+      `Updating coach certificate file questionnaire with ID: '${questionnaireId}'`,
+    );
+
+    const foundUser = await this.userService.findUserById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User with id '${userId}' not found`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.COACH) {
+      this.logger.warn(
+        `User '${userId}' is not coach. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_COACH);
+    }
+
+    const updatedQuestionnaire =
+      await this.findQuestionnaireById(questionnaireId);
+
+    if (userId !== updatedQuestionnaire.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to questionnaire access owned by User ID '${updatedQuestionnaire.user.toString()}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
+    }
+    const certificateIndex =
+      updatedQuestionnaire.certificateIds.indexOf(fileId);
+    if (certificateIndex === -1) {
+      this.logger.warn(
+        `File ID '${fileId}' not found in questionnaire ID '${questionnaireId}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.FILE_NO_FOUND);
+    }
+
+    const uploadedCertificateId = await this.fileService.uploadFile(
+      certificateFile,
+      [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
+      QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
+    );
+    if (!uploadedCertificateId) {
+      this.logger.warn(
+        `File ID '${fileId}' not load in questionnaire ID '${questionnaireId}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.FILE_NOT_LOAD);
+    }
+
+    updatedQuestionnaire.certificateIds =
+      updatedQuestionnaire.certificateIds.with(
+        certificateIndex,
+        uploadedCertificateId,
+      );
+
+    return this.questionnaireRepository.update(
+      questionnaireId,
+      updatedQuestionnaire,
+    );
+  }
+
+  public async uploadCoachFileQuestionnaireById(
+    userId: string,
+    questionnaireId: string,
+    certificateFile: Express.Multer.File,
+  ): Promise<QuestionnaireEntity> {
+    this.logger.log(
+      `Uploading coach certificate file questionnaire with ID: '${questionnaireId}'`,
+    );
+
+    const foundUser = await this.userService.findUserById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User with id '${userId}' not found`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.COACH) {
+      this.logger.warn(
+        `User '${userId}' is not coach. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_COACH);
+    }
+
+    const updatedQuestionnaire =
+      await this.findQuestionnaireById(questionnaireId);
+
+    if (userId !== updatedQuestionnaire.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to questionnaire access owned by User ID '${updatedQuestionnaire.user.toString()}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
+    }
+
+    const uploadedCertificateId = await this.fileService.uploadFile(
+      certificateFile,
+      [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
+      QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
+    );
+    if (!uploadedCertificateId) {
+      this.logger.warn(
+        `File can't load in questionnaire ID '${questionnaireId}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.FILE_NOT_LOAD);
+    }
+
+    updatedQuestionnaire.certificateIds.push(uploadedCertificateId);
+
+    return this.questionnaireRepository.update(
+      questionnaireId,
+      updatedQuestionnaire,
+    );
+  }
+
+  public async deleteCoachFileQuestionnaireById(
+    userId: string,
+    questionnaireId: string,
+    fileId: string,
+  ): Promise<QuestionnaireEntity> {
+    this.logger.log(
+      `Delete coach certificate file questionnaire with ID: '${questionnaireId}'`,
+    );
+
+    const foundUser = await this.userService.findUserById(userId);
+    if (!foundUser) {
+      this.logger.warn(`User with id '${userId}' not found`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    if (foundUser.role !== RoleType.COACH) {
+      this.logger.warn(
+        `User '${userId}' is not coach. Role: '${foundUser.role}'`,
+      );
+      throw new BadRequestException(QUESTIONNAIRE_MESSAGES.NO_COACH);
+    }
+
+    const updatedQuestionnaire =
+      await this.findQuestionnaireById(questionnaireId);
+
+    if (userId !== updatedQuestionnaire.user.toString()) {
+      this.logger.warn(
+        `User ID '${userId}' attempted to questionnaire access owned by User ID '${updatedQuestionnaire.user.toString()}'`,
+      );
+      throw new ForbiddenException(QUESTIONNAIRE_MESSAGES.NO_ACCESS);
+    }
+
+    updatedQuestionnaire.certificateIds =
+      updatedQuestionnaire.certificateIds.filter(
+        (certificate) => certificate !== fileId,
+      );
 
     return this.questionnaireRepository.update(
       questionnaireId,

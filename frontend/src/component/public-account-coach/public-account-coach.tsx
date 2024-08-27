@@ -1,17 +1,35 @@
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto.ts';
 import { AppRoute } from '../../const.ts';
+import { useAppDispatch } from '../../hook';
+import {
+  subscribeCoach,
+  unsubscribeCoach,
+} from '../../store/api-action/data-action.ts';
+import { setIsCertificateViewOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 import { CoachTrainingList } from '../coach-training-list/coach-training-list.tsx';
 
 interface PublicAccountCoachProps {
   publicUserDetail: PublicUserDto;
+  isCurrentUser?: boolean;
 }
 
 export function PublicAccountCoach({
   publicUserDetail,
+  isCurrentUser,
 }: Readonly<PublicAccountCoachProps>) {
-  const { name, location, isReadyForCoaching, experience, workout } =
-    publicUserDetail;
+  const dispatch = useAppDispatch();
+
+  const {
+    id,
+    name,
+    location,
+    isReadyForCoaching,
+    experience,
+    workout,
+    isSubscribed,
+  } = publicUserDetail;
 
   const hashtagList = workout?.map((hashtag) => (
     <li key={hashtag} className="user-card-coach__hashtag-item">
@@ -21,6 +39,31 @@ export function PublicAccountCoach({
     </li>
   ));
 
+  const handleSubscription = () => {
+    if (isSubscribed) {
+      dispatch(unsubscribeCoach(id))
+        .unwrap()
+        .then(() => {
+          toast.success(`Unsubscription from '${name}' was successful`, {
+            position: 'top-right',
+          });
+        });
+    } else {
+      dispatch(subscribeCoach(id))
+        .unwrap()
+        .then(() => {
+          toast.success(`Subscription to '${name}' was successful`, {
+            position: 'top-right',
+          });
+        });
+    }
+  };
+
+  const handleOpenCertificatePopupClick = () => {
+    dispatch(setIsCertificateViewOpen(true));
+  };
+
+  //todo location link
   return (
     <div className="inner-page__wrapper">
       <Link
@@ -77,6 +120,7 @@ export function PublicAccountCoach({
                 <button
                   className="btn-flat user-card-coach__sertificate"
                   type="button"
+                  onClick={handleOpenCertificatePopupClick}
                 >
                   <svg width="12" height="13" aria-hidden="true">
                     <use xlinkHref="#icon-teacher"></use>
@@ -84,7 +128,11 @@ export function PublicAccountCoach({
                   <span>Посмотреть сертификаты</span>
                 </button>
                 <ul className="user-card-coach__hashtag-list">{hashtagList}</ul>
-                <button className="btn user-card-coach__btn" type="button">
+                <button
+                  className="btn user-card-coach__btn"
+                  type="button"
+                  disabled={isCurrentUser}
+                >
                   Добавить в друзья
                 </button>
               </div>
@@ -118,6 +166,7 @@ export function PublicAccountCoach({
                 <button
                   className="btn user-card-coach__btn-training"
                   type="button"
+                  disabled={isCurrentUser}
                 >
                   Хочу персональную тренировку
                 </button>
@@ -126,8 +175,10 @@ export function PublicAccountCoach({
                     <label>
                       <input
                         type="checkbox"
-                        value="user-agreement-1"
-                        name="user-agreement"
+                        checked={isSubscribed}
+                        name="isSubscribed"
+                        onChange={handleSubscription}
+                        disabled={isCurrentUser}
                       />
                       <span className="custom-toggle__icon">
                         <svg width="9" height="6" aria-hidden="true">

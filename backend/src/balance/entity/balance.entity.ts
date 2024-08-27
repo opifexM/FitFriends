@@ -1,3 +1,4 @@
+import { instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Entity } from 'shared/base/entity';
 import { Balance } from 'shared/type/balance/balance';
@@ -22,26 +23,14 @@ export class BalanceEntity extends Entity implements Balance {
       return;
     }
 
-    this.id = balance.id ?? '';
-    this.totalCount = balance.totalCount;
-    this.availableCount = balance.availableCount;
-    this.createdAt = balance.createdAt;
-    this.updatedAt = balance.updatedAt;
-    this.training = balance.training;
-    this.user = balance.user;
-    this.purchaseStatus = balance.purchaseStatus;
+    Object.assign(this, balance);
   }
 
   public toPOJO() {
+    const { _id, ...rest } = instanceToPlain(this);
     return {
+      ...rest,
       id: this.id,
-      totalCount: this.totalCount,
-      availableCount: this.availableCount,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      user: this.user,
-      training: this.training,
-      purchaseStatus: this.purchaseStatus,
     };
   }
 }

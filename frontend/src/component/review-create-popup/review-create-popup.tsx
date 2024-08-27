@@ -89,9 +89,9 @@ export function ReviewCreatePopup() {
     setSubmitting(false);
   };
 
-  function handleCloseClick() {
+  const handleCloseClick = () => {
     dispatch(setIsReviewCreatePopupOpen(false));
-  }
+  };
 
   return (
     <div className="popup-form popup-form--feedback">

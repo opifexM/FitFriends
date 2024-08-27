@@ -1,3 +1,4 @@
+import { instanceToPlain } from 'class-transformer';
 import { Entity } from 'shared/base/entity';
 import { JwtToken } from 'shared/type/jwt-token.interface';
 
@@ -17,20 +18,14 @@ export class TokenEntity extends Entity {
       return;
     }
 
-    this.id = token.id ?? '';
-    this.createdAt = token.createdAt ?? new Date();
-    this.expiresIn = token.expiresIn ?? new Date();
-    this.userId = token.userId;
-    this.tokenId = token.tokenId;
+    Object.assign(this, token);
   }
 
   public toPOJO() {
+    const { _id, ...rest } = instanceToPlain(this);
     return {
+      ...rest,
       id: this.id,
-      createdAt: this.createdAt,
-      expiresIn: this.expiresIn,
-      userId: this.userId,
-      tokenId: this.tokenId,
     };
   }
 }

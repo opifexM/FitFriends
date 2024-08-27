@@ -68,22 +68,27 @@ export class UserController {
     return fillDto(UserDto, createdUser.toPOJO());
   }
 
-  @Get('public/:userId')
+  @Get('public/:publicUserId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get public user profile by ID' })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'The public user profile has been successfully retrieved.',
     type: UserDto,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   public async getUserPublicProfileById(
-    @Param('userId', MongoIdValidationPipe) userId: string,
+    @Param('publicUserId', MongoIdValidationPipe) publicUserId: string,
+    @GetUserId() currentUserId: string,
   ): Promise<PublicUserDto> {
-    this.logger.log(`Retrieving public user profile with ID: '${userId}'`);
-    const publicUserData =
-      await this.userService.findPublicUserProfileById(userId);
+    this.logger.log(
+      `Retrieving public user profile with ID: '${publicUserId}'`,
+    );
+    const publicUserData = await this.userService.findPublicUserProfileById(
+      currentUserId,
+      publicUserId,
+    );
 
     return fillDto(PublicUserDto, publicUserData);
   }
@@ -223,5 +228,47 @@ export class UserController {
   })
   public async refreshToken(@Req() { user }: RequestWithUser): Promise<Token> {
     return this.userService.createUserToken(user);
+  }
+
+  @Post('subscription/:subscribeUserId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Subscribe user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'User subscribed' })
+  public async subscribeUser(
+    @Param('subscribeUserId', MongoIdValidationPipe) subscribeUserId: string,
+    @GetUserId() currentUserId: string,
+  ): Promise<PublicUserDto> {
+    this.logger.log(
+      `Subscribing user '${currentUserId}' to user '${subscribeUserId}'`,
+    );
+
+    const publicUserData = await this.userService.subscribeUserById(
+      currentUserId,
+      subscribeUserId,
+    );
+
+    return fillDto(PublicUserDto, publicUserData);
+  }
+
+  @Delete('subscription/:unsubscribeUserId')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Unsubscribe user' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'User unsubscribed' })
+  public async unsubscribeUser(
+    @Param('unsubscribeUserId', MongoIdValidationPipe)
+    unsubscribeUserId: string,
+    @GetUserId() currentUserId: string,
+  ): Promise<PublicUserDto> {
+    this.logger.log(
+      `Unsubscribing user '${currentUserId}' from user '${unsubscribeUserId}'`,
+    );
+    const publicUserData = await this.userService.unsubscribeUserById(
+      currentUserId,
+      unsubscribeUserId,
+    );
+
+    return fillDto(PublicUserDto, publicUserData);
   }
 }

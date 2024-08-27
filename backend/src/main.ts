@@ -41,6 +41,7 @@ async function bootstrap() {
   Logger.log(
     `📚 Swagger is available on: http://localhost:${configService.appPort}/spec`,
   );
+  Logger.log(`📧 SMTP UI server: http://localhost:${configService.smtpUiPort}`);
 }
 
 bootstrap();

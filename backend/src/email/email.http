@@ -1,0 +1,6 @@
+@host = http://localhost:3000
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmE5NzFjZTkwYmU0NzBkYjhhNjFjNTciLCJlbWFpbCI6InRlc3RAYS5ydSIsImlhdCI6MTcyMzA2MDQ0NSwiZXhwIjoxNzI1NjUyNDQ1fQ.TOqF4WiBIcWeLy9tW94AtWGn9PLNVV9gyiYA0xDcz_kIeHaAZJPR55WSXFIr1hYXdmhuLOjsNTZitUWXxZpQcA
+
+### Initiate Email Dispatch
+POST {{host}}/api/emails/initiate-email-dispatch HTTP/1.1
+Authorization: Bearer {{token}}

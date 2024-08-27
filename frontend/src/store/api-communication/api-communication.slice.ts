@@ -24,6 +24,7 @@ import {
   createTraining,
   createVisitorQuestionnaire,
   deactivateBalancePurchase,
+  deleteCoachFileQuestionnaire,
   fetchBalances,
   fetchCoachTraining,
   fetchLatestQuestionnaire,
@@ -37,10 +38,14 @@ import {
   fetchTrainingFouYou,
   fetchTrainingSpecialPrice,
   fetchUserDetail,
+  subscribeCoach,
+  unsubscribeCoach,
+  updateCoachFileQuestionnaire,
   updateCoachQuestionnaire,
   updateReview,
   updateTraining,
   updateVisitorQuestionnaire,
+  uploadCoachFileQuestionnaire,
 } from '../api-action/data-action.ts';
 import { refreshAuth } from '../api-action/refresh-auth-action.ts';
 import {
@@ -234,6 +239,39 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(updateCoachQuestionnaire.fulfilled, (state, action) => {
+        state.lastQuestionnaire = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(updateCoachFileQuestionnaire.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateCoachFileQuestionnaire.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateCoachFileQuestionnaire.fulfilled, (state, action) => {
+        state.lastQuestionnaire = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(uploadCoachFileQuestionnaire.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(uploadCoachFileQuestionnaire.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(uploadCoachFileQuestionnaire.fulfilled, (state, action) => {
+        state.lastQuestionnaire = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(deleteCoachFileQuestionnaire.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteCoachFileQuestionnaire.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(deleteCoachFileQuestionnaire.fulfilled, (state, action) => {
         state.lastQuestionnaire = action.payload;
         state.isLoading = false;
       })
@@ -480,6 +518,28 @@ export const apiCommunicationSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(fetchPublicUserDetail.fulfilled, (state, action) => {
+        state.publicUserDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(subscribeCoach.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(subscribeCoach.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(subscribeCoach.fulfilled, (state, action) => {
+        state.publicUserDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(unsubscribeCoach.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(unsubscribeCoach.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(unsubscribeCoach.fulfilled, (state, action) => {
         state.publicUserDetail = action.payload;
         state.isLoading = false;
       });

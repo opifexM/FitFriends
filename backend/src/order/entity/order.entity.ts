@@ -1,3 +1,4 @@
+import { instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Entity } from 'shared/base/entity';
 import { PaymentStatusType } from 'shared/type/enum/payment-status-type.enum';
@@ -27,32 +28,14 @@ export class OrderEntity extends Entity implements Order {
       return;
     }
 
-    this.id = order.id ?? '';
-    this.count = order.count;
-    this.createdAt = order.createdAt;
-    this.payment = order.payment;
-    this.price = order.price;
-    this.purchase = order.purchase;
-    this.paymentStatus = order.paymentStatus;
-    this.service = order.service;
-    this.totalPrice = order.totalPrice;
-    this.updatedAt = order.updatedAt;
-    this.user = order.user;
+    Object.assign(this, order);
   }
 
   public toPOJO() {
+    const { _id, ...rest } = instanceToPlain(this);
     return {
+      ...rest,
       id: this.id,
-      count: this.count,
-      createdAt: this.createdAt,
-      payment: this.payment,
-      price: this.price,
-      purchase: this.purchase,
-      paymentStatus: this.paymentStatus,
-      service: this.service,
-      totalPrice: this.totalPrice,
-      updatedAt: this.updatedAt,
-      user: this.user,
     };
   }
 }

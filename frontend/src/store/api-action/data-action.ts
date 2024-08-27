@@ -11,6 +11,7 @@ import { CreateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/cre
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
 import { UpdateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/update-coach-questionnaire.dto.ts';
 import { UpdateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/update-visitor-questionnaire.dto.ts';
+import { UploadCoachFileQuestionnaireDto } from 'shared/type/questionnaire/dto/upload-coach-file-questionnaire.dto.ts';
 import { CreateReviewDto } from 'shared/type/review/dto/create-review.dto.ts';
 import { ReviewPaginationDto } from 'shared/type/review/dto/review-pagination.dto.ts';
 import { ReviewDto } from 'shared/type/review/dto/review.dto.ts';
@@ -159,6 +160,113 @@ export const updateCoachQuestionnaire = createAsyncThunk<
           },
         },
       );
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const updateCoachFileQuestionnaire = createAsyncThunk<
+  QuestionnaireDto,
+  {
+    questionnaireId: string;
+    fileId: string;
+    questionnaireData: UploadCoachFileQuestionnaireDto;
+  },
+  ThunkApiConfig
+>(
+  'data/updateCoachFileQuestionnaire',
+  async (
+    { questionnaireId, fileId, questionnaireData },
+    { extra: api, rejectWithValue },
+  ) => {
+    try {
+      const url = APIRoute.UpdateCoachFileQuestionnaire.replace(
+        ':questionnaireId',
+        questionnaireId,
+      ).replace(':fileId', fileId);
+
+      const { data } = await api.patch<QuestionnaireDto>(
+        url,
+        questionnaireData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const uploadCoachFileQuestionnaire = createAsyncThunk<
+  QuestionnaireDto,
+  {
+    questionnaireId: string;
+    questionnaireData: UploadCoachFileQuestionnaireDto;
+  },
+  ThunkApiConfig
+>(
+  'data/uploadCoachFileQuestionnaire',
+  async (
+    { questionnaireId, questionnaireData },
+    { extra: api, rejectWithValue },
+  ) => {
+    try {
+      const url = APIRoute.UploadCoachFileQuestionnaire.replace(
+        ':questionnaireId',
+        questionnaireId,
+      );
+
+      const { data } = await api.post<QuestionnaireDto>(
+        url,
+        questionnaireData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const deleteCoachFileQuestionnaire = createAsyncThunk<
+  QuestionnaireDto,
+  {
+    questionnaireId: string;
+    fileId: string;
+  },
+  ThunkApiConfig
+>(
+  'data/deleteCoachFileQuestionnaire',
+  async ({ questionnaireId, fileId }, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.DeleteCoachFileQuestionnaire.replace(
+        ':questionnaireId',
+        questionnaireId,
+      ).replace(':fileId', fileId);
+
+      const { data } = await api.delete<QuestionnaireDto>(url);
 
       return data;
     } catch (error) {
@@ -570,10 +678,61 @@ export const fetchPublicUserDetail = createAsyncThunk<
   ThunkApiConfig
 >(
   'data/fetchPublicUserDetail',
-  async (userId, { extra: api, rejectWithValue }) => {
+  async (publicUserId, { extra: api, rejectWithValue }) => {
     try {
-      const url = APIRoute.GetPublicUserDetail.replace(':userId', userId);
+      const url = APIRoute.GetPublicUserDetail.replace(
+        ':publicUserId',
+        publicUserId,
+      );
       const { data } = await api.get<PublicUserDto>(url);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const subscribeCoach = createAsyncThunk<
+  PublicUserDto,
+  string,
+  ThunkApiConfig
+>(
+  'data/subscribeCoach',
+  async (publicUserId, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.SubscribeCoach.replace(
+        ':publicUserId',
+        publicUserId,
+      );
+      const { data } = await api.post<PublicUserDto>(url);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const unsubscribeCoach = createAsyncThunk<
+  PublicUserDto,
+  string,
+  ThunkApiConfig
+>(
+  'data/unsubscribeCoach',
+  async (publicUserId, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.UnsubscribeCoach.replace(
+        ':publicUserId',
+        publicUserId,
+      );
+      const { data } = await api.delete<PublicUserDto>(url);
 
       return data;
     } catch (error) {

@@ -9,6 +9,10 @@ export class AppConfiguration {
     return this.configService.get<number>('APP_PORT');
   }
 
+  public get smtpUiPort(): number {
+    return this.configService.get<number>('EMAIL_SMTP_UI_PORT');
+  }
+
   public get appPasswordSaltRounds(): number {
     return this.configService.get<number>('APP_PASSWORD_SALT_ROUNDS');
   }

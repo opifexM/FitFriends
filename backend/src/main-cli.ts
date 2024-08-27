@@ -11,3 +11,5 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+//todo "typescript": "^5.1.3"

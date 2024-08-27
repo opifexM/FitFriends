@@ -10,9 +10,11 @@ import { CreateTrainingDto } from 'shared/type/training/dto/create-training.dto'
 import { UpdateTrainingDto } from 'shared/type/training/dto/update-training.dto';
 import { TrainingQuery } from 'shared/type/training/training.query';
 import { TRAINING, TRAINING_LIST } from 'shared/type/training/traning.constant';
+import { EmailService } from '../email/email.service';
 import { FileService } from '../file-module/file.service';
 import { QUESTIONNAIRE_MESSAGES } from '../questionnaire/questionnaire.constant';
 import { QuestionnaireService } from '../questionnaire/questionnaire.service';
+import { UserEntity } from '../user/entity/user.entity';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
 import { TrainingPaginationInterface } from './entity/training-pagination.interface';
@@ -30,6 +32,7 @@ export class TrainingService {
     private readonly userService: UserService,
     private readonly questionnaireService: QuestionnaireService,
     private readonly fileService: FileService,
+    private readonly emailService: EmailService,
   ) {}
 
   public async createTraining(
@@ -90,8 +93,38 @@ export class TrainingService {
     const trainingEntity = TrainingFactory.createEntity(trainingData);
     const createdTraining = await this.trainingRepository.save(trainingEntity);
     this.logger.log(`Training created with ID: '${createdTraining.id}'`);
+    await this.formEmailMessageByTraining(foundCoachUser, trainingEntity);
 
     return createdTraining;
+  }
+
+  public async formEmailMessageByTraining(
+    coachUser: UserEntity,
+    training: TrainingEntity,
+  ): Promise<void> {
+    this.logger.log(
+      `Forming [${coachUser.subscriptions.length}] emails for coach with ID: '${coachUser.id}'`,
+    );
+
+    const subscribedUsers = await this.userService.findUserSubscription(
+      coachUser.subscriptions,
+    );
+
+    for (const user of subscribedUsers) {
+      await this.emailService.createEmailMessage({
+        emailFrom: 'notify@fit-friends.com',
+        emailTo: user.email,
+        text: `New training '${training.name}' from your coach ${coachUser.name} is waiting you!
+        ${training.description}.
+        Price: $${training.price}. Duration: ${training.workoutDuration} minutes.
+
+        Coach ${coachUser.name}.
+        `,
+        topic: `New training '${training.name}'`,
+      });
+    }
+
+    console.log(subscribedUsers);
   }
 
   public async findTrainingWithCoachById(

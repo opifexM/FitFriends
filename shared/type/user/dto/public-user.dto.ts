@@ -84,4 +84,18 @@ export class PublicUserDto {
     description: 'Experience description for the coach',
   })
   public experience: string;
+
+  @Expose()
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if current user is subscribed to coach',
+  })
+  public isSubscribed: boolean;
+
+  @Expose()
+  @ApiProperty({
+    example: '60d0fe4f5311236168a109ca',
+    description: 'The unique identifier of the certificate file',
+  })
+  public certificateIds: string[];
 }

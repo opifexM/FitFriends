@@ -4,6 +4,7 @@ export const USER_MESSAGES = {
   AUTHENTICATION_PASSWORD_WRONG: 'User password is wrong',
   NOT_COACH: 'User is not coach',
   NO_ACCESS: 'Access to this user details is not permitted',
+  SUBSCRIBE_YOURSELF: 'Attempt to subscribe to oneself',
 } as const;
 
 export const USER_DEFAULT = {

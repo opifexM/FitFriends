@@ -1,3 +1,5 @@
+import { instanceToPlain } from 'class-transformer';
+import { Types } from 'mongoose';
 import { Entity } from 'shared/base/entity';
 import { GenderType } from 'shared/type/enum/gender-type.enum';
 import { LocationType } from 'shared/type/enum/location-type.enum';
@@ -17,6 +19,7 @@ export class UserEntity extends Entity implements User {
   public profilePictureId: string;
   public updatedAt: Date;
   public role: RoleType;
+  public subscriptions: Types.ObjectId[];
 
   constructor(user?: User) {
     super();
@@ -28,36 +31,14 @@ export class UserEntity extends Entity implements User {
       return;
     }
 
-    this.id = user.id ?? '';
-    this.avatarId = user.avatarId;
-    this.createdAt = user.createdAt;
-    this.dateOfBirth = user.dateOfBirth;
-    this.description = user.description;
-    this.email = user.email;
-    this.gender = user.gender;
-    this.location = user.location;
-    this.name = user.name;
-    this.password = user.password;
-    this.profilePictureId = user.profilePictureId;
-    this.updatedAt = user.updatedAt;
-    this.role = user.role;
+    Object.assign(this, user);
   }
 
   public toPOJO() {
+    const { _id, ...rest } = instanceToPlain(this);
     return {
+      ...rest,
       id: this.id,
-      avatarId: this.avatarId,
-      createdAt: this.createdAt,
-      dateOfBirth: this.dateOfBirth,
-      description: this.description,
-      email: this.email,
-      gender: this.gender,
-      location: this.location,
-      name: this.name,
-      password: this.password,
-      profilePictureId: this.profilePictureId,
-      updatedAt: this.updatedAt,
-      role: this.role,
     };
   }
 }

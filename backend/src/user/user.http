@@ -1,7 +1,7 @@
 @host = http://localhost:3000
-@userId = 66ad1ba799c9d362ba603c85
-@publicUserId = 66a971ce90be470db8a61c57
-@accessToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmE5NzFjZTkwYmU0NzBkYjhhNjFjNTciLCJlbWFpbCI6InRlc3RAYS5ydSIsImlhdCI6MTcyMzEzNjYxMywiZXhwIjoxNzI1NzI4NjEzfQ.Vx_taFu_y_LXrXtgPtAZoE_LkVaYZset9LQj7_rUPMVJ7PBw6oyXx8zxVwvBan-8H2orp8HLYmQEPd9H6RWzKg
+@userId = 66a971ce90be470db8a61c57
+@publicUserId = 66ad1ba799c9d362ba603c85
+@accessToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmE5NzFjZTkwYmU0NzBkYjhhNjFjNTciLCJlbWFpbCI6InRlc3RAYS5ydSIsImlhdCI6MTcyNDU0NDEyNywiZXhwIjoxNzI3MTM2MTI3fQ.NhGp4oBMmSOil7_xTQM_OfUwaqvFCCZkWpFaun_0QPKojJZmeIEGHQ7eSWyFV_iE_EaPqqDlTlkdXjnPKyJ8Vg
 @refreshToken = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjY5ZmEzMDFhNGE0NTdiODA5MmY1OTMiLCJlbWFpbCI6InVzZXIxM0Bub3Rmb3VuZC5sb2NhbCIsIm5hbWUiOiJBQUFBQUEyIiwidG9rZW5JZCI6IjRmNDAwMTM1LTljY2QtNGVkZi04ZjEwLTU2Y2ZlYmJiODE0NyIsImlhdCI6MTcxODU1NjMwOCwiZXhwIjoxNzIxMTQ4MzA4fQ.-UJowbd-IGAmPrPN-M4o3kK30rrRlC1GZaow28STekqCqRY99oWEAe4PjxTm--JwBhdWAFGNGgtSFjkMeDcPiw
 
 ### Create a new user
@@ -66,4 +66,14 @@ Authorization: Bearer {{refreshToken}}
 
 ### Get public user profile by ID
 GET {{host}}/api/users/public/{{publicUserId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Subscribe
+POST {{host}}/api/users/subscription/{{publicUserId}} HTTP/1.1
+Authorization: Bearer {{accessToken}}
+
+
+### Unsubscribe
+DELETE {{host}}/api/users/subscription/{{publicUserId}} HTTP/1.1
 Authorization: Bearer {{accessToken}}

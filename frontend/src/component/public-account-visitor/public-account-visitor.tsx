@@ -4,10 +4,12 @@ import { AppRoute } from '../../const.ts';
 
 interface PublicAccountCoachProps {
   publicUserDetail: PublicUserDto;
+  isCurrentUser?: boolean;
 }
 
 export function PublicAccountVisitor({
   publicUserDetail,
+  isCurrentUser,
 }: Readonly<PublicAccountCoachProps>) {
   const { name, location, isReadyForTraining, workout, description } =
     publicUserDetail;
@@ -60,7 +62,11 @@ export function PublicAccountVisitor({
               )}
               <div className="user-card__text">{description}</div>
               <ul className="user-card__hashtag-list">{hashtagList}</ul>
-              <button className="btn user-card__btn" type="button">
+              <button
+                className="btn user-card__btn"
+                type="button"
+                disabled={isCurrentUser}
+              >
                 Добавить в друзья
               </button>
             </div>

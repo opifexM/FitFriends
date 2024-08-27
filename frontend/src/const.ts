@@ -21,7 +21,9 @@ export type AppRouteType = (typeof AppRoute)[keyof typeof AppRoute];
 export const APIRoute = {
   CreateUser: 'users',
   GetUser: 'users',
-  GetPublicUserDetail: 'users/public/:userId',
+  GetPublicUserDetail: 'users/public/:publicUserId',
+  SubscribeCoach: 'users/subscription/:publicUserId',
+  UnsubscribeCoach: 'users/subscription/:publicUserId',
   UpdateUser: 'users',
   DeleteUser: 'users',
   Login: 'users/login',
@@ -33,6 +35,11 @@ export const APIRoute = {
   GetLatestQuestionnaire: 'questionnaires/latest',
   UpdateVisitorQuestionnaire: 'questionnaires/visitor/:questionnaireId',
   UpdateCoachQuestionnaire: 'questionnaires/coach/:questionnaireId',
+  UpdateCoachFileQuestionnaire:
+    'questionnaires/coach/:questionnaireId/file/:fileId',
+  UploadCoachFileQuestionnaire: 'questionnaires/coach/:questionnaireId/file',
+  DeleteCoachFileQuestionnaire:
+    'questionnaires/coach/:questionnaireId/file/:fileId',
   DeleteQuestionnaire: 'questionnaires/:questionnaireId',
   CreateBalance: 'balances',
   GetBalances: 'balances',

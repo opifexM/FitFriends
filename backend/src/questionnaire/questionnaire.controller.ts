@@ -58,6 +58,36 @@ export class QuestionnaireController {
     return fillDto(QuestionnaireDto, createdQuestionnaire.toPOJO());
   }
 
+  @Post('coach/:questionnaireId/file')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('certificateFile'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Upload coach certificate file questionnaire' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The coach certificate file questionnaire has been successfully uploaded.',
+    type: QuestionnaireDto,
+  })
+  @ApiResponse({ status: 404, description: 'Questionnaire not found.' })
+  public async uploadCoachFileQuestionnaire(
+    @Param('questionnaireId', MongoIdValidationPipe) questionnaireId: string,
+    @GetUserId() userId: string,
+    @UploadedFile() certificateFile: Express.Multer.File,
+  ): Promise<QuestionnaireDto> {
+    this.logger.log(
+      `Upload coach certificate file questionnaire with ID '${questionnaireId}'`,
+    );
+    const updatedQuestionnaire =
+      await this.questionnaireService.uploadCoachFileQuestionnaireById(
+        userId,
+        questionnaireId,
+        certificateFile,
+      );
+
+    return fillDto(QuestionnaireDto, updatedQuestionnaire.toPOJO());
+  }
+
   @Post('coach')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('certificateFiles[]'))
@@ -125,6 +155,69 @@ export class QuestionnaireController {
     return fillDto(QuestionnaireDto, foundQuestionnaire.toPOJO());
   }
 
+  @Patch('coach/:questionnaireId/file/:fileId')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('certificateFile'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update coach certificate file questionnaire' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The coach certificate file questionnaire has been successfully updated.',
+    type: QuestionnaireDto,
+  })
+  @ApiResponse({ status: 404, description: 'Questionnaire not found.' })
+  public async updateCoachFileQuestionnaire(
+    @Param('questionnaireId', MongoIdValidationPipe) questionnaireId: string,
+    @Param('fileId') fileId: string,
+    @GetUserId() userId: string,
+    @UploadedFile() certificateFile: Express.Multer.File,
+  ): Promise<QuestionnaireDto> {
+    this.logger.log(
+      `Updating coach certificate file questionnaire with ID '${questionnaireId}'`,
+    );
+    const updatedQuestionnaire =
+      await this.questionnaireService.updateCoachFileQuestionnaireById(
+        userId,
+        questionnaireId,
+        fileId,
+        certificateFile,
+      );
+
+    return fillDto(QuestionnaireDto, updatedQuestionnaire.toPOJO());
+  }
+
+  @Patch('coach/:questionnaireId')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('certificateFiles[]'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update coach questionnaire' })
+  @ApiResponse({
+    status: 200,
+    description: 'The coach questionnaire has been successfully updated.',
+    type: QuestionnaireDto,
+  })
+  @ApiResponse({ status: 404, description: 'Questionnaire not found.' })
+  public async updateCoachQuestionnaire(
+    @Param('questionnaireId', MongoIdValidationPipe) questionnaireId: string,
+    @Body() dto: UpdateCoachQuestionnaireDto,
+    @GetUserId() userId: string,
+    @UploadedFiles() certificateFiles?: Express.Multer.File[],
+  ): Promise<QuestionnaireDto> {
+    this.logger.log(
+      `Updating coach questionnaire with ID '${questionnaireId}'`,
+    );
+    const updatedQuestionnaire =
+      await this.questionnaireService.updateCoachQuestionnaireById(
+        userId,
+        questionnaireId,
+        dto,
+        certificateFiles,
+      );
+
+    return fillDto(QuestionnaireDto, updatedQuestionnaire.toPOJO());
+  }
+
   @Patch('visitor/:questionnaireId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -153,32 +246,31 @@ export class QuestionnaireController {
     return fillDto(QuestionnaireDto, updatedQuestionnaire.toPOJO());
   }
 
-  @Patch('coach/:questionnaireId')
+  @Delete('coach/:questionnaireId/file/:fileId')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('certificateFile'))
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update coach questionnaire' })
+  @ApiOperation({ summary: 'Delete coach certificate file questionnaire' })
   @ApiResponse({
     status: 200,
-    description: 'The coach questionnaire has been successfully updated.',
+    description:
+      'The coach certificate file questionnaire has been successfully deleted.',
     type: QuestionnaireDto,
   })
   @ApiResponse({ status: 404, description: 'Questionnaire not found.' })
-  public async updateCoachQuestionnaire(
+  public async deleteCoachFileQuestionnaire(
     @Param('questionnaireId', MongoIdValidationPipe) questionnaireId: string,
-    @Body() dto: UpdateCoachQuestionnaireDto,
+    @Param('fileId') fileId: string,
     @GetUserId() userId: string,
-    @UploadedFile() certificateFile?: Express.Multer.File,
   ): Promise<QuestionnaireDto> {
     this.logger.log(
-      `Updating coach questionnaire with ID '${questionnaireId}'`,
+      `Updating coach certificate file questionnaire with ID '${questionnaireId}'`,
     );
     const updatedQuestionnaire =
-      await this.questionnaireService.updateCoachQuestionnaireById(
+      await this.questionnaireService.deleteCoachFileQuestionnaireById(
         userId,
         questionnaireId,
-        dto,
-        certificateFile,
+        fileId,
       );
 
     return fillDto(QuestionnaireDto, updatedQuestionnaire.toPOJO());

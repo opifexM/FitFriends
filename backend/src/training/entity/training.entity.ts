@@ -1,3 +1,4 @@
+import { instanceToPlain } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Entity } from 'shared/base/entity';
 import { GenderType } from 'shared/type/enum/gender-type.enum';
@@ -34,44 +35,14 @@ export class TrainingEntity extends Entity implements Training {
       return;
     }
 
-    this.id = training.id ?? '';
-    this.backgroundId = training.backgroundId;
-    this.caloriesBurned = training.caloriesBurned;
-    this.coach = training.coach;
-    this.createdAt = training.createdAt;
-    this.description = training.description;
-    this.gender = training.gender;
-    this.isSpecialOffer = training.isSpecialOffer;
-    this.discountPercent = training.discountPercent;
-    this.name = training.name;
-    this.price = training.price;
-    this.rating = training.rating;
-    this.skillLevel = training.skillLevel;
-    this.updatedAt = training.updatedAt;
-    this.videoId = training.videoId;
-    this.workout = training.workout;
-    this.workoutDuration = training.workoutDuration;
+    Object.assign(this, training);
   }
 
   public toPOJO() {
+    const { _id, ...rest } = instanceToPlain(this);
     return {
+      ...rest,
       id: this.id,
-      backgroundId: this.backgroundId,
-      caloriesBurned: this.caloriesBurned,
-      coach: this.coach,
-      createdAt: this.createdAt,
-      description: this.description,
-      gender: this.gender,
-      isSpecialOffer: this.isSpecialOffer,
-      discountPercent: this.discountPercent,
-      name: this.name,
-      price: this.price,
-      rating: this.rating,
-      skillLevel: this.skillLevel,
-      updatedAt: this.updatedAt,
-      videoId: this.videoId,
-      workout: this.workout,
-      workoutDuration: this.workoutDuration,
     };
   }
 }

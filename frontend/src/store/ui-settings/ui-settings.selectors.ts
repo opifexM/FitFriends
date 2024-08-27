@@ -25,5 +25,9 @@ export const getIsQuestionnaireOpen = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].isQuestionnaireOpen;
 
+export const getIsCertificateViewOpen = (
+  state: Pick<State, typeof NameSpace.UiSetting>,
+) => state[NameSpace.UiSetting].isCertificateViewOpen;
+
 export const getMenuStatus = (state: Pick<State, typeof NameSpace.UiSetting>) =>
   state[NameSpace.UiSetting].menuStatus;

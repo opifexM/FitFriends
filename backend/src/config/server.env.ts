@@ -45,6 +45,26 @@ export class ServerEnvConfig {
 
   @IsString()
   UPLOAD_DIRECTORY_PATH: string;
+
+  @IsString()
+  EMAIL_SMTP_HOST: string;
+
+  @IsNumber()
+  @Min(1)
+  EMAIL_SMTP_PORT: number;
+
+  @IsNumber()
+  @Min(1)
+  EMAIL_SMTP_UI_PORT: number;
+
+  @IsString()
+  EMAIL_USER_NAME: string;
+
+  @IsString()
+  EMAIL_USER_PASSWORD: string;
+
+  @IsString()
+  EMAIL_FROM: string;
 }
 
 export function validate(config: Record<string, unknown>) {

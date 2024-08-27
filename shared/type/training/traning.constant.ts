@@ -27,6 +27,11 @@ export const TRAINING = {
   },
 } as const;
 
+export const CERTIFICATE_LIST = {
+  LIMIT: 3,
+  DEFAULT_FILTER_PAGE: 1,
+} as const;
+
 export const TRAINING_LIST = {
   LIMIT: 6,
   DEFAULT_SORT_TYPE: TrainingSortType.BY_DATE,

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   forwardRef,
@@ -8,9 +9,12 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ObjectId } from 'mongodb';
+import { EmailContactDto } from 'shared/type/email/dto/email-contact.dto';
 import { Token } from 'shared/type/token.interface';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
+import { PublicUserDto } from 'shared/type/user/dto/public-user.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { USER } from 'shared/type/user/user.constant';
 import { BcryptCrypto } from '../crypto/bcrypt.crypto';
@@ -104,26 +108,62 @@ export class UserService {
     return foundUser;
   }
 
-  public async findPublicUserProfileById(
-    userId: string,
-  ): Promise<Partial<UserEntity & QuestionnaireEntity>> {
-    this.logger.log(`Looking for public user profile with ID: '${userId}'`);
-    const foundUser = await this.userRepository.findById(userId);
-    if (!foundUser) {
-      this.logger.warn(`User not found with ID: '${userId}'`);
-      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
-    }
+  public async findUserSubscription(
+    subscriptions: ObjectId[],
+  ): Promise<EmailContactDto[]> {
+    this.logger.log(`Looking user for [${subscriptions.length}] subscriptions`);
 
+    return await this.userRepository.findUserSubscription(subscriptions);
+  }
+
+  private async getUserWithQuestionnaireAndSubscription(
+    publicUser: UserEntity,
+    isUserSubscribed: boolean,
+  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
     const questionnaire =
       await this.questionnaireService.findLatestQuestionnairePublicProfileByUserId(
-        userId,
+        publicUser.id,
       );
 
     if (questionnaire) {
-      return { ...foundUser.toPOJO(), ...questionnaire.toPOJO() };
+      return {
+        ...publicUser.toPOJO(),
+        ...questionnaire.toPOJO(),
+        id: publicUser.id,
+        isSubscribed: isUserSubscribed,
+      };
     }
 
-    return foundUser.toPOJO();
+    return { ...publicUser.toPOJO(), isSubscribed: isUserSubscribed };
+  }
+
+  public async findPublicUserProfileById(
+    currentUserId: string,
+    publicUserId: string,
+  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+    this.logger.log(
+      `Looking for public user profile ID: '${publicUserId}' from current user ID: '${currentUserId}'`,
+    );
+    const currenUser = await this.userRepository.findById(currentUserId);
+    if (!currenUser) {
+      this.logger.warn(`Current user not found with ID: '${publicUserId}'`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+
+    const publicUser = await this.userRepository.findById(publicUserId);
+    if (!publicUser) {
+      this.logger.warn(`User not found with ID: '${publicUserId}'`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    const isUserSubscribed = await this.isSubscriptionPresent(
+      currenUser,
+      publicUser,
+    );
+
+    return await this.getUserWithQuestionnaireAndSubscription(
+      publicUser,
+      isUserSubscribed,
+    );
   }
 
   public async updateUserById(
@@ -214,5 +254,74 @@ export class UserService {
     }
 
     return existUser;
+  }
+
+  public async isSubscriptionPresent(
+    currenUser: UserEntity,
+    publicUser: UserEntity,
+  ): Promise<boolean> {
+    this.logger.log(
+      `Checking subscription presence for user ID: '${currenUser.id}' with subscription ID: '${publicUser.id}'`,
+    );
+
+    return publicUser.subscriptions.some(
+      (id) => id.toString() === currenUser.id,
+    );
+  }
+
+  public async subscribeUserById(
+    currentUserId: string,
+    subscribeUserId: string,
+  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+    this.logger.log(
+      `Subscribing user '${currentUserId}' to user '${subscribeUserId}'`,
+    );
+
+    if (currentUserId === subscribeUserId) {
+      this.logger.warn('Attempt to subscribe to oneself');
+      throw new BadRequestException(USER_MESSAGES.SUBSCRIBE_YOURSELF);
+    }
+    const publicUser = await this.userRepository.findById(subscribeUserId);
+    if (!publicUser) {
+      this.logger.warn(`User not found with ID: '${subscribeUserId}'`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+
+    await this.userRepository.addSubscription(subscribeUserId, currentUserId);
+    const isUserSubscribed = true;
+    this.logger.log(`User ${currentUserId} subscribed to ${subscribeUserId}`);
+
+    return await this.getUserWithQuestionnaireAndSubscription(
+      publicUser,
+      isUserSubscribed,
+    );
+  }
+
+  public async unsubscribeUserById(
+    currentUserId: string,
+    unsubscribeUserId: string,
+  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+    this.logger.log(
+      `Unsubscribing user '${currentUserId}' from user '${unsubscribeUserId}'`,
+    );
+    const publicUser = await this.userRepository.findById(unsubscribeUserId);
+    if (!publicUser) {
+      this.logger.warn(`User not found with ID: '${unsubscribeUserId}'`);
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+
+    await this.userRepository.removeSubscription(
+      unsubscribeUserId,
+      currentUserId,
+    );
+    const isUserSubscribed = false;
+    this.logger.log(
+      `User ${currentUserId} unsubscribed from ${unsubscribeUserId}`,
+    );
+
+    return await this.getUserWithQuestionnaireAndSubscription(
+      publicUser,
+      isUserSubscribed,
+    );
   }
 }

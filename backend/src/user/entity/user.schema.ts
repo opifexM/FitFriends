@@ -46,6 +46,9 @@ export class UserModel extends Document {
 
   @Prop({ required: true, enum: RoleType })
   public role: RoleType;
+
+  @Prop({ required: true, type: [{ type: Types.ObjectId, ref: 'UserModel' }] })
+  public subscriptions: UserModel[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);
