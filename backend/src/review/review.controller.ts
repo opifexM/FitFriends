@@ -108,7 +108,7 @@ export class ReviewController {
     @Query() query: ReviewQuery,
   ): Promise<ReviewPaginationDto> {
     this.logger.log(
-      `Retrieving review list for training ID '${trainingId}' with query: ${JSON.stringify(query)}'`,
+      `Retrieving review list for training ID '${trainingId}' with query: '${JSON.stringify(query)}'`,
     );
     const reviewPaginationData =
       await this.reviewService.findReviewByTrainingIdByQuery(trainingId, query);

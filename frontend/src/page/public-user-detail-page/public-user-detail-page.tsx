@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../hook';
 import {
   fetchCoachTraining,
   fetchPublicUserDetail,
+  fetchUserDetail,
 } from '../../store/api-action/data-action.ts';
 import {
   getPublicUserDetail,
@@ -28,6 +29,7 @@ export function PublicUserDetailPage() {
     if (userId) {
       dispatch(fetchPublicUserDetail(userId));
       dispatch(fetchCoachTraining(userId));
+      dispatch(fetchUserDetail());
     }
   }, [dispatch, userId]);
 
@@ -35,10 +37,10 @@ export function PublicUserDetailPage() {
     dispatch(setMenuStatus(MenuType.NONE));
   }, [dispatch]);
 
-  if (!userId || !publicUserDetail) {
+  if (!userId || !publicUserDetail || !currentUserDetail) {
     return null;
   }
-  const isCurrentUser = currentUserDetail?.id === publicUserDetail?.id;
+  const isCurrentUser = currentUserDetail.id === publicUserDetail?.id;
 
   return (
     <div className="wrapper">
@@ -52,12 +54,14 @@ export function PublicUserDetailPage() {
               <PublicAccountVisitor
                 publicUserDetail={publicUserDetail}
                 isCurrentUser={isCurrentUser}
+                currentUserDetail={currentUserDetail}
               />
             )}
             {publicUserDetail.role === RoleType.COACH && (
               <PublicAccountCoach
                 publicUserDetail={publicUserDetail}
                 isCurrentUser={isCurrentUser}
+                currentUserDetail={currentUserDetail}
               />
             )}
           </div>

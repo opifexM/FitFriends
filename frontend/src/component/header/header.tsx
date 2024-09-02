@@ -60,7 +60,7 @@ export function Header() {
                 className={classNames('main-nav__link', {
                   'is-active': menuStatus === MenuType.FRIENDS,
                 })}
-                to={AppRoute.Main}
+                to={AppRoute.MyFriend}
                 aria-label="Друзья"
               >
                 <svg width="22" height="16" aria-hidden="true">

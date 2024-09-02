@@ -19,7 +19,7 @@ export class TrainingPaginationDto {
 
   @Expose()
   @ApiProperty({
-    description: 'Page number of the review pagination',
+    description: 'Page number of the training pagination',
     example: 1,
   })
   public currentPage: number;

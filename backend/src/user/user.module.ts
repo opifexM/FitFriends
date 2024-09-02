@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CryptoModule } from '../crypto/crypto.module';
 import { FileModule } from '../file-module/file.module';
+import { FriendModule } from '../friend/friend.module';
 import { QuestionnaireModule } from '../questionnaire/questionnaire.module';
 import { TokenModule } from '../token-module/token.module';
 import { JwtAccessStrategy } from './authentication/strategy/jwt-access.strategy';
@@ -21,6 +22,7 @@ import { UserService } from './user.service';
     TokenModule,
     FileModule,
     forwardRef(() => QuestionnaireModule),
+    forwardRef(() => FriendModule),
   ],
   controllers: [UserController],
   providers: [

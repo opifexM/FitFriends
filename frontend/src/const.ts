@@ -12,6 +12,7 @@ export const AppRoute = {
   TrainingCard: '/training/:trainingId',
   BalancePurchase: '/my-purchase',
   MyOrder: '/my-order',
+  MyFriend: '/my-friend',
   PersonalAccount: '/personal-account',
   PublicAccount: '/public-account',
   PublicAccountId: '/public-account/:userId',
@@ -63,6 +64,10 @@ export const APIRoute = {
   CreateOrder: 'orders',
   GetOrder: 'orders/:orderId',
   GetMyOrder: 'orders/my-order',
+  AddFriend: 'friends',
+  RemoveFriend: 'friends/:friendId',
+  ChangeFriendRequestStatus: 'friends/:friendId',
+  GetMyFriend: 'friends/my-friend',
 } as const;
 
 export const AuthorizationStatus = {

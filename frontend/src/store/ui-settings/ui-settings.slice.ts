@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
+import { FRIEND_LIST } from 'shared/type/friend/friend.constant.ts';
 import { OrderSortType } from 'shared/type/order/order-sort-type.enum.ts';
 import { ORDER_LIST } from 'shared/type/order/order.constant.ts';
 import { SortDirection } from 'shared/type/sort-direction.interface.ts';
@@ -13,6 +14,7 @@ import { NameSpace } from '../../const.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
 import {
   fetchLatestQuestionnaire,
+  fetchMyFriend,
   fetchMyOrder,
   fetchPurchase,
   fetchTraining,
@@ -53,10 +55,16 @@ interface MyOrderFilter {
   currentPage: number;
 }
 
+interface MyFriendFilter {
+  totalPages: number;
+  currentPage: number;
+}
+
 interface UiSettingsSlice {
   trainingFilter: TrainingFilter;
   purchaseFilter: PurchaseFilter;
   myOrderFilter: MyOrderFilter;
+  myFriendFilter: MyFriendFilter;
   isReviewCreatePopupOpen: boolean;
   isPurchasePopupOpen: boolean;
   isQuestionnaireOpen: boolean;
@@ -95,6 +103,10 @@ const initialState: UiSettingsSlice = {
     currentPage: ORDER_LIST.DEFAULT_FILTER_PAGE,
     orderSortType: ORDER_LIST.DEFAULT_SORT_TYPE,
     orderSortDirection: ORDER_LIST.DEFAULT_SORT_DIRECTION,
+  },
+  myFriendFilter: {
+    totalPages: 0,
+    currentPage: FRIEND_LIST.DEFAULT_FILTER_PAGE,
   },
   isReviewCreatePopupOpen: false,
   isPurchasePopupOpen: false,
@@ -166,6 +178,9 @@ export const uiSettingsSlice = createSlice({
     },
     increaseMyOrderFilterCurrentPage: (state) => {
       state.myOrderFilter.currentPage++;
+    },
+    increaseMyFriendFilterCurrentPage: (state) => {
+      state.myFriendFilter.currentPage++;
     },
     setOrderSortTypeFilter: (state, action: PayloadAction<OrderSortType>) => {
       state.myOrderFilter.orderSortType = action.payload;
@@ -248,6 +263,12 @@ export const uiSettingsSlice = createSlice({
         state.myOrderFilter.totalPages = totalPages;
       })
 
+      .addCase(fetchMyFriend.fulfilled, (state, action) => {
+        const { currentPage, totalPages } = action.payload;
+        state.myFriendFilter.currentPage = currentPage;
+        state.myFriendFilter.totalPages = totalPages;
+      })
+
       .addCase(fetchTrainingFouYou.rejected, (state, action) => {
         if (action.payload === 'Questionnaire not found') {
           state.isQuestionnaireOpen = true;
@@ -284,4 +305,5 @@ export const {
   setOrderSortTypeFilter,
   setOrderSortDirectionFilter,
   setIsCertificateViewOpen,
+  increaseMyFriendFilterCurrentPage,
 } = uiSettingsSlice.actions;

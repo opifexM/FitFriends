@@ -10,21 +10,26 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
+import { fillDto } from 'shared/lib/common';
 import { EmailContactDto } from 'shared/type/email/dto/email-contact.dto';
+import { FriendPaginationDto } from 'shared/type/friend/dto/friend-pagination.dto';
+import { PaginationResult } from 'shared/type/pagination.interface';
 import { Token } from 'shared/type/token.interface';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
-import { PublicUserDto } from 'shared/type/user/dto/public-user.dto';
+import { PublicUserPaginationDto } from 'shared/type/user/dto/public-user-pagination.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { USER } from 'shared/type/user/user.constant';
 import { BcryptCrypto } from '../crypto/bcrypt.crypto';
 import { FileService } from '../file-module/file.service';
-import { QuestionnaireEntity } from '../questionnaire/entity/questionnaire.entity';
+import { FriendService } from '../friend/friend.service';
 import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 import { TokenService } from '../token-module/token.service';
+import { TrainingEntity } from '../training/entity/training.entity';
 import { UserEntity } from './entity/user.entity';
 import { UserFactory } from './entity/user.factory';
 import { UserRepository } from './entity/user.repository';
+import { UserQuestionnairePublic } from './public-user.type';
 import { USER_DEFAULT, USER_MESSAGES } from './user.constant';
 
 @Injectable()
@@ -38,6 +43,8 @@ export class UserService {
     private readonly fileService: FileService,
     @Inject(forwardRef(() => QuestionnaireService))
     private readonly questionnaireService: QuestionnaireService,
+    @Inject(forwardRef(() => FriendService))
+    private readonly friendService: FriendService,
   ) {}
 
   public async createUser(
@@ -116,14 +123,24 @@ export class UserService {
     return await this.userRepository.findUserSubscription(subscriptions);
   }
 
-  private async getUserWithQuestionnaireAndSubscription(
+  private async getPublicUserWithQuestionnaireAndSubscription(
     publicUser: UserEntity,
     isUserSubscribed: boolean,
-  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+    currentUserId: string,
+  ): Promise<Partial<UserQuestionnairePublic>> {
+    this.logger.log(
+      `Looking user [${publicUser.id}] for public details with questionnaire and subscription`,
+    );
+
     const questionnaire =
       await this.questionnaireService.findLatestQuestionnairePublicProfileByUserId(
         publicUser.id,
       );
+
+    const friendConnection = await this.friendService.findFriendConnectionByIds(
+      currentUserId,
+      publicUser.id,
+    );
 
     if (questionnaire) {
       return {
@@ -131,16 +148,21 @@ export class UserService {
         ...questionnaire.toPOJO(),
         id: publicUser.id,
         isSubscribed: isUserSubscribed,
+        friendId: friendConnection?.id,
       };
     }
 
-    return { ...publicUser.toPOJO(), isSubscribed: isUserSubscribed };
+    return {
+      ...publicUser.toPOJO(),
+      isSubscribed: isUserSubscribed,
+      friendId: friendConnection?.id,
+    };
   }
 
   public async findPublicUserProfileById(
     currentUserId: string,
     publicUserId: string,
-  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+  ): Promise<Partial<UserQuestionnairePublic>> {
     this.logger.log(
       `Looking for public user profile ID: '${publicUserId}' from current user ID: '${currentUserId}'`,
     );
@@ -160,9 +182,10 @@ export class UserService {
       publicUser,
     );
 
-    return await this.getUserWithQuestionnaireAndSubscription(
+    return await this.getPublicUserWithQuestionnaireAndSubscription(
       publicUser,
       isUserSubscribed,
+      currentUserId,
     );
   }
 
@@ -272,7 +295,7 @@ export class UserService {
   public async subscribeUserById(
     currentUserId: string,
     subscribeUserId: string,
-  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+  ): Promise<Partial<UserQuestionnairePublic>> {
     this.logger.log(
       `Subscribing user '${currentUserId}' to user '${subscribeUserId}'`,
     );
@@ -291,16 +314,17 @@ export class UserService {
     const isUserSubscribed = true;
     this.logger.log(`User ${currentUserId} subscribed to ${subscribeUserId}`);
 
-    return await this.getUserWithQuestionnaireAndSubscription(
+    return await this.getPublicUserWithQuestionnaireAndSubscription(
       publicUser,
       isUserSubscribed,
+      currentUserId,
     );
   }
 
   public async unsubscribeUserById(
     currentUserId: string,
     unsubscribeUserId: string,
-  ): Promise<Partial<UserEntity & QuestionnaireEntity & PublicUserDto>> {
+  ): Promise<Partial<UserQuestionnairePublic>> {
     this.logger.log(
       `Unsubscribing user '${currentUserId}' from user '${unsubscribeUserId}'`,
     );
@@ -319,9 +343,41 @@ export class UserService {
       `User ${currentUserId} unsubscribed from ${unsubscribeUserId}`,
     );
 
-    return await this.getUserWithQuestionnaireAndSubscription(
+    return await this.getPublicUserWithQuestionnaireAndSubscription(
       publicUser,
       isUserSubscribed,
+      currentUserId,
     );
+  }
+
+  public async findLookingForTraining(
+    userId: string,
+  ): Promise<PublicUserPaginationDto> {
+    this.logger.log(`Finding 'looking for training' user list`);
+    const questionnairePaginationResult =
+      await this.questionnaireService.findLookingForTraining(userId);
+
+    console.log(questionnairePaginationResult);
+
+    const publicUserList = await Promise.all(
+      questionnairePaginationResult.entities.map(async (questionnaire) => {
+        const publicUser = await this.userRepository.findById(
+          questionnaire.user.toString(),
+        );
+        return {
+          ...publicUser.toPOJO(),
+          ...questionnaire.toPOJO(),
+          id: publicUser.id,
+        };
+      }),
+    );
+    this.logger.log(
+      `Found [${publicUserList.entries.length}] 'looking for training' users`,
+    );
+
+    return fillDto(PublicUserPaginationDto, {
+      ...questionnairePaginationResult,
+      entities: publicUserList,
+    });
   }
 }

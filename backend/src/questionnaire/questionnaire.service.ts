@@ -8,12 +8,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { RoleType } from 'shared/type/enum/role-type.enum';
+import { PaginationResult } from 'shared/type/pagination.interface';
 import { CreateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/create-coach-questionnaire.dto';
 import { CreateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/create-visitor-questionnaire.dto';
 import { UpdateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/update-coach-questionnaire.dto';
 import { UpdateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/update-visitor-questionnaire.dto';
 import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
 import { FileService } from '../file-module/file.service';
+import { TrainingEntity } from '../training/entity/training.entity';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
 import { QuestionnaireEntity } from './entity/questionnaire.entity';
@@ -462,5 +464,13 @@ export class QuestionnaireService {
 
   public async exists(questionnaireId: string): Promise<boolean> {
     return this.questionnaireRepository.exists(questionnaireId);
+  }
+
+  public async findLookingForTraining(
+    userId: string,
+  ): Promise<PaginationResult<QuestionnaireEntity>> {
+    this.logger.log(`Finding 'looking for training' questionnaire list`);
+
+    return this.questionnaireRepository.findAllLookingForTraining(userId);
   }
 }

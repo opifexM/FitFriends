@@ -35,17 +35,19 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
 
   public async findWithCoachById(id: string): Promise<TrainingEntity | null> {
     this.logger.log(`Finding training by ID: '${id}'`);
-    const foundDocument = await this.model.findById(new ObjectId(id)).populate({
-      path: 'coach',
-      select: 'name avatarId profilePictureId',
-    });
+    const foundDocument = await this.trainingModel
+      .findById(new ObjectId(id))
+      .populate({
+        path: 'coach',
+        select: 'name avatarId profilePictureId',
+      });
 
     return this.createEntityFromDocument(foundDocument);
   }
 
   public async findAllByCoachId(id: string): Promise<TrainingEntity[]> {
     this.logger.log(`Finding all training by coach ID: '${id}'`);
-    const trainings = await this.model.find({ coach: id });
+    const trainings = await this.trainingModel.find({ coach: id });
     this.logger.log(`Retrieved [${trainings.length}] trainings`);
 
     return trainings.map((training) => this.createEntityFromDocument(training));
@@ -53,7 +55,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
 
   public async findById(id: string): Promise<TrainingEntity | null> {
     this.logger.log(`Finding training by ID: '${id}'`);
-    const foundDocument = await this.model.findById(new ObjectId(id));
+    const foundDocument = await this.trainingModel.findById(new ObjectId(id));
 
     return this.createEntityFromDocument(foundDocument);
   }
@@ -140,7 +142,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       .skip(skip)
       .limit(limit);
 
-    const totalItem = await this.model.countDocuments(filterCriteria);
+    const totalItem = await this.trainingModel.countDocuments(filterCriteria);
 
     this.logger.log(`Retrieved [${trainings.length}] trainings`);
 
@@ -168,7 +170,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
     priceStats: Array<any>;
     ratingStats: Array<any>;
   }> {
-    const priceStats = await this.model.aggregate([
+    const priceStats = await this.trainingModel.aggregate([
       { $match: filterCriteria },
       {
         $group: {
@@ -179,7 +181,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       },
     ]);
 
-    const caloriesStats = await this.model.aggregate([
+    const caloriesStats = await this.trainingModel.aggregate([
       { $match: filterCriteria },
       {
         $group: {
@@ -190,7 +192,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       },
     ]);
 
-    const ratingStats = await this.model.aggregate([
+    const ratingStats = await this.trainingModel.aggregate([
       { $match: filterCriteria },
       {
         $group: {
@@ -222,7 +224,8 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       .skip(skip)
       .limit(limit);
 
-    const trainingItem = await this.model.countDocuments(filterCriteria);
+    const trainingItem =
+      await this.trainingModel.countDocuments(filterCriteria);
 
     this.logger.log(`Retrieved [${trainings.length}] trainings`);
 
@@ -248,7 +251,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       workout: { $in: workouts },
     };
 
-    const trainings = await this.model.find(filterCriteria);
+    const trainings = await this.trainingModel.find(filterCriteria);
     const trainingEntities = trainings.map((training) =>
       this.createEntityFromDocument(training),
     );
@@ -276,7 +279,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
       isSpecialOffer: true,
     };
 
-    const trainings = await this.model.find(filterCriteria);
+    const trainings = await this.trainingModel.find(filterCriteria);
 
     this.logger.log(`Retrieved [${trainings.length}] trainings`);
 

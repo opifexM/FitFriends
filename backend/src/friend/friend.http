@@ -1,0 +1,39 @@
+@host = http://localhost:3000
+@friendId = 66d1e167d182662195e55355
+@friendUserId = 668b20ca4faf60db85dd3369
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmNiNmJmYzI2MTE2N2UyNDZmNzRhOWUiLCJlbWFpbCI6InRlc3Q1QHRlc3QuY29tIiwiaWF0IjoxNzI0OTUwOTkyLCJleHAiOjE3Mjc1NDI5OTJ9.5gjkfcRZ9oAi3_x_UOfT_RZKzw2Xf4qFY6l7KUz6ZLX5aCihmLJW56OncLJHQIRYsKvvqQhaWAPepMeb40vs-w
+
+
+### Create a new friend connection
+POST {{host}}/api/friends HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "friend": "{{friendUserId}}"
+}
+
+
+### Get friend connection by ID
+GET {{host}}/api/friends/{{friendId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Update friend connection by ID
+PATCH {{host}}/api/friends/{{friendId}} HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "requestStatus": "accepted"
+}
+
+
+### Delete friend connection by ID
+DELETE {{host}}/api/friends/{{friendId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+
+### Get friend connection list
+GET {{host}}/api/friends/my-friend HTTP/1.1
+Authorization: Bearer {{token}}

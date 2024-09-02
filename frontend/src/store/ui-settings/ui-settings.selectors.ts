@@ -13,6 +13,10 @@ export const getMyOrderFilter = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].myOrderFilter;
 
+export const getMyFriendFilter = (
+  state: Pick<State, typeof NameSpace.UiSetting>,
+) => state[NameSpace.UiSetting].myFriendFilter;
+
 export const getIsPurchasePopupOpen = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].isPurchasePopupOpen;

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Document, Model } from 'mongoose';
+import { Document, Model, Promise } from 'mongoose';
 import { EmailContactDto } from 'shared/type/email/dto/email-contact.dto';
 import { BaseRepository } from '../../database/base-mongo.repository';
 import { UserEntity } from './user.entity';
@@ -28,7 +28,7 @@ export class UserRepository extends BaseRepository<UserEntity> {
   }
 
   public async findByEmail(email: string): Promise<UserEntity | null> {
-    this.logger.log(`Searching for user by email: ${email}`);
+    this.logger.log(`Searching for user by email: '${email}'`);
     const foundDocument = await this.model
       .findOne({ email: email })
       .select('password email');

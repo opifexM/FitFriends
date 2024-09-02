@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
+import { FriendDto } from 'shared/type/friend/dto/friend.dto.ts';
 import { MyOrderDto } from 'shared/type/order/dto/my-order-pagination.dto.ts';
 import { ORDER_LIST } from 'shared/type/order/order.constant.ts';
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
@@ -18,6 +19,8 @@ import {
 import { dropToken, saveToken } from '../../services/token.ts';
 import {
   activateBalancePurchase,
+  addFriend,
+  changeFriendRequestStatus,
   createCoachQuestionnaire,
   createOrder,
   createReview,
@@ -29,6 +32,7 @@ import {
   fetchCoachTraining,
   fetchLatestQuestionnaire,
   fetchLatestReview,
+  fetchMyFriend,
   fetchMyOrder,
   fetchPublicUserDetail,
   fetchPurchase,
@@ -38,6 +42,7 @@ import {
   fetchTrainingFouYou,
   fetchTrainingSpecialPrice,
   fetchUserDetail,
+  removeFriend,
   subscribeCoach,
   unsubscribeCoach,
   updateCoachFileQuestionnaire,
@@ -72,6 +77,7 @@ interface ApiCommunicationState {
   publicUserDetail: PublicUserDto | null;
   trainingsForYou: TrainingDto[];
   specialPriceTrainings: TrainingDto[];
+  myFriends: FriendDto[];
 }
 
 const initialState: ApiCommunicationState = {
@@ -90,6 +96,7 @@ const initialState: ApiCommunicationState = {
   trainingsForYou: [],
   specialPriceTrainings: [],
   balances: [],
+  myFriends: [],
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -541,6 +548,48 @@ export const apiCommunicationSlice = createSlice({
       })
       .addCase(unsubscribeCoach.fulfilled, (state, action) => {
         state.publicUserDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(addFriend.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addFriend.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(addFriend.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+
+      .addCase(removeFriend.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(removeFriend.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(removeFriend.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+
+      .addCase(changeFriendRequestStatus.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(changeFriendRequestStatus.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(changeFriendRequestStatus.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+
+      .addCase(fetchMyFriend.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchMyFriend.rejected, (state) => {
+        state.myFriends = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchMyFriend.fulfilled, (state, action) => {
+        state.myFriends = action.payload.entities;
         state.isLoading = false;
       });
   },

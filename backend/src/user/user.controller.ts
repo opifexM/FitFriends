@@ -25,9 +25,11 @@ import {
 import { fillDto } from 'shared/lib/common';
 import { TokenPayload } from 'shared/type/token-payload.interface';
 import { Token } from 'shared/type/token.interface';
+import { TrainingPaginationDto } from 'shared/type/training/dto/training-pagination.dto';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoggedDto } from 'shared/type/user/dto/logged.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
+import { PublicUserPaginationDto } from 'shared/type/user/dto/public-user-pagination.dto';
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { UserDto } from 'shared/type/user/dto/user.dto';
@@ -91,6 +93,24 @@ export class UserController {
     );
 
     return fillDto(PublicUserDto, publicUserData);
+  }
+
+  @Get('/looking-for-training')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get users who are looking for a joint training' })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The users who are looking for a joint training successfully retrieved.',
+    type: PublicUserPaginationDto,
+  })
+  @ApiResponse({ status: 404, description: 'Users not found.' })
+  public async getLookingTrainingUsers(
+    @GetUserId() userId: string,
+  ): Promise<PublicUserPaginationDto> {
+    this.logger.log(`Retrieving 'looking for training' user list`);
+    return this.userService.findLookingForTraining(userId);
   }
 
   @Get(':userId')

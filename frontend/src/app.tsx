@@ -13,6 +13,7 @@ import { BalancePurchasePage } from './page/balance-purchase-page/balance-purcha
 import { IntroPage } from './page/intro-page/intro-page.tsx';
 import { LoginPage } from './page/login-page/login-page.tsx';
 import { MainPage } from './page/main-page/main-page.tsx';
+import { MyFriendPage } from './page/my-friend-page/my-friend-page.tsx';
 import { MyOrderPage } from './page/my-order-page/my-order-page.tsx';
 import { NotFoundPage } from './page/not-found-page/not-found-page.tsx';
 import { PersonalAccountPage } from './page/personal-account/personal-account-page.tsx';
@@ -170,6 +171,18 @@ export function App({
               declinedElement={AppRoute.Intro}
             >
               <MyOrderPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.MyFriend}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <MyFriendPage />
             </PrivateRoute>
           }
         />

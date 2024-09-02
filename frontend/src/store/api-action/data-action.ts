@@ -2,6 +2,11 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { BalanceTrainingQuery } from 'shared/type/balance/balance-training.query.ts';
 import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
+import { CreateFriendDto } from 'shared/type/friend/dto/create-friend.dto.ts';
+import { FriendPaginationDto } from 'shared/type/friend/dto/friend-pagination.dto.ts';
+import { FriendDto } from 'shared/type/friend/dto/friend.dto.ts';
+import { UpdateFriendDto } from 'shared/type/friend/dto/update-friend.dto.ts';
+import { FriendQuery } from 'shared/type/friend/friend.query.ts';
 import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto.ts';
 import { MyOrderPaginationDto } from 'shared/type/order/dto/my-order-pagination.dto.ts';
 import { OrderDto } from 'shared/type/order/dto/order.dto.ts';
@@ -733,6 +738,90 @@ export const unsubscribeCoach = createAsyncThunk<
         publicUserId,
       );
       const { data } = await api.delete<PublicUserDto>(url);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const addFriend = createAsyncThunk<
+  FriendDto,
+  CreateFriendDto,
+  ThunkApiConfig
+>('data/addFriend', async (friendData, { extra: api, rejectWithValue }) => {
+  try {
+    const { data } = await api.post<FriendDto>(APIRoute.AddFriend, friendData);
+
+    return data;
+  } catch (error) {
+    toast.warning(handleApiError(error), {
+      position: 'top-right',
+    });
+    return rejectWithValue(handleApiError(error));
+  }
+});
+
+export const removeFriend = createAsyncThunk<FriendDto, string, ThunkApiConfig>(
+  'data/removeFriend',
+  async (friendId, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.RemoveFriend.replace(':friendId', friendId);
+      const { data } = await api.delete<FriendDto>(url);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const changeFriendRequestStatus = createAsyncThunk<
+  FriendDto,
+  {
+    friendId: string;
+    friendData: UpdateFriendDto;
+  },
+  ThunkApiConfig
+>(
+  'data/changeFriendRequestStatus',
+  async ({ friendId, friendData }, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.ChangeFriendRequestStatus.replace(
+        ':friendId',
+        friendId,
+      );
+      const { data } = await api.patch<FriendDto>(url, friendData);
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const fetchMyFriend = createAsyncThunk<
+  FriendPaginationDto,
+  FriendQuery,
+  ThunkApiConfig
+>(
+  'data/fetchMyFriend',
+  async (myFriendQuery, { extra: api, rejectWithValue }) => {
+    try {
+      const { data } = await api.get<FriendPaginationDto>(
+        APIRoute.GetMyFriend,
+        { params: myFriendQuery },
+      );
 
       return data;
     } catch (error) {

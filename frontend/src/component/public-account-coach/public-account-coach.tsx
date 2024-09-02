@@ -1,9 +1,14 @@
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto.ts';
+import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import {
+  addFriend,
+  fetchPublicUserDetail,
+  removeFriend,
   subscribeCoach,
   unsubscribeCoach,
 } from '../../store/api-action/data-action.ts';
@@ -12,12 +17,14 @@ import { CoachTrainingList } from '../coach-training-list/coach-training-list.ts
 
 interface PublicAccountCoachProps {
   publicUserDetail: PublicUserDto;
-  isCurrentUser?: boolean;
+  isCurrentUser: boolean;
+  currentUserDetail: UserDto;
 }
 
 export function PublicAccountCoach({
   publicUserDetail,
   isCurrentUser,
+  currentUserDetail,
 }: Readonly<PublicAccountCoachProps>) {
   const dispatch = useAppDispatch();
 
@@ -29,6 +36,7 @@ export function PublicAccountCoach({
     experience,
     workout,
     isSubscribed,
+    friendId,
   } = publicUserDetail;
 
   const hashtagList = workout?.map((hashtag) => (
@@ -55,6 +63,28 @@ export function PublicAccountCoach({
           toast.success(`Subscription to '${name}' was successful`, {
             position: 'top-right',
           });
+        });
+    }
+  };
+
+  const handleFriendship = () => {
+    if (friendId) {
+      dispatch(removeFriend(friendId))
+        .unwrap()
+        .then(() => {
+          toast.success('The user has been removed from friends', {
+            position: 'top-right',
+          });
+          dispatch(fetchPublicUserDetail(publicUserDetail.id));
+        });
+    } else {
+      dispatch(addFriend({ friend: id }))
+        .unwrap()
+        .then(() => {
+          toast.success('The user has been added as a friend', {
+            position: 'top-right',
+          });
+          dispatch(fetchPublicUserDetail(publicUserDetail.id));
         });
     }
   };
@@ -128,13 +158,28 @@ export function PublicAccountCoach({
                   <span>Посмотреть сертификаты</span>
                 </button>
                 <ul className="user-card-coach__hashtag-list">{hashtagList}</ul>
-                <button
-                  className="btn user-card-coach__btn"
-                  type="button"
-                  disabled={isCurrentUser}
-                >
-                  Добавить в друзья
-                </button>
+                {friendId ? (
+                  <button
+                    className="btn user-card-coach__btn"
+                    type="button"
+                    disabled={isCurrentUser}
+                    onClick={handleFriendship}
+                    style={{ backgroundColor: '#f0f0f0' }}
+                  >
+                    Удалить из друзей
+                  </button>
+                ) : (
+                  <button
+                    className="btn user-card-coach__btn"
+                    type="button"
+                    disabled={
+                      isCurrentUser || currentUserDetail.role === RoleType.COACH
+                    }
+                    onClick={handleFriendship}
+                  >
+                    Добавить в друзья
+                  </button>
+                )}
               </div>
               <div className="user-card-coach__gallary">
                 <ul className="user-card-coach__gallary-list">

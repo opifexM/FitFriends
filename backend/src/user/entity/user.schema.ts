@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 import { GenderType } from 'shared/type/enum/gender-type.enum';
 import { LocationType } from 'shared/type/enum/location-type.enum';
 import { RoleType } from 'shared/type/enum/role-type.enum';
+import { QuestionnaireModel } from '../../questionnaire/entity/questionnaire.schema';
 
 @Schema({
   collection: 'users',
@@ -49,6 +50,9 @@ export class UserModel extends Document {
 
   @Prop({ required: true, type: [{ type: Types.ObjectId, ref: 'UserModel' }] })
   public subscriptions: UserModel[];
+
+  @Prop({ type: Types.ObjectId, ref: 'QuestionnaireModel' })
+  public questionnaire: QuestionnaireModel;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);

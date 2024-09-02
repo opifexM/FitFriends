@@ -98,4 +98,11 @@ export class PublicUserDto {
     description: 'The unique identifier of the certificate file',
   })
   public certificateIds: string[];
+
+  @Expose()
+  @ApiProperty({
+    example: '60d0fe4f5311236168a109ca',
+    description: 'The unique identifier of the friend connection',
+  })
+  public friendId: string;
 }

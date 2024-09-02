@@ -1,18 +1,38 @@
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto.ts';
+import { UserDto } from 'shared/type/user/dto/user.dto.ts';
 import { AppRoute } from '../../const.ts';
+import { useAppDispatch } from '../../hook';
+import {
+  addFriend,
+  fetchPublicUserDetail,
+  removeFriend,
+} from '../../store/api-action/data-action.ts';
 
 interface PublicAccountCoachProps {
   publicUserDetail: PublicUserDto;
-  isCurrentUser?: boolean;
+  isCurrentUser: boolean;
+  currentUserDetail: UserDto;
 }
 
 export function PublicAccountVisitor({
   publicUserDetail,
   isCurrentUser,
+  currentUserDetail,
 }: Readonly<PublicAccountCoachProps>) {
-  const { name, location, isReadyForTraining, workout, description } =
-    publicUserDetail;
+  const dispatch = useAppDispatch();
+
+  const {
+    id,
+    name,
+    location,
+    isReadyForTraining,
+    workout,
+    description,
+    friendId,
+  } = publicUserDetail;
 
   const hashtagList = workout?.map((hashtag) => (
     <li key={hashtag} className="user-card-coach__hashtag-item">
@@ -21,6 +41,28 @@ export function PublicAccountVisitor({
       </div>
     </li>
   ));
+
+  const handleFriendship = () => {
+    if (friendId) {
+      dispatch(removeFriend(friendId))
+        .unwrap()
+        .then(() => {
+          toast.success('The user has been removed from friends', {
+            position: 'top-right',
+          });
+          dispatch(fetchPublicUserDetail(publicUserDetail.id));
+        });
+    } else {
+      dispatch(addFriend({ friend: id }))
+        .unwrap()
+        .then(() => {
+          toast.success('The user has been added as a friend', {
+            position: 'top-right',
+          });
+          dispatch(fetchPublicUserDetail(publicUserDetail.id));
+        });
+    }
+  };
 
   return (
     <div className="inner-page__wrapper">
@@ -62,13 +104,28 @@ export function PublicAccountVisitor({
               )}
               <div className="user-card__text">{description}</div>
               <ul className="user-card__hashtag-list">{hashtagList}</ul>
-              <button
-                className="btn user-card__btn"
-                type="button"
-                disabled={isCurrentUser}
-              >
-                Добавить в друзья
-              </button>
+              {friendId ? (
+                <button
+                  className="btn user-card-coach__btn"
+                  type="button"
+                  disabled={isCurrentUser}
+                  onClick={handleFriendship}
+                  style={{ backgroundColor: '#f0f0f0' }}
+                >
+                  Удалить из друзей
+                </button>
+              ) : (
+                <button
+                  className="btn user-card-coach__btn"
+                  type="button"
+                  disabled={
+                    isCurrentUser || currentUserDetail.role === RoleType.COACH
+                  }
+                  onClick={handleFriendship}
+                >
+                  Добавить в друзья
+                </button>
+              )}
             </div>
             <div className="user-card__gallary">
               <ul className="user-card__gallary-list">
