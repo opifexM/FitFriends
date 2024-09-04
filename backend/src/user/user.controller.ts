@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -25,7 +26,7 @@ import {
 import { fillDto } from 'shared/lib/common';
 import { TokenPayload } from 'shared/type/token-payload.interface';
 import { Token } from 'shared/type/token.interface';
-import { TrainingPaginationDto } from 'shared/type/training/dto/training-pagination.dto';
+import { TrainingQuery } from 'shared/type/training/training.query';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoggedDto } from 'shared/type/user/dto/logged.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
@@ -33,6 +34,7 @@ import { PublicUserPaginationDto } from 'shared/type/user/dto/public-user-pagina
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
 import { UserDto } from 'shared/type/user/dto/user.dto';
+import { PublicUserQuery } from 'shared/type/user/public-user.query';
 import { MongoIdValidationPipe } from '../database/mongo-id-validation.pipe';
 import { GetUserId } from '../decorator/get-user.decorator';
 import { JwtAuthGuard } from './authentication/guard/jwt-auth.guard';
@@ -111,6 +113,27 @@ export class UserController {
   ): Promise<PublicUserPaginationDto> {
     this.logger.log(`Retrieving 'looking for training' user list`);
     return this.userService.findLookingForTraining(userId);
+  }
+
+  @Get('/public-users')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get public user list' })
+  @ApiResponse({
+    status: 200,
+    description: 'The public user list successfully retrieved.',
+    type: PublicUserPaginationDto,
+  })
+  @ApiResponse({ status: 404, description: 'Public user list not found.' })
+  public async getPublicUsers(
+    @GetUserId() userId: string,
+    @Query() publicUserQuery: PublicUserQuery,
+  ): Promise<PublicUserPaginationDto> {
+    this.logger.log(
+      `Retrieving public user list with query: ${JSON.stringify(publicUserQuery)}'`,
+    );
+
+    return this.userService.findPublicUsers(userId, publicUserQuery);
   }
 
   @Get(':userId')

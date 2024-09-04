@@ -7,13 +7,18 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { LocationType } from 'shared/type/enum/location-type.enum';
 import { RoleType } from 'shared/type/enum/role-type.enum';
+import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum';
+import { WorkoutType } from 'shared/type/enum/workout-type.enum';
 import { PaginationResult } from 'shared/type/pagination.interface';
 import { CreateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/create-coach-questionnaire.dto';
 import { CreateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/create-visitor-questionnaire.dto';
 import { UpdateCoachQuestionnaireDto } from 'shared/type/questionnaire/dto/update-coach-questionnaire.dto';
 import { UpdateVisitorQuestionnaireDto } from 'shared/type/questionnaire/dto/update-visitor-questionnaire.dto';
 import { QUESTIONNAIRE } from 'shared/type/questionnaire/questionnaire.constant';
+import { PublicUserSortType } from 'shared/type/user/public-user-sort-type.enum';
+import { PublicUserQuery } from 'shared/type/user/public-user.query';
 import { FileService } from '../file-module/file.service';
 import { TrainingEntity } from '../training/entity/training.entity';
 import { USER_MESSAGES } from '../user/user.constant';
@@ -468,9 +473,25 @@ export class QuestionnaireService {
 
   public async findLookingForTraining(
     userId: string,
+    limit: number,
   ): Promise<PaginationResult<QuestionnaireEntity>> {
     this.logger.log(`Finding 'looking for training' questionnaire list`);
 
-    return this.questionnaireRepository.findAllLookingForTraining(userId);
+    return this.questionnaireRepository.findAllLookingForTraining(
+      userId,
+      limit,
+    );
+  }
+
+  public async findPublicUserQuestionnaires(
+    userId: string,
+    publicUserQuery: PublicUserQuery,
+  ): Promise<PaginationResult<QuestionnaireEntity>> {
+    this.logger.log(`Finding public user questionnaire list`);
+
+    return this.questionnaireRepository.findPublicUserQuestionnaires(
+      userId,
+      publicUserQuery,
+    );
   }
 }

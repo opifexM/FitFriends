@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../hook';
 import { getUserDetail } from '../../store/api-communication/api-communication.selectors.ts';
 import { getTrainingFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
 import {
-  resetTrainingFilterRange,
+  resetTrainingFilter,
   setTrainingFilterCaloriesFrom,
   setTrainingFilterCaloriesTo,
   setTrainingFilterPriceFrom,
@@ -205,7 +205,7 @@ export function TrainingFilter() {
                           }
                           if (updatedWorkout.length) {
                             dispatch(setTrainingFilterWorkout(updatedWorkout));
-                            dispatch(resetTrainingFilterRange());
+                            dispatch(resetTrainingFilter());
                           }
                         }}
                       />

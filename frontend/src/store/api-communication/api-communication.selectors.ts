@@ -61,6 +61,14 @@ export const getPublicUserDetail = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].publicUserDetail;
 
+export const getPublicUsers = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].publicUsers;
+
+export const getSpecialLookingUsers = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].specialLookingUsers;
+
 export const getBalances = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].balances;

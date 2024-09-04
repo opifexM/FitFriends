@@ -1,3 +1,5 @@
+import { PublicUserSortType } from './public-user-sort-type.enum';
+
 export const USER = {
   NAME: {
     MIN: 1,
@@ -19,4 +21,17 @@ export const USER = {
     MIN: 10,
     MAX: 140,
   },
+} as const;
+
+export const USER_MAIN = {
+  DEFAULT_FILTER_PAGE: 1,
+  LOOK_FOR_COMPANY_SHOW_LIMIT: 4,
+  LOOK_FOR_COMPANY_MAX_LIMIT: 8,
+} as const;
+
+export const USER_LIST = {
+  LIMIT: 6,
+  DEFAULT_SORT_TYPE: PublicUserSortType.BY_DATE,
+  DEFAULT_FILTER_PAGE: 1,
+  FILTER_ELEMENT_LIMIT: 5,
 } as const;

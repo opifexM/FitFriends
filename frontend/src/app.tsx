@@ -18,6 +18,7 @@ import { MyOrderPage } from './page/my-order-page/my-order-page.tsx';
 import { NotFoundPage } from './page/not-found-page/not-found-page.tsx';
 import { PersonalAccountPage } from './page/personal-account/personal-account-page.tsx';
 import { PublicUserDetailPage } from './page/public-user-detail-page/public-user-detail-page.tsx';
+import { PublicUserListPage } from './page/public-user-list-page/public-user-list-page.tsx';
 import { QuestionnairePage } from './page/questionnaire-page/questionnaire-page.tsx';
 import { RegistrationPage } from './page/registration-page/registration-page.tsx';
 import { TrainingCreatePage } from './page/training-create-page/training-create-page.tsx';
@@ -207,6 +208,18 @@ export function App({
               declinedElement={AppRoute.Intro}
             >
               <PublicUserDetailPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path={AppRoute.ListUsers}
+          element={
+            <PrivateRoute
+              authorizationStatus={authorizationStatus}
+              requiredAuthorizationStatus={AuthorizationStatus.Auth}
+              declinedElement={AppRoute.Intro}
+            >
+              <PublicUserListPage />
             </PrivateRoute>
           }
         />

@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
+import { LocationType } from 'shared/type/enum/location-type.enum.ts';
+import { SkillLevelType } from 'shared/type/enum/skill-level-type.enum.ts';
 import { WorkoutType } from 'shared/type/enum/workout-type.enum.ts';
 import { FRIEND_LIST } from 'shared/type/friend/friend.constant.ts';
 import { OrderSortType } from 'shared/type/order/order-sort-type.enum.ts';
@@ -10,12 +12,15 @@ import {
   TRAINING,
   TRAINING_LIST,
 } from 'shared/type/training/traning.constant.ts';
+import { PublicUserSortType } from 'shared/type/user/public-user-sort-type.enum.ts';
+import { USER_LIST } from 'shared/type/user/user.constant.ts';
 import { NameSpace } from '../../const.ts';
 import { MenuType } from '../../type/menu-type.enum.ts';
 import {
   fetchLatestQuestionnaire,
   fetchMyFriend,
   fetchMyOrder,
+  fetchPublicUser,
   fetchPurchase,
   fetchTraining,
   fetchTrainingFouYou,
@@ -42,6 +47,15 @@ interface TrainingFilter {
   coachId: string;
 }
 
+interface PublicUserFilter {
+  workout: WorkoutType[];
+  location: LocationType[];
+  skillLevel: SkillLevelType;
+  publicUserSortType: PublicUserSortType;
+  totalPages: number;
+  currentPage: number;
+}
+
 interface PurchaseFilter {
   isActive: boolean;
   totalPages: number;
@@ -65,6 +79,7 @@ interface UiSettingsSlice {
   purchaseFilter: PurchaseFilter;
   myOrderFilter: MyOrderFilter;
   myFriendFilter: MyFriendFilter;
+  publicUserFilter: PublicUserFilter;
   isReviewCreatePopupOpen: boolean;
   isPurchasePopupOpen: boolean;
   isQuestionnaireOpen: boolean;
@@ -90,8 +105,8 @@ const initialState: UiSettingsSlice = {
     ratingMax: 0,
     totalPages: 0,
     currentPage: TRAINING_LIST.DEFAULT_FILTER_PAGE,
-    isReset: true,
     coachId: '',
+    isReset: false,
   },
   purchaseFilter: {
     totalPages: 0,
@@ -107,6 +122,14 @@ const initialState: UiSettingsSlice = {
   myFriendFilter: {
     totalPages: 0,
     currentPage: FRIEND_LIST.DEFAULT_FILTER_PAGE,
+  },
+  publicUserFilter: {
+    totalPages: 0,
+    workout: Object.values(WorkoutType),
+    location: Object.values(LocationType),
+    skillLevel: SkillLevelType.BEGINNER,
+    publicUserSortType: USER_LIST.DEFAULT_SORT_TYPE,
+    currentPage: USER_LIST.DEFAULT_FILTER_PAGE,
   },
   isReviewCreatePopupOpen: false,
   isPurchasePopupOpen: false,
@@ -131,10 +154,12 @@ export const uiSettingsSlice = createSlice({
     setIsCertificateViewOpen: (state, action: PayloadAction<boolean>) => {
       state.isCertificateViewOpen = action.payload;
     },
+
     setMenuStatus: (state, action: PayloadAction<MenuType>) => {
       state.menuStatus = action.payload;
     },
-    resetTrainingFilterRange: (state) => {
+
+    resetTrainingFilter: (state) => {
       state.trainingFilter.isReset = true;
     },
     setTrainingFilterWorkout: (state, action: PayloadAction<WorkoutType[]>) => {
@@ -170,17 +195,16 @@ export const uiSettingsSlice = createSlice({
     increaseTrainingFilterCurrentPage: (state) => {
       state.trainingFilter.currentPage++;
     },
+
     setPurchaseFilterIsActive: (state, action: PayloadAction<boolean>) => {
       state.purchaseFilter.isActive = action.payload;
     },
     increasePurchaseFilterCurrentPage: (state) => {
       state.purchaseFilter.currentPage++;
     },
+
     increaseMyOrderFilterCurrentPage: (state) => {
       state.myOrderFilter.currentPage++;
-    },
-    increaseMyFriendFilterCurrentPage: (state) => {
-      state.myFriendFilter.currentPage++;
     },
     setOrderSortTypeFilter: (state, action: PayloadAction<OrderSortType>) => {
       state.myOrderFilter.orderSortType = action.payload;
@@ -190,6 +214,38 @@ export const uiSettingsSlice = createSlice({
       action: PayloadAction<SortDirection>,
     ) => {
       state.myOrderFilter.orderSortDirection = action.payload;
+    },
+
+    increaseMyFriendFilterCurrentPage: (state) => {
+      state.myFriendFilter.currentPage++;
+    },
+
+    setPublicUserFilterWorkout: (
+      state,
+      action: PayloadAction<WorkoutType[]>,
+    ) => {
+      state.publicUserFilter.workout = action.payload;
+    },
+    setPublicUserFilterLocation: (
+      state,
+      action: PayloadAction<LocationType[]>,
+    ) => {
+      state.publicUserFilter.location = action.payload;
+    },
+    setPublicUserFilterSkillLevel: (
+      state,
+      action: PayloadAction<SkillLevelType>,
+    ) => {
+      state.publicUserFilter.skillLevel = action.payload;
+    },
+    setPublicUserFilterTrainingSortType: (
+      state,
+      action: PayloadAction<PublicUserSortType>,
+    ) => {
+      state.publicUserFilter.publicUserSortType = action.payload;
+    },
+    increasePublicUserFilterCurrentPage: (state) => {
+      state.publicUserFilter.currentPage++;
     },
   },
   extraReducers(builder) {
@@ -251,6 +307,12 @@ export const uiSettingsSlice = createSlice({
         }
       })
 
+      .addCase(fetchPublicUser.fulfilled, (state, action) => {
+        const { currentPage, totalPages } = action.payload;
+        state.publicUserFilter.currentPage = currentPage;
+        state.publicUserFilter.totalPages = totalPages;
+      })
+
       .addCase(fetchPurchase.fulfilled, (state, action) => {
         const { currentPage, totalPages } = action.payload;
         state.purchaseFilter.currentPage = currentPage;
@@ -284,7 +346,7 @@ export const uiSettingsSlice = createSlice({
 });
 
 export const {
-  resetTrainingFilterRange,
+  resetTrainingFilter,
   setTrainingFilterPriceFrom,
   setTrainingFilterPriceTo,
   setTrainingFilterCaloriesFrom,
@@ -306,4 +368,9 @@ export const {
   setOrderSortDirectionFilter,
   setIsCertificateViewOpen,
   increaseMyFriendFilterCurrentPage,
+  increasePublicUserFilterCurrentPage,
+  setPublicUserFilterLocation,
+  setPublicUserFilterSkillLevel,
+  setPublicUserFilterTrainingSortType,
+  setPublicUserFilterWorkout,
 } = uiSettingsSlice.actions;

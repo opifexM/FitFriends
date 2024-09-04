@@ -83,6 +83,7 @@ export class TrainingRepository extends BaseRepository<TrainingEntity> {
     }
 
     const filterCriteria: { [key: string]: any } = {};
+
     if (workout && workout.length > 0) {
       filterCriteria['workout'] = { $in: workout };
     }

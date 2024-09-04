@@ -10,6 +10,7 @@ import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
 import { TRAINING_LIST } from 'shared/type/training/traning.constant.ts';
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto.ts';
 import { UserDto } from 'shared/type/user/dto/user.dto.ts';
+import { USER_LIST } from 'shared/type/user/user.constant.ts';
 import {
   AUTH_TOKEN,
   AuthorizationStatus,
@@ -34,9 +35,11 @@ import {
   fetchLatestReview,
   fetchMyFriend,
   fetchMyOrder,
+  fetchPublicUser,
   fetchPublicUserDetail,
   fetchPurchase,
   fetchReviewByTraining,
+  fetchSpecialLookingUser,
   fetchTraining,
   fetchTrainingDetail,
   fetchTrainingFouYou,
@@ -77,7 +80,9 @@ interface ApiCommunicationState {
   publicUserDetail: PublicUserDto | null;
   trainingsForYou: TrainingDto[];
   specialPriceTrainings: TrainingDto[];
+  specialLookingUsers: PublicUserDto[];
   myFriends: FriendDto[];
+  publicUsers: PublicUserDto[];
 }
 
 const initialState: ApiCommunicationState = {
@@ -95,8 +100,10 @@ const initialState: ApiCommunicationState = {
   publicUserDetail: null,
   trainingsForYou: [],
   specialPriceTrainings: [],
+  specialLookingUsers: [],
   balances: [],
   myFriends: [],
+  publicUsers: [],
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -526,6 +533,36 @@ export const apiCommunicationSlice = createSlice({
       })
       .addCase(fetchPublicUserDetail.fulfilled, (state, action) => {
         state.publicUserDetail = action.payload;
+        state.isLoading = false;
+      })
+
+      .addCase(fetchPublicUser.rejected, (state) => {
+        state.publicUsers = [];
+      })
+      .addCase(fetchPublicUser.fulfilled, (state, action) => {
+        const { currentPage, entities } = action.payload;
+        if (currentPage === USER_LIST.DEFAULT_FILTER_PAGE) {
+          state.publicUsers = entities;
+        } else {
+          const existingTrainingIds = new Set(
+            state.publicUsers.map((user) => user.id),
+          );
+          const newEntities = entities.filter(
+            (entity) => !existingTrainingIds.has(entity.id),
+          );
+          state.publicUsers = [...state.publicUsers, ...newEntities];
+        }
+      })
+
+      .addCase(fetchSpecialLookingUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchSpecialLookingUser.rejected, (state) => {
+        state.specialLookingUsers = [];
+        state.isLoading = false;
+      })
+      .addCase(fetchSpecialLookingUser.fulfilled, (state, action) => {
+        state.specialLookingUsers = action.payload.entities;
         state.isLoading = false;
       })
 

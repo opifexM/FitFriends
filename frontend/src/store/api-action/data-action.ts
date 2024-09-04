@@ -27,8 +27,10 @@ import { TrainingPaginationDto } from 'shared/type/training/dto/training-paginat
 import { TrainingDto } from 'shared/type/training/dto/training.dto.ts';
 import { UpdateTrainingDto } from 'shared/type/training/dto/update-training.dto.ts';
 import { TrainingQuery } from 'shared/type/training/training.query.ts';
+import { PublicUserPaginationDto } from 'shared/type/user/dto/public-user-pagination.dto.ts';
 import { PublicUserDto } from 'shared/type/user/dto/public-user.dto.ts';
 import { UserDto } from 'shared/type/user/dto/user.dto.ts';
+import { PublicUserQuery } from 'shared/type/user/public-user.query.ts';
 import { APIRoute } from '../../const.ts';
 import { handleApiError } from '../../services/api/api-error-handler.ts';
 import { ThunkApiConfig } from '../state.ts';
@@ -696,6 +698,48 @@ export const fetchPublicUserDetail = createAsyncThunk<
       toast.warning(handleApiError(error), {
         position: 'top-right',
       });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const fetchPublicUser = createAsyncThunk<
+  PublicUserPaginationDto,
+  PublicUserQuery | undefined,
+  ThunkApiConfig
+>(
+  'data/fetchPublicUser',
+  async (publicUserQuery, { extra: api, rejectWithValue }) => {
+    try {
+      const { data } = await api.get<PublicUserPaginationDto>(
+        APIRoute.GetPublicUsers,
+        { params: publicUserQuery },
+      );
+
+      return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const fetchSpecialLookingUser = createAsyncThunk<
+  PublicUserPaginationDto,
+  undefined,
+  ThunkApiConfig
+>(
+  'data/fetchSpecialLookingUser',
+  async (_arg, { extra: api, rejectWithValue }) => {
+    try {
+      const { data } = await api.get<PublicUserPaginationDto>(
+        APIRoute.GetSpecialLookingUser,
+      );
+
+      return data;
+    } catch (error) {
       return rejectWithValue(handleApiError(error));
     }
   },

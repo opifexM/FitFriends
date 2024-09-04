@@ -35,3 +35,7 @@ export const getIsCertificateViewOpen = (
 
 export const getMenuStatus = (state: Pick<State, typeof NameSpace.UiSetting>) =>
   state[NameSpace.UiSetting].menuStatus;
+
+export const getPublicUserFilter = (
+  state: Pick<State, typeof NameSpace.UiSetting>,
+) => state[NameSpace.UiSetting].publicUserFilter;

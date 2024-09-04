@@ -12,20 +12,20 @@ import {
 import { ObjectId } from 'mongodb';
 import { fillDto } from 'shared/lib/common';
 import { EmailContactDto } from 'shared/type/email/dto/email-contact.dto';
-import { FriendPaginationDto } from 'shared/type/friend/dto/friend-pagination.dto';
 import { PaginationResult } from 'shared/type/pagination.interface';
 import { Token } from 'shared/type/token.interface';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';
 import { PublicUserPaginationDto } from 'shared/type/user/dto/public-user-pagination.dto';
 import { UpdateUserDto } from 'shared/type/user/dto/update-user.dto';
-import { USER } from 'shared/type/user/user.constant';
+import { PublicUserQuery } from 'shared/type/user/public-user.query';
+import { USER, USER_LIST, USER_MAIN } from 'shared/type/user/user.constant';
 import { BcryptCrypto } from '../crypto/bcrypt.crypto';
 import { FileService } from '../file-module/file.service';
 import { FriendService } from '../friend/friend.service';
+import { QuestionnaireEntity } from '../questionnaire/entity/questionnaire.entity';
 import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 import { TokenService } from '../token-module/token.service';
-import { TrainingEntity } from '../training/entity/training.entity';
 import { UserEntity } from './entity/user.entity';
 import { UserFactory } from './entity/user.factory';
 import { UserRepository } from './entity/user.repository';
@@ -156,6 +156,31 @@ export class UserService {
       ...publicUser.toPOJO(),
       isSubscribed: isUserSubscribed,
       friendId: friendConnection?.id,
+    };
+  }
+
+  private async getPublicUserWithQuestionnaire(
+    publicUser: UserEntity,
+  ): Promise<Partial<UserQuestionnairePublic>> {
+    this.logger.log(
+      `Looking user [${publicUser.id}] for public details with questionnaire`,
+    );
+
+    const questionnaire =
+      await this.questionnaireService.findLatestQuestionnairePublicProfileByUserId(
+        publicUser.id,
+      );
+
+    if (questionnaire) {
+      return {
+        ...publicUser.toPOJO(),
+        ...questionnaire.toPOJO(),
+        id: publicUser.id,
+      };
+    }
+
+    return {
+      ...publicUser.toPOJO(),
     };
   }
 
@@ -350,20 +375,13 @@ export class UserService {
     );
   }
 
-  public async findLookingForTraining(
-    userId: string,
-  ): Promise<PublicUserPaginationDto> {
-    this.logger.log(`Finding 'looking for training' user list`);
-    const questionnairePaginationResult =
-      await this.questionnaireService.findLookingForTraining(userId);
-
-    console.log(questionnairePaginationResult);
-
-    const publicUserList = await Promise.all(
+  private async getPublicUsersWithQuestionnaires(
+    questionnairePaginationResult: PaginationResult<QuestionnaireEntity>,
+  ) {
+    return await Promise.all(
       questionnairePaginationResult.entities.map(async (questionnaire) => {
-        const publicUser = await this.userRepository.findById(
-          questionnaire.user.toString(),
-        );
+        const id = questionnaire.user?._id || questionnaire.user.toString();
+        const publicUser = await this.userRepository.findById(id as string);
         return {
           ...publicUser.toPOJO(),
           ...questionnaire.toPOJO(),
@@ -371,9 +389,61 @@ export class UserService {
         };
       }),
     );
-    this.logger.log(
-      `Found [${publicUserList.entries.length}] 'looking for training' users`,
+  }
+
+  public async findLookingForTraining(
+    userId: string,
+  ): Promise<PublicUserPaginationDto> {
+    this.logger.log(`Finding 'looking for training' user list`);
+    const questionnairePaginationResult =
+      await this.questionnaireService.findLookingForTraining(
+        userId,
+        USER_MAIN.LOOK_FOR_COMPANY_MAX_LIMIT,
+      );
+    const publicUserList = await this.getPublicUsersWithQuestionnaires(
+      questionnairePaginationResult,
     );
+    this.logger.log(
+      `Found [${publicUserList.length}] 'looking for training' users`,
+    );
+
+    return fillDto(PublicUserPaginationDto, {
+      ...questionnairePaginationResult,
+      entities: publicUserList,
+    });
+  }
+
+  public async findPublicUsers(
+    userId: string,
+    publicUserQuery?: PublicUserQuery,
+  ): Promise<PublicUserPaginationDto> {
+    this.logger.log(`Finding public user list`);
+
+    const limit = Math.min(
+      publicUserQuery?.limit ?? Number.MAX_VALUE,
+      USER_LIST.LIMIT,
+    );
+    const currentPage =
+      publicUserQuery?.currentPage ?? USER_LIST.DEFAULT_FILTER_PAGE;
+    const workout = publicUserQuery?.workout;
+    const location = publicUserQuery?.location;
+    const skillLevel = publicUserQuery?.skillLevel;
+    const publicUserSortType =
+      publicUserQuery?.publicUserSortType ?? USER_LIST.DEFAULT_SORT_TYPE;
+
+    const questionnairePaginationResult =
+      await this.questionnaireService.findPublicUserQuestionnaires(userId, {
+        limit,
+        currentPage,
+        workout,
+        location,
+        skillLevel,
+        publicUserSortType,
+      });
+    const publicUserList = await this.getPublicUsersWithQuestionnaires(
+      questionnairePaginationResult,
+    );
+    this.logger.log(`Found [${publicUserList.length}] public users`);
 
     return fillDto(PublicUserPaginationDto, {
       ...questionnairePaginationResult,

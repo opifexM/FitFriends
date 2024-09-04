@@ -7,7 +7,15 @@ interface TrainingCardProps {
 }
 
 export function TrainingCard({ training }: Readonly<TrainingCardProps>) {
-  const { id, price, name, workout, caloriesBurned, description } = training;
+  const {
+    id,
+    price,
+    name,
+    workout,
+    caloriesBurned,
+    description,
+    backgroundId,
+  } = training;
   const trainingRoute = `${AppRoute.Training}/${id}`;
 
   return (
@@ -18,11 +26,11 @@ export function TrainingCard({ training }: Readonly<TrainingCardProps>) {
             <picture>
               <source
                 type="image/webp"
-                srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
+                srcSet={`${UPLOAD_DIRECTORY}${backgroundId}`}
               />
               <img
-                src={`${UPLOAD_DIRECTORY}${training.backgroundId}`}
-                srcSet={`${UPLOAD_DIRECTORY}${training.backgroundId} 2x`}
+                src={`${UPLOAD_DIRECTORY}${backgroundId}`}
+                srcSet={`${UPLOAD_DIRECTORY}${backgroundId} 2x`}
                 width="330"
                 height="190"
                 alt=""

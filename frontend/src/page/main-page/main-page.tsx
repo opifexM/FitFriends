@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { BackgroundSymbol } from '../../component/background-symbol/background-symbol.tsx';
 import { Header } from '../../component/header/header.tsx';
+import { MainSpecialLooking } from '../../component/main-special-looking/main-special-looking.tsx';
 import { MainPopularTraining } from '../../component/main-popular-training/main-popular-training.tsx';
 import { MainSpecialForYou } from '../../component/main-special-for-you/main-special-for-you.tsx';
 import { MainSpecialOffer } from '../../component/main-special-offer/main-special-offer.tsx';
 import { AppRoute } from '../../const.ts';
 import { useAppDispatch, useAppSelector } from '../../hook';
 import {
+  fetchSpecialLookingUser,
   fetchTraining,
   fetchTrainingFouYou,
   fetchTrainingSpecialPrice,
@@ -31,6 +33,7 @@ export function MainPage() {
     dispatch(fetchTraining());
     dispatch(fetchTrainingFouYou());
     dispatch(fetchTrainingSpecialPrice());
+    dispatch(fetchSpecialLookingUser());
   }, [dispatch]);
 
   useEffect(() => {
@@ -60,7 +63,7 @@ export function MainPage() {
         <MainSpecialForYou />
         <MainSpecialOffer />
         <MainPopularTraining />
-        {/* <MainLookCompany /> */}
+        <MainSpecialLooking />
       </main>
     </div>
   );

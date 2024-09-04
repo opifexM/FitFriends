@@ -153,13 +153,13 @@ export class TrainingController {
   })
   @ApiResponse({ status: 404, description: 'Training not found.' })
   public async getAllTraining(
-    @Query() query: TrainingQuery,
+    @Query() trainingQuery: TrainingQuery,
   ): Promise<TrainingPaginationDto> {
     this.logger.log(
-      `Retrieving training list with query: ${JSON.stringify(query)}'`,
+      `Retrieving training list with query: ${JSON.stringify(trainingQuery)}'`,
     );
     const trainingPaginationData =
-      await this.trainingService.findTrainingByQuery(query);
+      await this.trainingService.findTrainingByQuery(trainingQuery);
 
     return fillDto(TrainingPaginationDto, {
       ...trainingPaginationData,

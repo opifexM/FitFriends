@@ -82,3 +82,8 @@ Authorization: Bearer {{accessToken}}
 ### Get 'looking for training' list
 GET {{host}}/api/users/looking-for-training HTTP/1.1
 Authorization: Bearer {{accessToken}}
+
+
+### Get public user list
+GET {{host}}/api/users/public-users HTTP/1.1
+Authorization: Bearer {{accessToken}}
