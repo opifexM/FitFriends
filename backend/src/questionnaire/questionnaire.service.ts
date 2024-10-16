@@ -108,7 +108,7 @@ export class QuestionnaireService {
 
     const certificateIds = await Promise.all(
       certificateFiles.map(async (file) => {
-        return await this.fileService.uploadFile(
+        return this.fileService.uploadFile(
           file,
           [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
           QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,
@@ -159,7 +159,7 @@ export class QuestionnaireService {
     this.logger.log(
       `Looking for last questionnaire for public profile with user ID: '${userId}'`,
     );
-    return await this.questionnaireRepository.findByUserId(userId);
+    return this.questionnaireRepository.findByUserId(userId);
   }
 
   public async findQuestionnaireById(
@@ -259,7 +259,7 @@ export class QuestionnaireService {
 
     const certificateIds = await Promise.all(
       certificateFiles.map(async (file) => {
-        return await this.fileService.uploadFile(
+        return this.fileService.uploadFile(
           file,
           [...QUESTIONNAIRE.CERTIFICATE.FORMATS],
           QUESTIONNAIRE.CERTIFICATE.MAX_SIZE_KB,

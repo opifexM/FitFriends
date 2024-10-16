@@ -156,7 +156,7 @@ export class BalanceService {
   public async findAllBalances(userId: string): Promise<BalanceEntity[]> {
     this.logger.log(`Finding all balances by user ID: '${userId}'`);
 
-    return await this.balanceRepository.findAllByUserId(userId, true);
+    return this.balanceRepository.findAllByUserId(userId, true);
   }
 
   public async activatePurchase(userId: string, balanceId: string) {

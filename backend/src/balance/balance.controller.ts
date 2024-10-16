@@ -40,7 +40,9 @@ export class BalanceController {
     type: [String],
   })
   @ApiResponse({ status: 404, description: 'Balance not found.' })
-  public async getAllBalances(@GetUserId() userId: string) {
+  public async getAllBalances(
+    @GetUserId() userId: string,
+  ): Promise<BalanceDto[]> {
     this.logger.log(`Retrieving balances list for user ID ${userId}'`);
     const userBalances = await this.balanceService.findAllBalances(userId);
 

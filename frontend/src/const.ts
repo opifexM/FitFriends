@@ -71,6 +71,8 @@ export const APIRoute = {
   RemoveFriend: 'friends/:friendId',
   ChangeFriendRequestStatus: 'friends/:friendId',
   GetMyFriend: 'friends/my-friend',
+  GetMyNotification: 'notifications',
+  ReadNotification: 'notifications/:notificationId',
 } as const;
 
 export const AuthorizationStatus = {

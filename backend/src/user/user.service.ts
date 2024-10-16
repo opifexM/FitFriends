@@ -120,7 +120,7 @@ export class UserService {
   ): Promise<EmailContactDto[]> {
     this.logger.log(`Looking user for [${subscriptions.length}] subscriptions`);
 
-    return await this.userRepository.findUserSubscription(subscriptions);
+    return this.userRepository.findUserSubscription(subscriptions);
   }
 
   private async getPublicUserWithQuestionnaireAndSubscription(
@@ -159,31 +159,6 @@ export class UserService {
     };
   }
 
-  private async getPublicUserWithQuestionnaire(
-    publicUser: UserEntity,
-  ): Promise<Partial<UserQuestionnairePublic>> {
-    this.logger.log(
-      `Looking user [${publicUser.id}] for public details with questionnaire`,
-    );
-
-    const questionnaire =
-      await this.questionnaireService.findLatestQuestionnairePublicProfileByUserId(
-        publicUser.id,
-      );
-
-    if (questionnaire) {
-      return {
-        ...publicUser.toPOJO(),
-        ...questionnaire.toPOJO(),
-        id: publicUser.id,
-      };
-    }
-
-    return {
-      ...publicUser.toPOJO(),
-    };
-  }
-
   public async findPublicUserProfileById(
     currentUserId: string,
     publicUserId: string,
@@ -207,7 +182,7 @@ export class UserService {
       publicUser,
     );
 
-    return await this.getPublicUserWithQuestionnaireAndSubscription(
+    return this.getPublicUserWithQuestionnaireAndSubscription(
       publicUser,
       isUserSubscribed,
       currentUserId,
@@ -339,7 +314,7 @@ export class UserService {
     const isUserSubscribed = true;
     this.logger.log(`User ${currentUserId} subscribed to ${subscribeUserId}`);
 
-    return await this.getPublicUserWithQuestionnaireAndSubscription(
+    return this.getPublicUserWithQuestionnaireAndSubscription(
       publicUser,
       isUserSubscribed,
       currentUserId,
@@ -368,7 +343,7 @@ export class UserService {
       `User ${currentUserId} unsubscribed from ${unsubscribeUserId}`,
     );
 
-    return await this.getPublicUserWithQuestionnaireAndSubscription(
+    return this.getPublicUserWithQuestionnaireAndSubscription(
       publicUser,
       isUserSubscribed,
       currentUserId,
@@ -378,7 +353,7 @@ export class UserService {
   private async getPublicUsersWithQuestionnaires(
     questionnairePaginationResult: PaginationResult<QuestionnaireEntity>,
   ) {
-    return await Promise.all(
+    return Promise.all(
       questionnairePaginationResult.entities.map(async (questionnaire) => {
         const id = questionnaire.user?._id || questionnaire.user.toString();
         const publicUser = await this.userRepository.findById(id as string);

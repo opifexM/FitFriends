@@ -7,9 +7,11 @@ import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import {
   addFriend,
+  fetchMyNotification,
   fetchPublicUserDetail,
   removeFriend,
 } from '../../store/api-action/data-action.ts';
+import { setIsLocationViewOpen } from '../../store/ui-settings/ui-settings.slice.ts';
 
 interface PublicAccountCoachProps {
   publicUserDetail: PublicUserDto;
@@ -51,6 +53,7 @@ export function PublicAccountVisitor({
             position: 'top-right',
           });
           dispatch(fetchPublicUserDetail(publicUserDetail.id));
+          dispatch(fetchMyNotification());
         });
     } else {
       dispatch(addFriend({ friend: id }))
@@ -60,8 +63,13 @@ export function PublicAccountVisitor({
             position: 'top-right',
           });
           dispatch(fetchPublicUserDetail(publicUserDetail.id));
+          dispatch(fetchMyNotification());
         });
     }
+  };
+
+  const handleOpenLocationPopupClick = () => {
+    dispatch(setIsLocationViewOpen(true));
   };
 
   return (
@@ -85,7 +93,11 @@ export function PublicAccountVisitor({
                 <h2 className="user-card__title">{name}</h2>
               </div>
               <div className="user-card__label">
-                <a href="">
+                <button
+                  className="btn-flat user-card-coach__sertificate"
+                  type="button"
+                  onClick={handleOpenLocationPopupClick}
+                >
                   <svg
                     className="user-card-coach__icon-location"
                     width="12"
@@ -95,7 +107,7 @@ export function PublicAccountVisitor({
                     <use xlinkHref="#icon-location"></use>
                   </svg>
                   <span>{location}</span>
-                </a>
+                </button>
               </div>
               {isReadyForTraining && (
                 <div className="user-card__status">

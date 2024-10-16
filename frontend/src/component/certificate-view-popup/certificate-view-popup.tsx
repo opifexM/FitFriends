@@ -60,6 +60,7 @@ export function CertificateViewPopup() {
           </div>
           <div className="popup__content popup__content--feedback">
             <div className="personal-account-coach__label-wrapper">
+              {!currentCertificateIds.length && <p>Сертификатов нет</p>}
               <div className="personal-account-coach__controls">
                 <button
                   className="btn-icon personal-account-coach__control"

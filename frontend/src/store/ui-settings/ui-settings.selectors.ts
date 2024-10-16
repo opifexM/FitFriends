@@ -33,6 +33,10 @@ export const getIsCertificateViewOpen = (
   state: Pick<State, typeof NameSpace.UiSetting>,
 ) => state[NameSpace.UiSetting].isCertificateViewOpen;
 
+export const getIsLocationViewOpen = (
+  state: Pick<State, typeof NameSpace.UiSetting>,
+) => state[NameSpace.UiSetting].isLocationViewOpen;
+
 export const getMenuStatus = (state: Pick<State, typeof NameSpace.UiSetting>) =>
   state[NameSpace.UiSetting].menuStatus;
 

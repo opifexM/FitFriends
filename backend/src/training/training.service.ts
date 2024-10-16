@@ -146,7 +146,7 @@ export class TrainingService {
   ): Promise<TrainingEntity[]> {
     this.logger.log(`Looking for all training by coachID: '${coachId}'`);
 
-    return await this.trainingRepository.findAllByCoachId(coachId);
+    return this.trainingRepository.findAllByCoachId(coachId);
   }
 
   public async findTrainingById(trainingId: string): Promise<TrainingEntity> {

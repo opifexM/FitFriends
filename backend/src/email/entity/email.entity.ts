@@ -1,25 +1,25 @@
 import { instanceToPlain } from 'class-transformer';
 import { Entity } from 'shared/base/entity';
 import { Email } from 'shared/type/email/email';
-import { Questionnaire } from 'shared/type/questionnaire/questionnaire';
 
 export class EmailEntity extends Entity implements Email {
   public emailFrom: string;
   public emailTo: string;
   public topic: string;
   public text: string;
+  public date: Date;
 
-  constructor(questionnaire?: Questionnaire) {
+  constructor(email?: Email) {
     super();
-    this.fillUserData(questionnaire);
+    this.fillUserData(email);
   }
 
-  public fillUserData(questionnaire?: Questionnaire): void {
-    if (!questionnaire) {
+  public fillUserData(email?: Email): void {
+    if (!email) {
       return;
     }
 
-    Object.assign(this, questionnaire);
+    Object.assign(this, email);
   }
 
   public toPOJO() {

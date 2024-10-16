@@ -72,3 +72,7 @@ export const getSpecialLookingUsers = (
 export const getBalances = (
   state: Pick<State, typeof NameSpace.ApiCommunication>,
 ) => state[NameSpace.ApiCommunication].balances;
+
+export const getMyNotifications = (
+  state: Pick<State, typeof NameSpace.ApiCommunication>,
+) => state[NameSpace.ApiCommunication].myNotifications;

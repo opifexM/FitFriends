@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { BALANCE_PURCHASE_LIST } from 'shared/type/balance/balance.constant.ts';
 import { BalanceDto } from 'shared/type/balance/dto/balance.dto.ts';
 import { FriendDto } from 'shared/type/friend/dto/friend.dto.ts';
+import { NotifyDto } from 'shared/type/notify/dto/notify.dto.ts';
 import { MyOrderDto } from 'shared/type/order/dto/my-order-pagination.dto.ts';
 import { ORDER_LIST } from 'shared/type/order/order.constant.ts';
 import { QuestionnaireDto } from 'shared/type/questionnaire/dto/questionnaire.dto.ts';
@@ -34,6 +35,7 @@ import {
   fetchLatestQuestionnaire,
   fetchLatestReview,
   fetchMyFriend,
+  fetchMyNotification,
   fetchMyOrder,
   fetchPublicUser,
   fetchPublicUserDetail,
@@ -83,6 +85,7 @@ interface ApiCommunicationState {
   specialLookingUsers: PublicUserDto[];
   myFriends: FriendDto[];
   publicUsers: PublicUserDto[];
+  myNotifications: NotifyDto[];
 }
 
 const initialState: ApiCommunicationState = {
@@ -104,6 +107,7 @@ const initialState: ApiCommunicationState = {
   balances: [],
   myFriends: [],
   publicUsers: [],
+  myNotifications: [],
 };
 
 export const apiCommunicationSlice = createSlice({
@@ -628,6 +632,13 @@ export const apiCommunicationSlice = createSlice({
       .addCase(fetchMyFriend.fulfilled, (state, action) => {
         state.myFriends = action.payload.entities;
         state.isLoading = false;
+      })
+
+      .addCase(fetchMyNotification.rejected, (state) => {
+        state.myNotifications = [];
+      })
+      .addCase(fetchMyNotification.fulfilled, (state, action) => {
+        state.myNotifications = action.payload;
       });
   },
 });

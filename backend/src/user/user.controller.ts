@@ -26,7 +26,6 @@ import {
 import { fillDto } from 'shared/lib/common';
 import { TokenPayload } from 'shared/type/token-payload.interface';
 import { Token } from 'shared/type/token.interface';
-import { TrainingQuery } from 'shared/type/training/training.query';
 import { CreateUserDto } from 'shared/type/user/dto/create-user.dto';
 import { LoggedDto } from 'shared/type/user/dto/logged.dto';
 import { LoginDto } from 'shared/type/user/dto/login.dto';

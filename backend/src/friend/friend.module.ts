@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { NotifyModule } from '../notify/notify.module';
 import { QuestionnaireModule } from '../questionnaire/questionnaire.module';
 import { UserModule } from '../user/user.module';
 import { FriendRepository } from './entity/friend.repository';
@@ -14,6 +15,7 @@ import { FriendService } from './friend.service';
     ]),
     forwardRef(() => UserModule),
     forwardRef(() => QuestionnaireModule),
+    forwardRef(() => NotifyModule),
   ],
   controllers: [FriendController],
   providers: [FriendService, FriendRepository],

@@ -84,6 +84,7 @@ interface UiSettingsSlice {
   isPurchasePopupOpen: boolean;
   isQuestionnaireOpen: boolean;
   isCertificateViewOpen: boolean;
+  isLocationViewOpen: boolean;
   menuStatus: MenuType;
 }
 
@@ -135,6 +136,7 @@ const initialState: UiSettingsSlice = {
   isPurchasePopupOpen: false,
   isQuestionnaireOpen: false,
   isCertificateViewOpen: false,
+  isLocationViewOpen: false,
   menuStatus: MenuType.NONE,
 };
 
@@ -153,6 +155,9 @@ export const uiSettingsSlice = createSlice({
     },
     setIsCertificateViewOpen: (state, action: PayloadAction<boolean>) => {
       state.isCertificateViewOpen = action.payload;
+    },
+    setIsLocationViewOpen: (state, action: PayloadAction<boolean>) => {
+      state.isLocationViewOpen = action.payload;
     },
 
     setMenuStatus: (state, action: PayloadAction<MenuType>) => {
@@ -373,4 +378,5 @@ export const {
   setPublicUserFilterSkillLevel,
   setPublicUserFilterTrainingSortType,
   setPublicUserFilterWorkout,
+  setIsLocationViewOpen,
 } = uiSettingsSlice.actions;

@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../hook';
 import {
   changeFriendRequestStatus,
   fetchMyFriend,
+  fetchMyNotification,
 } from '../../store/api-action/data-action.ts';
 import { getUserDetail } from '../../store/api-communication/api-communication.selectors.ts';
 import { getMyFriendFilter } from '../../store/ui-settings/ui-settings.selectors.ts';
@@ -90,6 +91,7 @@ export function FriendCard({
             currentPage: myFriendFilter.currentPage,
           }),
         );
+        dispatch(fetchMyNotification());
       });
   };
 
@@ -113,6 +115,7 @@ export function FriendCard({
             currentPage: myFriendFilter.currentPage,
           }),
         );
+        dispatch(fetchMyNotification());
       });
   };
 
@@ -136,6 +139,7 @@ export function FriendCard({
             currentPage: myFriendFilter.currentPage,
           }),
         );
+        dispatch(fetchMyNotification());
       });
   };
 

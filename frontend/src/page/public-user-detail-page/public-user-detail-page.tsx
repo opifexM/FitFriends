@@ -4,6 +4,7 @@ import { RoleType } from 'shared/type/enum/role-type.enum.ts';
 import { BackgroundSymbol } from '../../component/background-symbol/background-symbol.tsx';
 import { CertificateViewPopup } from '../../component/certificate-view-popup/certificate-view-popup.tsx';
 import { Header } from '../../component/header/header.tsx';
+import { LocationViewPopup } from '../../component/location-vew-popup/location-view-popup.tsx';
 import { PublicAccountCoach } from '../../component/public-account-coach/public-account-coach.tsx';
 import { PublicAccountVisitor } from '../../component/public-account-visitor/public-account-visitor.tsx';
 import { useAppDispatch, useAppSelector } from '../../hook';
@@ -48,6 +49,7 @@ export function PublicUserDetailPage() {
       <Header />
       <main>
         <CertificateViewPopup />
+        <LocationViewPopup />
         <div className="inner-page inner-page--no-sidebar">
           <div className="container">
             {publicUserDetail.role === RoleType.VISITOR && (

@@ -15,6 +15,7 @@ import { UpdateFriendDto } from 'shared/type/friend/dto/update-friend.dto';
 import { FRIEND_LIST } from 'shared/type/friend/friend.constant';
 import { FriendQuery } from 'shared/type/friend/friend.query';
 import { ORDER_LIST } from 'shared/type/order/order.constant';
+import { NotifyService } from '../notify/notify.service';
 import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 import { USER_MESSAGES } from '../user/user.constant';
 import { UserService } from '../user/user.service';
@@ -33,6 +34,8 @@ export class FriendService {
     private readonly userService: UserService,
     @Inject(forwardRef(() => QuestionnaireService))
     private readonly questionnaireService: QuestionnaireService,
+    @Inject(forwardRef(() => NotifyService))
+    private readonly notifyService: NotifyService,
   ) {}
 
   public async createFriendConnection(
@@ -89,6 +92,17 @@ export class FriendService {
     this.logger.log(
       `Friend connection created with ID: '${createdFriend.id}' for users '${foundUserInitiator.name}' and '${foundFriendUser.name}'`,
     );
+
+    const notificationTopic = 'Friend connection';
+    const notificationText = 'has added to our friends list';
+    await this.notifyService.createNotifyMessage(foundUserInitiator.id, {
+      topic: notificationTopic,
+      text: `${foundFriendUser.name} ${notificationText}`,
+    });
+    await this.notifyService.createNotifyMessage(foundFriendUser.id, {
+      topic: notificationTopic,
+      text: `${foundUserInitiator.name} ${notificationText}`,
+    });
 
     return createdFriend;
   }
@@ -157,10 +171,52 @@ export class FriendService {
       throw new ForbiddenException(FRIEND_MESSAGES.RESPONSE_WAIT);
     }
 
+    const foundUserInitiator = await this.userService.findUserById(
+      updatedFriend.friendInitiator.toString(),
+    );
+    if (!foundUserInitiator) {
+      this.logger.warn(
+        `User initiator with id '${updatedFriend.friendInitiator.toString()}' not found`,
+      );
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    const foundFriendUser = await this.userService.findUserById(
+      updatedFriend.friend.toString(),
+    );
+    if (!foundFriendUser) {
+      this.logger.warn(
+        `Friend user with id '${updatedFriend.friend.toString()}' not found`,
+      );
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+
     if (dto.requestStatus !== undefined)
       updatedFriend.requestStatus = dto.requestStatus;
 
-    return this.friendRepository.update(friendId, updatedFriend);
+    const updatedFriendResult = await this.friendRepository.update(
+      friendId,
+      updatedFriend,
+    );
+
+    const notificationTopic = 'Friend connection';
+    let notificationText = '';
+    if (updatedFriend.requestStatus === RequestStatusType.PENDING) {
+      notificationText = 'training request has been sent';
+    } else if (updatedFriend.requestStatus === RequestStatusType.REJECTED) {
+      notificationText = 'training request has been rejected';
+    } else if (updatedFriend.requestStatus === RequestStatusType.ACCEPTED) {
+      notificationText = 'training request has been accepted';
+    }
+    await this.notifyService.createNotifyMessage(foundUserInitiator.id, {
+      topic: notificationTopic,
+      text: `${foundFriendUser.name} ${notificationText}`,
+    });
+    await this.notifyService.createNotifyMessage(foundFriendUser.id, {
+      topic: notificationTopic,
+      text: `${foundUserInitiator.name} ${notificationText}`,
+    });
+
+    return updatedFriendResult;
   }
 
   public async deleteFriendConnection(
@@ -180,7 +236,40 @@ export class FriendService {
       throw new ForbiddenException(FRIEND_MESSAGES.NO_ACCESS);
     }
 
-    return this.friendRepository.deleteById(friendId);
+    const foundUserInitiator = await this.userService.findUserById(
+      deletedFriend.friendInitiator.toString(),
+    );
+    if (!foundUserInitiator) {
+      this.logger.warn(
+        `User initiator with id '${deletedFriend.friendInitiator.toString()}' not found`,
+      );
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+    const foundFriendUser = await this.userService.findUserById(
+      deletedFriend.friend.toString(),
+    );
+    if (!foundFriendUser) {
+      this.logger.warn(
+        `Friend user with id '${deletedFriend.friend.toString()}' not found`,
+      );
+      throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
+    }
+
+    const friendDeletionResult =
+      await this.friendRepository.deleteById(friendId);
+
+    const notificationTopic = 'Friend connection';
+    const notificationText = 'has removed from our friends list';
+    await this.notifyService.createNotifyMessage(foundUserInitiator.id, {
+      topic: notificationTopic,
+      text: `${foundFriendUser.name} ${notificationText}`,
+    });
+    await this.notifyService.createNotifyMessage(foundFriendUser.id, {
+      topic: notificationTopic,
+      text: `${foundUserInitiator.name} ${notificationText}`,
+    });
+
+    return friendDeletionResult;
   }
 
   public async findMyFriend(

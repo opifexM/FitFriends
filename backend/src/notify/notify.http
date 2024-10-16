@@ -1,0 +1,12 @@
+@host = http://localhost:3000
+@notificationId = 66d8a2df3a5967a0eca60c25
+@token = eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmNiNmJmYzI2MTE2N2UyNDZmNzRhOWUiLCJlbWFpbCI6InRlc3Q1QHRlc3QuY29tIiwiaWF0IjoxNzI0OTUwOTkyLCJleHAiOjE3Mjc1NDI5OTJ9.5gjkfcRZ9oAi3_x_UOfT_RZKzw2Xf4qFY6l7KUz6ZLX5aCihmLJW56OncLJHQIRYsKvvqQhaWAPepMeb40vs-w
+
+### Get notification list
+GET {{host}}/api/notifications HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Get friend connection by ID
+PATCH {{host}}/api/notifications/{{notificationId}} HTTP/1.1
+Authorization: Bearer {{token}}
+

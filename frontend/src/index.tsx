@@ -8,6 +8,7 @@ import { store } from './store';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'leaflet/dist/leaflet.css';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',

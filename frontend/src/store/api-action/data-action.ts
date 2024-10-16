@@ -7,6 +7,7 @@ import { FriendPaginationDto } from 'shared/type/friend/dto/friend-pagination.dt
 import { FriendDto } from 'shared/type/friend/dto/friend.dto.ts';
 import { UpdateFriendDto } from 'shared/type/friend/dto/update-friend.dto.ts';
 import { FriendQuery } from 'shared/type/friend/friend.query.ts';
+import { NotifyDto } from 'shared/type/notify/dto/notify.dto.ts';
 import { CreateOrderDto } from 'shared/type/order/dto/create-order.dto.ts';
 import { MyOrderPaginationDto } from 'shared/type/order/dto/my-order-pagination.dto.ts';
 import { OrderDto } from 'shared/type/order/dto/order.dto.ts';
@@ -868,6 +869,41 @@ export const fetchMyFriend = createAsyncThunk<
       );
 
       return data;
+    } catch (error) {
+      toast.warning(handleApiError(error), {
+        position: 'top-right',
+      });
+      return rejectWithValue(handleApiError(error));
+    }
+  },
+);
+
+export const fetchMyNotification = createAsyncThunk<
+  NotifyDto[],
+  void,
+  ThunkApiConfig
+>('data/fetchMyNotification', async (_arg, { extra: api, rejectWithValue }) => {
+  try {
+    const { data } = await api.get<NotifyDto[]>(APIRoute.GetMyNotification);
+
+    return data;
+  } catch (error) {
+    toast.warning(handleApiError(error), {
+      position: 'top-right',
+    });
+    return rejectWithValue(handleApiError(error));
+  }
+});
+
+export const readNotification = createAsyncThunk<void, string, ThunkApiConfig>(
+  'data/readNotification',
+  async (notificationId, { extra: api, rejectWithValue }) => {
+    try {
+      const url = APIRoute.ReadNotification.replace(
+        ':notificationId',
+        notificationId,
+      );
+      await api.patch<void>(url);
     } catch (error) {
       toast.warning(handleApiError(error), {
         position: 'top-right',

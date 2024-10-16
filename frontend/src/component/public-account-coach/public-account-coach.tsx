@@ -7,12 +7,16 @@ import { AppRoute } from '../../const.ts';
 import { useAppDispatch } from '../../hook';
 import {
   addFriend,
+  fetchMyNotification,
   fetchPublicUserDetail,
   removeFriend,
   subscribeCoach,
   unsubscribeCoach,
 } from '../../store/api-action/data-action.ts';
-import { setIsCertificateViewOpen } from '../../store/ui-settings/ui-settings.slice.ts';
+import {
+  setIsCertificateViewOpen,
+  setIsLocationViewOpen,
+} from '../../store/ui-settings/ui-settings.slice.ts';
 import { CoachTrainingList } from '../coach-training-list/coach-training-list.tsx';
 
 interface PublicAccountCoachProps {
@@ -76,6 +80,7 @@ export function PublicAccountCoach({
             position: 'top-right',
           });
           dispatch(fetchPublicUserDetail(publicUserDetail.id));
+          dispatch(fetchMyNotification());
         });
     } else {
       dispatch(addFriend({ friend: id }))
@@ -85,6 +90,7 @@ export function PublicAccountCoach({
             position: 'top-right',
           });
           dispatch(fetchPublicUserDetail(publicUserDetail.id));
+          dispatch(fetchMyNotification());
         });
     }
   };
@@ -93,7 +99,10 @@ export function PublicAccountCoach({
     dispatch(setIsCertificateViewOpen(true));
   };
 
-  //todo location link
+  const handleOpenLocationPopupClick = () => {
+    dispatch(setIsLocationViewOpen(true));
+  };
+
   return (
     <div className="inner-page__wrapper">
       <Link
@@ -116,7 +125,11 @@ export function PublicAccountCoach({
                   <h2 className="user-card-coach__title">{name}</h2>
                 </div>
                 <div className="user-card-coach__label">
-                  <a href="popup-user-map.html">
+                  <button
+                    className="btn-flat user-card-coach__sertificate"
+                    type="button"
+                    onClick={handleOpenLocationPopupClick}
+                  >
                     <svg
                       className="user-card-coach__icon-location"
                       width="12"
@@ -126,7 +139,7 @@ export function PublicAccountCoach({
                       <use xlinkHref="#icon-location"></use>
                     </svg>
                     <span>{location}</span>
-                  </a>
+                  </button>
                 </div>
                 <div className="user-card-coach__status-container">
                   <div className="user-card-coach__status user-card-coach__status--tag">
